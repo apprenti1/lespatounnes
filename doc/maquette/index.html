@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Patounes - Communauté Puppy LGBT+ Paris</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .paw-pattern {
+            background-image: radial-gradient(circle, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stats-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+        
+        .hero-image {
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+        
+        .image-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-card img {
+            transition: transform 0.5s ease;
+        }
+        
+        .image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .overlay-gradient {
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            border-radius: 2.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a class="flex items-center space-x-3" href="./">
+                    <div class="text-4xl">
+                        <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Les Patounes</span>
+                </a>
+                
+                <div class="hidden md:flex md:items-center space-x-5 ">
+                    <a href="./" class="nav-link text-purple-600 font-semibold transition active">Accueil</a>
+                    <a href="./events" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                    <a href="./partner" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                    <a href="./shop" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                    <a href="./story" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="./login" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                            <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                        </a>
+                        <a href="./register" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                            Adhérer
+                        </a>
+                    </div>
+                </div>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="./" class="block nav-link text-purple-600 font-semibold transition active">Accueil</a>
+                <a href="./events" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                <a href="./partner" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                <a href="./shop" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                <a href="./story" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                <div class="flex items-center space-x-4">
+                    <a href="./login" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                        <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                    </a>
+                    <a href="./register" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                        Adhérer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Image -->
+    <section id="accueil" class="pt-20 relative overflow-hidden">
+        <!-- Hero Image Background -->
+        <div class="absolute inset-0 z-0" style="
+            background: url(https://media.joomeo.com/large/68f186f9e8f11.jpg) no-repeat fixed;
+            background-position: center;
+            background-size: cover;
+        ">
+            <img src="" alt="PupNic Pride 2025" class="w-full h-full hero-image">
+            <div class="absolute inset-0 gradient-bg opacity-80"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-6 text-white" style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: calc(100vh - 5rem);
+        ">
+            <div class="text-center fade-in" style="animation: 1s ease-out 0s 1 normal none running fadeIn;">
+                <div class="text-8xl md:text-9xl mb-6 floating" style="
+                    display: flex;
+                    justify-content: center;
+                ">
+                    <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" style="
+                        width: 10rem;
+                        border-radius: 2rem;
+                    ">
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
+                    Les Patounes
+                </h1>
+                <p class="text-xl md:text-2xl mb-4 max-w-3xl mx-auto font-light drop-shadow-lg">
+                    Communauté Puppy LGBT+ à Paris
+                </p>
+                <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto font-light opacity-90 drop-shadow-lg">
+                    Un espace inclusif, bienveillant et "pawsitif" 🌈
+                </p>
+                <p class="text-sm opacity-75 mb-8">Photo : Scooby, PupNic Pride 2025</p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mt-12">
+                    <a href="#mission" class="bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg">
+                        Découvrir notre mission
+                    </a>
+                    <a href="./events" class="border-2 border-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-purple-600 transition shadow-lg">
+                        Nos événements
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                <div class="stats-box rounded-2xl p-8 text-center card-hover pulse-glow" style="opacity: 1; transform: translateY(0px); transition: 0.6s;">
+                    <div class="text-6xl mb-3">👥</div>
+                    <div class="text-5xl font-bold gradient-text mb-2">~80</div>
+                    <div class="text-gray-600 font-semibold">Personnes par événement</div>
+                </div>
+                <div class="stats-box rounded-2xl p-8 text-center card-hover pulse-glow" style="opacity: 1; transform: translateY(0px); transition: 0.6s;">
+                    <div class="text-6xl mb-3">💜</div>
+                    <div class="text-5xl font-bold gradient-text mb-2">64</div>
+                    <div class="text-gray-600 font-semibold">Adhérents</div>
+                </div>
+                <div class="stats-box rounded-2xl p-8 text-center card-hover pulse-glow" style="opacity: 1; transform: translateY(0px); transition: 0.6s;">
+                    <div class="text-6xl mb-3">🎉</div>
+                    <div class="text-5xl font-bold gradient-text mb-2">2025</div>
+                    <div class="text-gray-600 font-semibold">Ouverture en Juin</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wave Separator -->
+        <div class="relative z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full">
+                <path fill="#F9FAFB" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <!-- Junction Line -->
+        <div style="
+            height: 1px;
+            background-color: #F9FAFB;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        "></div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="py-20 bg-gray-50 paw-pattern">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold gradient-text mb-4">Notre Mission</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Promouvoir et valoriser la culture fétiche LGBT+ 🐶</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-10 md:p-16 shadow-2xl card-hover">
+                <div class="max-w-4xl mx-auto">
+                    <p class="text-lg md:text-xl text-gray-700 leading-relaxed mb-6">
+                        Chez Les Patounes, notre mission est de <span class="font-bold text-purple-600">promouvoir et valoriser la culture fétiche LGBT+</span>, et plus particulièrement la <span class="font-bold text-purple-600">communauté Puppy 🐶</span>
+                    </p>
+                    <p class="text-lg md:text-xl text-gray-700 leading-relaxed mb-6">
+                        Nous souhaitons offrir un espace où chacun peut <span class="font-bold text-pink-600">vivre pleinement son identité</span>, s'exprimer librement et trouver sa place au sein d'une communauté bienveillante et inclusive 🌈
+                    </p>
+                    <p class="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                        Nos actions visent à <span class="font-bold text-purple-600">rassembler, visibiliser et dynamiser</span> la scène fétiche et Puppy parisienne à travers des initiatives conviviales et solidaires.
+                    </p>
+                    
+                    <div class="bg-white rounded-2xl p-8 shadow-lg">
+                        <p class="text-lg md:text-xl text-gray-700 leading-relaxed text-center font-semibold">
+                            Rejoindre Les Patounes, c'est faire partie d'une véritable <span class="gradient-text text-2xl">safe place</span>, fondée sur le respect, la solidarité et la "pawsitivité" 🐾
+                        </p>
+                    </div>
+                    <div class="flex justify-center">
+                        <a href="./story" class="mt-5 inline-flex items-center gap-3 btn-primary text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl">
+                            <span class="text-2xl">📖</span> Notre histoire
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="evenements" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold gradient-text mb-4">Nos Événements</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Découvrez toutes nos initiatives 🌈</p>
+            </div>
+            
+            <!-- Main Event with Image -->
+            <div class="relative bg-white rounded-3xl overflow-hidden mb-10 shadow-2xl card-hover">
+                <div class="image-card h-96 relative">
+                    <img src="https://lespatounes.sitew.org/fs/Root/ep61a-Affiche-Les-Patounes-Tous-les-jeudis-2-q85_w_1920.jpg" 
+                         alt="Affiche Les Patounes" 
+                         class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-10 text-white flex justify-center items-center flex-col h-full">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-5xl">🍻</span>
+                            <h3 class="text-3xl md:text-4xl font-bold">Apéros Hebdomadaires</h3>
+                        </div>
+                        <p class="text-xl md:text-2xl mb-4 font-light">
+                            Tous les jeudis à 18h30 au FreeDj, dans le Marais à Paris
+                        </p>
+                        <p class="text-lg opacity-90 mb-4">
+                            Avec La Qonnasse KyssyBangBang
+                        </p>
+                        <div class="inline-block bg-white text-purple-600 px-6 py-3 rounded-full font-bold text-lg">
+                            Tous les jeudis 📅
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="py-20 bg-gray-50 paw-pattern rounded-3xl">
+                <div class="flex flex-col md:flex-row items-center gap-8 p-8">
+                    <!-- Texte à gauche -->
+                    <div class="flex-1">
+                        <h3 class="text-3xl md:text-4xl font-bold gradient-text mb-6">Rejoignez la meute !</h3>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                            En devenant membre des Patounes, vous intégrez une communauté bienveillante et inclusive où chacun peut s'exprimer librement.
+                        </p>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                            Profitez d'événements exclusifs, de remises chez nos partenaires, et soutenez le développement de la scène Puppy parisienne.
+                        </p>
+                        <a href="./events" class="inline-flex items-center gap-3 btn-primary text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl">
+                            <span class="text-2xl">🐾</span> Plus d'Events ?
+                        </a>
+                    </div>
+
+                    <!-- Image à droite -->
+                    <div class="flex-1 w-full md:w-auto">
+                        <img src="https://media.joomeo.com/large/68f186f9e8f11.jpg"
+                             alt="Adhésion Les Patounes"
+                             class="w-full h-auto rounded-2xl shadow-2xl object-cover">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="mt-16 text-center bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-10 md:p-16">
+                <h3 class="text-3xl font-bold text-gray-800 mb-4">Ne manquez aucun événement !</h3>
+                <p class="text-lg text-gray-600 mb-8">
+                    📅 Retrouvez toutes nos activités sur notre agenda ou suivez-nous sur Instagram
+                </p>
+                <a href="https://instagram.com/lespatounesfr" target="_blank" class="inline-flex items-center gap-3 btn-primary text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl">
+                    <span class="text-2xl">📱</span> @lespatounesfr
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Adhesion Section -->
+    <section id="adhesion" class="py-20 bg-gray-50 paw-pattern">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Devenir Membre</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Rejoignez notre communauté 🐾</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="gradient-bg text-white p-10 text-center">
+                    <h3 class="text-3xl font-bold mb-4">Pourquoi adhérer ?</h3>
+                    <p class="text-lg">Devenez membre de Les Patounes et profitez de nombreux avantages exclusifs</p>
+                </div>
+                
+                <div class="p-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl">✨</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-2">Événements exclusifs</h4>
+                                <p class="text-gray-600">Accédez à des événements réservés aux membres</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl">🎁</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-2">Cadeaux &amp; avantages</h4>
+                                <p class="text-gray-600">Recevez des goodies et des surprises tout au long de l'année</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl">💰</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-2">Remises partenaires</h4>
+                                <p class="text-gray-600">Bénéficiez de réductions chez nos partenaires</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl">💜</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-2">Soutenez l'association</h4>
+                                <p class="text-gray-600">Aidez-nous à proposer toujours plus d'événements</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 mb-8">
+                        <h4 class="text-2xl font-bold text-gray-800 mb-4">Comment adhérer ?</h4>
+                        <ol class="space-y-4">
+                            <li class="flex items-start gap-4">
+                                <span class="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</span>
+                                <p class="text-gray-700 pt-1">Remplissez notre formulaire d'adhésion en ligne</p>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</span>
+                                <p class="text-gray-700 pt-1">Réglez votre cotisation annuelle</p>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</span>
+                                <p class="text-gray-700 pt-1">Recevez votre confirmation et vos premiers avantages !</p>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="./register" class="btn-primary text-white px-10 py-4 rounded-full font-bold text-lg">
+                            Formulaire d'adhésion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="equipe" class="py-20 bg-gray-50 paw-pattern">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-bold gradient-text mb-4">L'Équipe</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Trois membres passionnés et engagés 💙</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
+                <!-- Team Member 1 -->
+                <div class="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
+                    <div class="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
+                        🐺
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">Loufy</h3>
+                    <p class="text-purple-600 font-bold text-lg mb-4">Président & Fondateur</p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Véritable moteur du projet, il insuffle l'énergie et la vision qui guident Les Patounes depuis leur création. 
+                        Il œuvre à renforcer les liens au sein de la communauté et à faire grandir la scène Puppy parisienne.
+                    </p>
+                </div>
+                
+                <!-- Team Member 2 -->
+                <div class="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
+                    <div class="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
+                        🐕
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">Tau</h3>
+                    <p class="text-blue-600 font-bold text-lg mb-4">Trésorier</p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Veille avec rigueur et bienveillance à la gestion de l'association. 
+                        Toujours à l'écoute, il contribue à garantir la stabilité et la continuité de nos actions 🐶💙
+                    </p>
+                </div>
+                
+                <!-- Team Member 3 -->
+                <div class="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
+                    <div class="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-orange-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
+                        🦴
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">Draikon</h3>
+                    <p class="text-pink-600 font-bold text-lg mb-4">Secrétaire</p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Assure la coordination et le bon déroulement de nos projets. 
+                        Son engagement et sa créativité sont essentiels à la dynamique et à la convivialité qui caractérisent Les Patounes.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-10 md:p-16 text-white text-center shadow-2xl">
+                <h3 class="text-3xl md:text-4xl font-bold mb-6">Une équipe soudée 💜</h3>
+                <p class="text-xl md:text-2xl font-light max-w-3xl mx-auto">
+                    Ensemble, ils forment une équipe animée par des valeurs de partage, d'inclusion et de "pawsitivité", 
+                    au service d'une communauté qui ne cesse de grandir 🌈🐾
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-10 md:p-16 text-center shadow-xl">
+                <div class="text-6xl mb-6">📬</div>
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Restez Informés</h3>
+                <p class="text-lg text-gray-600 mb-8">
+                    Recevez directement dans votre boîte mail les dernières nouvelles de Les Patounes et découvrez nos projets à venir
+                </p>
+                <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                    <input type="email" placeholder="Votre email" required class="flex-1 px-6 py-4 rounded-full border-2 border-purple-200 focus:border-purple-500 outline-none text-gray-700">
+                    <button type="submit" class="btn-primary text-white px-10 py-4 rounded-full font-bold text-lg whitespace-nowrap">
+                        S'inscrire 🐾
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-5xl">
+                            <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" class="h-[5rem] rounded-2xl">
+                        </span>
+                        <span class="text-3xl font-bold">Les Patounes</span>
+                    </div>
+                    <p class="text-white/90 text-lg leading-relaxed">
+                        Communauté Puppy LGBT+ à Paris. Safe place, respect, solidarité et pawsitivité 🌈
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Contact</h4>
+                    <div class="space-y-4">
+                        <a href="./contact" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📧</span> contact@lespatounes.fr
+                        </a>
+                        <a href="https://instagram.com/lespatounesfr" target="_blank" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📱</span> @lespatounesfr
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Crédits</h4>
+                    <div class="space-y-2 text-white/80">
+                        <p>🎨 Affiches par <span class="font-bold">LaGoulue</span></p>
+                        <p>📸 Photos par <span class="font-bold">Scooby</span></p>
+                        <p>🌈 Association LGBT+ inclusive</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/20 pt-8 text-center">
+                <p class="text-white/80 text-lg">© 2025 Les Patounes - Tous droits réservés 🌈🐾</p>
+                <p class="text-white/60 mt-2">Ensemble, continuons à faire rayonner notre communauté</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.offsetTop - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Scroll Animation for cards
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card-hover, .stats-box').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+        
+        /*
+        // Active Nav on Scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop - 100;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelectorAll('a[href^="#"]').forEach(link => {
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.style.color = '#9333ea';
+                        } else {
+                            link.style.color = '';
+                        }
+                    });
+                }
+            });
+        });
+        */
+        
+        // Newsletter Form
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            if (email) {
+                alert('Merci pour votre inscription ! 🐾 Vous recevrez bientôt nos actualités.');
+                e.target.reset();
+            }
+        });
+        
+        
+        // Add entrance animation
+        window.addEventListener('load', () => {
+            document.querySelector('.fade-in').style.animation = 'fadeIn 1s ease-out';
+        });
+    </script>
+</body>
+</html>

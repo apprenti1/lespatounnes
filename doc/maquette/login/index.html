@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Les Patounes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .paw-pattern {
+            background-image: radial-gradient(circle, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #9333ea;
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            border-radius: 2.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a class="flex items-center space-x-3" href="./">
+                    <div class="text-4xl">
+                        <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Les Patounes</span>
+                </a>
+                
+                <div class="hidden md:flex md:items-center space-x-5">
+                    <a href="./#accueil" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Accueil</a>
+                    <a href="./events" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                    <a href="./#mission" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                    <a href="./#mission" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                    <a href="./#equipe" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="./login" class="h-[42px] w-[42px] text-white bg-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-700 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                            <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                        </a>
+                        <a href="./#adhesion" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                            Adhérer
+                        </a>
+                    </div>
+                </div>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="./#accueil" class="block text-gray-700 hover:text-purple-600 font-semibold">Accueil</a>
+                <a href="./#mission" class="block text-gray-700 hover:text-purple-600 font-semibold">Notre Mission</a>
+                <a href="./events" class="block text-gray-700 hover:text-purple-600 font-semibold">Événements</a>
+                <a href="./#equipe" class="block text-gray-700 hover:text-purple-600 font-semibold">L'Équipe</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Section -->
+    <section class="pt-32 pb-20 min-h-screen gradient-bg relative overflow-hidden">
+        <div class="absolute inset-0 paw-pattern opacity-10"></div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="text-center mb-12 text-white fade-in">
+                <div class="text-8xl mb-6 floating">🐾</div>
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                    Bon retour parmi nous !
+                </h1>
+                <p class="text-xl md:text-2xl font-light drop-shadow-lg">
+                    Connectez-vous à votre espace membre
+                </p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="max-w-xl mx-auto">
+                <div class="bg-white rounded-3xl p-8 md:p-12 shadow-2xl pulse-glow">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-bold gradient-text mb-3">Connexion</h2>
+                        <p class="text-gray-600 text-lg">Accédez à votre espace personnel 💜</p>
+                    </div>
+
+                    <form id="loginForm" class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3 text-lg">Adresse email</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="mail-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="email" 
+                                    id="email"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="votre@email.com"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-3 text-lg">Mot de passe</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="password" 
+                                    id="password"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="••••••••"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" class="w-5 h-5 rounded border-2 border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                <span class="text-gray-700 group-hover:text-purple-600 transition">Se souvenir de moi</span>
+                            </label>
+                            <a href="#" class="text-purple-600 hover:text-purple-700 font-semibold hover:underline transition">
+                                Mot de passe oublié ?
+                            </a>
+                        </div>
+
+                        <button type="submit" class="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3">
+                            <span>Se connecter</span>
+                            <span class="text-2xl">🐾</span>
+                        </button>
+                    </form>
+
+                    <div class="mt-10 pt-8 border-t-2 border-gray-100 text-center">
+                        <p class="text-gray-600 text-lg mb-4">
+                            Pas encore membre de la meute ?
+                        </p>
+                        <a href="./#adhesion" class="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:from-pink-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-300">
+                            <span class="text-2xl">✨</span>
+                            <span>Rejoindre Les Patounes</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Info Boxes -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                        <div class="text-4xl mb-3">🔒</div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Connexion sécurisée</h3>
+                        <p class="text-gray-600 text-sm">
+                            Vos données sont protégées
+                        </p>
+                    </div>
+
+                    <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                        <div class="text-4xl mb-3">💜</div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Espace membre</h3>
+                        <p class="text-gray-600 text-sm">
+                            Accès à vos avantages exclusifs
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    <span class="text-2xl font-bold">Les Patounes</span>
+                </div>
+                <p class="text-white/80">© 2025 Les Patounes - Tous droits réservés 🌈🐾</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('❌ Veuillez remplir tous les champs !');
+                return;
+            }
+
+            // Simulation de connexion
+            alert('🐾 Connexion réussie !\n\nBienvenue dans votre espace membre Les Patounes 💜\n\nVous allez être redirigé vers votre tableau de bord...');
+            
+            // Ici vous pouvez rediriger vers le dashboard
+            // window.location.href = './dashboard';
+        });
+
+        // Animation au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Les Patounes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .paw-pattern {
+            background-image: radial-gradient(circle, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+
+        .contact-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .contact-card:hover::before {
+            left: 100%;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #9333ea;
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            border-radius: 2.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a class="flex items-center space-x-3" href="./../">
+                    <div class="text-4xl">
+                        <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Les Patounes</span>
+                </a>
+                
+                <div class="hidden md:flex md:items-center space-x-5 ">
+                    <a href="./../" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Accueil</a>
+                    <a href="./../events" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                    <a href="./../partner" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                    <a href="./../shop" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                    <a href="./../story" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="./../login" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                            <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                        </a>
+                        <a href="./../register" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                            Adhérer
+                        </a>
+                    </div>
+                </div>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="./../" class="block nav-link text-purple-600 font-semibold transition active">Accueil</a>
+                <a href="./../events" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                <a href="./../partner" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                <a href="./../shop" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                <a href="./../story" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                <div class="flex items-center space-x-4">
+                    <a href="./../login" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                        <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                    </a>
+                    <a href="./../register" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                        Adhérer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+    <!-- Hero Section with Image -->
+    <section id="accueil" class="pt-20 relative overflow-hidden">
+        <!-- Hero Image Background -->
+        <div class="absolute inset-0 z-0" style="
+            background: url(https://media.joomeo.com/large/68f186f9e8f11.jpg) no-repeat fixed;
+            background-position: center;
+            background-size: cover;
+        ">
+            <img src="" alt="PupNic Pride 2025" class="w-full h-full hero-image">
+            <div class="absolute inset-0 gradient-bg opacity-80"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-0 md:pt-10 text-white" style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        ">
+            <div class="text-center fade-in" style="animation: 1s ease-out 0s 1 normal none running fadeIn;">
+                <div class="text-8xl md:text-9xl mb-6 floating" style="
+                    display: flex;
+                    justify-content: center;
+                ">
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
+                    Contactez nous
+                </h1>
+                <p class="text-xl md:text-2xl mb-4 max-w-3xl mx-auto font-light drop-shadow-lg">
+                    Une question ? Une suggestion ? N'hésitez pas à nous écrire 🐾
+                </p>
+            </div>
+            
+        </div>
+        
+        <!-- Wave Separator -->
+        <div class="relative z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full">
+                <path fill="#F9FAFB" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <!-- Junction Line -->
+        <div style="
+            height: 1px;
+            background-color: #F9FAFB;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        "></div>
+    </section>
+
+
+    <!-- Contact Cards -->
+    <section class="py-20 pt-0 bg-gray-50 paw-pattern -mt-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
+                <!-- Email Card -->
+                <a href="mailto:contact@lespatounes.fr" class="contact-card bg-white rounded-3xl p-10 text-center card-hover shadow-xl group">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">📧</div>
+                    <h3 class="text-3xl font-bold gradient-text mb-4">Email</h3>
+                    <p class="text-gray-600 mb-4 text-lg">Écrivez-nous directement</p>
+                    <p class="text-purple-600 font-bold text-xl">contact@lespatounes.fr</p>
+                </a>
+
+                <!-- Instagram Card -->
+                <a href="https://instagram.com/lespatounesfr" target="_blank" class="contact-card bg-white rounded-3xl p-10 text-center card-hover shadow-xl group">
+                    <div class="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">📱</div>
+                    <h3 class="text-3xl font-bold gradient-text mb-4">Instagram</h3>
+                    <p class="text-gray-600 mb-4 text-lg">Suivez nos actualités</p>
+                    <p class="text-purple-600 font-bold text-xl">@lespatounesfr</p>
+                </a>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="max-w-3xl mx-auto mb-32">
+                <div class="bg-white rounded-3xl p-10 md:p-12 shadow-2xl">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Formulaire de Contact</h2>
+                        <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-4"></div>
+                        <p class="text-lg text-gray-600">Remplissez le formulaire ci-dessous et nous vous répondrons rapidement 💜</p>
+                    </div>
+
+                    <form id="contactForm" class="flex flex-col md:flex-row gap-6">
+
+                        <div class="space-y-6 p-4 flex-1">
+                            <!-- Name -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg" for="name">
+                                    Nom / Pseudo *
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name"
+                                    required
+                                    class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="Votre nom"
+                                >
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg" for="email">
+                                    Email *
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email"
+                                    required
+                                    class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="votre@email.com"
+                                >
+                            </div>
+
+                            <!-- Subject -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg" for="subject">
+                                    Sujet *
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="subject" 
+                                    name="subject"
+                                    required
+                                    class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="Objet de votre message"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 p-4 flex-1">
+                            <!-- Message -->
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg" for="message">
+                                    Message *
+                                </label>
+                                <textarea 
+                                    id="message" 
+                                    name="message"
+                                    required
+                                    rows="6"
+                                    class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300 resize-none"
+                                    placeholder="Écrivez votre message ici..."
+                                ></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center pt-4">
+                                <button 
+                                    type="submit" 
+                                    class="btn-primary text-white px-12 py-4 rounded-full font-bold text-xl inline-flex items-center gap-3 shadow-xl"
+                                >
+                                    <span>Envoyer</span>
+                                    <span class="text-2xl">🐾</span>
+                                </button>
+                            </div>
+
+                            <p class="text-center text-gray-500 text-sm mt-4">
+                                * Champs obligatoires
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="max-w-3xl mx-auto mt-12">
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 text-center">
+                    <div class="text-5xl mb-4">⏱️</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Temps de réponse</h3>
+                    <p class="text-gray-700 text-lg leading-relaxed">
+                        Nous faisons notre maximum pour répondre à tous vos messages dans les <span class="font-bold text-purple-600">48 heures</span>. 
+                        Pour les demandes urgentes, n'hésitez pas à nous contacter sur Instagram 📱
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Questions Fréquentes</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Vous avez peut-être déjà la réponse 🤔</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-3">
+                        <span class="text-2xl">❓</span>
+                        Comment adhérer à l'association ?
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Rendez-vous sur notre page d'accueil et cliquez sur le bouton "Adhérer" pour accéder au formulaire d'inscription. Vous pouvez aussi nous contacter directement pour plus d'informations.
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-3">
+                        <span class="text-2xl">📅</span>
+                        Où trouver le calendrier des événements ?
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Tous nos événements sont annoncés sur notre compte Instagram @lespatounesfr et dans la section "Événements" de notre site web. Suivez-nous pour ne rien manquer !
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-3">
+                        <span class="text-2xl">🐕</span>
+                        Faut-il être Puppy pour rejoindre Les Patounes ?
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed mb-3">
+                        Absolument pas ! Nos événements sont ouverts à <span class="font-bold text-purple-600">tous les fétiches et à tout le monde</span>, sans aucune condition. Que vous soyez Puppy, Handler, Kitten, Pony, Leather, Rubber, ou simplement curieux et bienveillant, vous êtes les bienvenus ! 
+                    </p>
+                    <p class="text-gray-700 leading-relaxed">
+                        Pas besoin de matériel, d'expérience ou de connaissances particulières. Venez comme vous êtes, avec respect et ouverture d'esprit. Notre communauté est <span class="font-bold text-pink-600">inclusive, diverse et accueillante</span> 🌈✨
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-5xl">
+                            <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" class="h-[5rem] rounded-2xl">
+                        </span>
+                        <span class="text-3xl font-bold">Les Patounes</span>
+                    </div>
+                    <p class="text-white/90 text-lg leading-relaxed">
+                        Communauté Puppy LGBT+ à Paris. Safe place, respect, solidarité et pawsitivité 🌈
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Contact</h4>
+                    <div class="space-y-4">
+                        <a href="./" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📧</span> contact@lespatounes.fr
+                        </a>
+                        <a href="https://instagram.com/lespatounesfr" target="_blank" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📱</span> @lespatounesfr
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Crédits</h4>
+                    <div class="space-y-2 text-white/80">
+                        <p>🎨 Affiches par <span class="font-bold">LaGoulue</span></p>
+                        <p>📸 Photos par <span class="font-bold">Scooby</span></p>
+                        <p>🌈 Association LGBT+ inclusive</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/20 pt-8 text-center">
+                <p class="text-white/80 text-lg">© 2025 Les Patounes - Tous droits réservés 🌈🐾</p>
+                <p class="text-white/60 mt-2">Ensemble, continuons à faire rayonner notre communauté</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Form Submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            // Simulation d'envoi
+            alert('🐾 Merci pour votre message !\n\nNous avons bien reçu votre demande et nous vous répondrons dans les plus brefs délais.\n\nÀ très bientôt !\nL\'équipe des Patounes 💜');
+            
+            // Reset form
+            e.target.reset();
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card-hover').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

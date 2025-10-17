@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Événements - Les Patounes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .paw-pattern {
+            background-image: radial-gradient(circle, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+
+        .image-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-card img {
+            transition: transform 0.5s ease;
+        }
+        
+        .image-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            border-radius: 2.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .event-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a class="flex items-center space-x-3" href="./../">
+                    <div class="text-4xl">
+                        <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Les Patounes</span>
+                </a>
+                
+                <div class="hidden md:flex md:items-center space-x-5">
+                    <a href="./../" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Accueil</a>
+                    <a href="./../events/" class="nav-link text-purple-600 font-semibold transition active">Événements</a>
+                    <a href="./../partner/" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                    <a href="./../shop/" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                    <a href="./../story/" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="./../login/" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                            <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                        </a>
+                        <a href="./../register/" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                            Adhérer
+                        </a>
+                    </div>
+                </div>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="./../" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Accueil</a>
+                <a href="./../events/" class="block nav-link text-purple-600 font-semibold transition active">Événements</a>
+                <a href="./../partner/" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                <a href="./../shop/" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                <a href="./../story/" class="block nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                <div class="flex items-center space-x-4">
+                    <a href="./../login/" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                        <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                    </a>
+                    <a href="./../register/" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                        Adhérer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+    <!-- Hero Section with Image -->
+    <section id="accueil" class="pt-20 relative overflow-hidden">
+        <!-- Hero Image Background -->
+        <div class="absolute inset-0 z-0" style="
+            background: url(https://media.joomeo.com/large/68f186f9e8f11.jpg) no-repeat fixed;
+            background-position: center;
+            background-size: cover;
+        ">
+            <div class="absolute inset-0 gradient-bg opacity-80"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-0 md:pt-10 text-white" style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        ">
+            <div class="text-center fade-in" style="animation: 1s ease-out 0s 1 normal none running fadeIn;">
+                <div class="text-8xl md:text-9xl mb-6 floating" style="
+                    display: flex;
+                    justify-content: center;
+                ">
+                </div>
+                <div class="text-8xl mb-6 floating">🎉</div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
+                    Nos Événements
+                </h1>
+                <p class="text-xl md:text-2xl mb-4 max-w-3xl mx-auto font-light drop-shadow-lg">
+                    Découvrez toutes nos initiatives et rejoignez la meute 🐾
+                </p>
+            </div>
+            
+        </div>
+        
+        <!-- Wave Separator -->
+        <div class="relative z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full">
+                <path fill="#F9FAFB" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <!-- Junction Line -->
+        <div style="
+            height: 1px;
+            background-color: #F9FAFB;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        "></div>
+    </section>
+
+    <!-- Featured Event -->
+    <section class="py-20 bg-gray-50 paw-pattern -mt-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="inline-block bg-purple-100 text-purple-600 px-6 py-3 rounded-full font-bold text-lg mb-4">
+                    ⭐ ÉVÉNEMENT PHARE
+                </span>
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Notre Rendez-vous Hebdomadaire</h2>
+            </div>
+
+            <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl card-hover">
+                <div class="image-card h-96 md:h-[500px] relative">
+                    <img src="https://lespatounes.sitew.org/fs/Root/ep61a-Affiche-Les-Patounes-Tous-les-jeudis-2-q85_w_1920.jpg" 
+                         alt="Affiche Les Patounes" 
+                         class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-5xl md:text-6xl">🍻</span>
+                            <h3 class="text-3xl md:text-5xl font-bold">Apéros Hebdomadaires</h3>
+                        </div>
+                        <p class="text-xl md:text-2xl mb-3 font-light">
+                            Tous les jeudis à 18h30 au FreeDj, dans le Marais à Paris
+                        </p>
+                        <p class="text-lg md:text-xl opacity-90 mb-6">
+                            Avec La Qonnasse KyssyBangBang
+                        </p>
+                        <div class="flex flex-wrap gap-3 mb-4">
+                            <span class="event-badge bg-white text-purple-600">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                Tous les jeudis
+                            </span>
+                            <span class="event-badge bg-white text-purple-600">
+                                <ion-icon name="time-outline"></ion-icon>
+                                18h30
+                            </span>
+                            <span class="event-badge bg-white text-purple-600">
+                                <ion-icon name="location-outline"></ion-icon>
+                                FreeDj - Le Marais
+                            </span>
+                        </div>
+                        <p class="text-sm opacity-75">Affiche : LaGoulue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Grid -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Tous Nos Événements</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">Une programmation riche et variée tout au long de l'année 🌈</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Event Card 1 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">🎉</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Événements Mensuels</h3>
+                            <span class="event-badge bg-blue-100 text-blue-600 flex-shrink-0">Mensuel</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Un événement spécial chaque mois pour renforcer les liens de notre communauté et découvrir de nouvelles activités ensemble.
+                        </p>
+                        <div class="flex items-center gap-2 text-blue-600 font-semibold">
+                            <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
+                            <span>1 fois par mois</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Card 2 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">🌞</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Pique-niques & Sorties</h3>
+                            <span class="event-badge bg-pink-100 text-pink-600 flex-shrink-0">Saisonnier</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Des moments conviviaux en plein air pour se retrouver dans une ambiance détendue et profiter du beau temps tous ensemble.
+                        </p>
+                        <div class="flex items-center gap-2 text-pink-600 font-semibold">
+                            <ion-icon name="sunny-outline" class="text-xl"></ion-icon>
+                            <span>Printemps & Été</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Card 3 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">🎭</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Événements Thématiques</h3>
+                            <span class="event-badge bg-green-100 text-green-600 flex-shrink-0">Spécial</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Des événements sur plusieurs jours avec des thématiques créatives et immersives pour vivre des expériences inoubliables.
+                        </p>
+                        <div class="flex items-center gap-2 text-green-600 font-semibold">
+                            <ion-icon name="sparkles-outline" class="text-xl"></ion-icon>
+                            <span>Événements exceptionnels</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Card 4 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-yellow-500 to-red-500 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">📸</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Calendrier Puppy 2026</h3>
+                            <span class="event-badge bg-yellow-100 text-yellow-600 flex-shrink-0">Projet 2026</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Un projet collectif qui mettra en avant nos membres et nos valeurs à travers un calendrier photographique unique et créatif.
+                        </p>
+                        <div class="flex items-center gap-2 text-yellow-600 font-semibold">
+                            <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                            <span>À venir en 2026</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Card 5 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">✨</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Soirées Spéciales</h3>
+                            <span class="event-badge bg-indigo-100 text-indigo-600 flex-shrink-0">Régulier</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Des soirées thématiques festives et inclusives pour célébrer ensemble notre communauté dans une ambiance unique et bienveillante.
+                        </p>
+                        <div class="flex items-center gap-2 text-indigo-600 font-semibold">
+                            <ion-icon name="moon-outline" class="text-xl"></ion-icon>
+                            <span>Plusieurs fois par an</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Card 6 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100">
+                    <div class="h-48 bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span class="text-7xl relative z-10">🤝</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-2xl font-bold text-gray-800">Rencontres & Networking</h3>
+                            <span class="event-badge bg-purple-100 text-purple-600 flex-shrink-0">Continu</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Créer des liens forts et authentiques entre les participants à travers des moments d'échange et de partage privilégiés.
+                        </p>
+                        <div class="flex items-center gap-2 text-purple-600 font-semibold">
+                            <ion-icon name="people-outline" class="text-xl"></ion-icon>
+                            <span>Tout au long de l'année</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendar CTA -->
+    <section class="py-20 bg-gray-50 paw-pattern">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-10 md:p-16 text-white text-center shadow-2xl card-hover">
+                <div class="text-7xl mb-6 floating">📅</div>
+                <h3 class="text-3xl md:text-4xl font-bold mb-6">Ne manquez aucun événement !</h3>
+                <p class="text-xl md:text-2xl mb-8 font-light max-w-2xl mx-auto">
+                    Suivez-nous sur Instagram pour être informé en temps réel de tous nos événements et actualités
+                </p>
+                <a href="https://instagram.com/lespatounesfr" target="_blank" class="inline-flex items-center gap-3 bg-white text-purple-600 px-10 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-gray-100 transition transform hover:scale-105">
+                    <span class="text-2xl">📱</span> 
+                    <span>@lespatounesfr</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Participation Info -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Comment Participer ?</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
+                <p class="text-xl text-gray-600">C'est simple et ouvert à tous 🌈</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-4xl text-white shadow-xl">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Suivez-nous</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Abonnez-vous à notre Instagram et activez les notifications pour ne rien manquer de nos annonces
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-4xl text-white shadow-xl">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Venez comme vous êtes</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Pas besoin de matériel ou d'expérience. Venez avec respect, ouverture d'esprit et bienveillance
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-4xl text-white shadow-xl">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Profitez !</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Rencontrez de nouvelles personnes, créez des liens et faites partie de notre communauté pawsitive
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <div class="inline-block bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8">
+                    <p class="text-lg text-gray-700 mb-4">
+                        <span class="font-bold text-purple-600">Pour les membres :</span> accès prioritaire et avantages exclusifs sur certains événements
+                    </p>
+                    <a href="./../register/" class="inline-flex items-center gap-3 btn-primary text-white px-8 py-3 rounded-full font-bold shadow-xl">
+                        <span>Devenir membre</span>
+                        <span class="text-xl">🐾</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-5xl">
+                            <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&amp;webp_compatible=1" alt="" class="h-[5rem] rounded-2xl">
+                        </span>
+                        <span class="text-3xl font-bold">Les Patounes</span>
+                    </div>
+                    <p class="text-white/90 text-lg leading-relaxed">
+                        Communauté Puppy LGBT+ à Paris. Safe place, respect, solidarité et pawsitivité 🌈
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Contact</h4>
+                    <div class="space-y-4">
+                        <a href="./../contact/" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📧</span> contact@lespatounes.fr
+                        </a>
+                        <a href="https://instagram.com/lespatounesfr" target="_blank" class="flex items-center gap-3 text-white/90 hover:text-white transition text-lg">
+                            <span class="text-2xl">📱</span> @lespatounesfr
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-6">Crédits</h4>
+                    <div class="space-y-2 text-white/80">
+                        <p>🎨 Affiches par <span class="font-bold">LaGoulue</span></p>
+                        <p>📸 Photos par <span class="font-bold">Scooby</span></p>
+                        <p>🌈 Association LGBT+ inclusive</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/20 pt-8 text-center">
+                <p class="text-white/80 text-lg">© 2025 Les Patounes - Tous droits réservés 🌈🐾</p>
+                <p class="text-white/60 mt-2">Ensemble, continuons à faire rayonner notre communauté</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card-hover').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.offsetTop - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

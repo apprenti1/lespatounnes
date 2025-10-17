@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adhésion - Les Patounes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .paw-pattern {
+            background-image: radial-gradient(circle, rgba(102, 126, 234, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #9333ea;
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            border-radius: 2.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step.active {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a class="flex items-center space-x-3" href="./">
+                    <div class="text-4xl">
+                        <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Les Patounes</span>
+                </a>
+                
+                <div class="hidden md:flex md:items-center space-x-5">
+                    <a href="./#accueil" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Accueil</a>
+                    <a href="./events" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Événements</a>
+                    <a href="./#mission" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Partenaires</a>
+                    <a href="./#mission" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Boutique</a>
+                    <a href="./#equipe" class="nav-link text-gray-700 hover:text-purple-600 font-semibold transition">Histoire</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="./login" class="h-[42px] w-[42px] text-purple-600 border-2 border-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-xl" title="Se connecter">
+                            <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
+                        </a>
+                        <a href="./adhesion" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                            Adhérer
+                        </a>
+                    </div>
+                </div>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="./#accueil" class="block text-gray-700 hover:text-purple-600 font-semibold">Accueil</a>
+                <a href="./#mission" class="block text-gray-700 hover:text-purple-600 font-semibold">Notre Mission</a>
+                <a href="./events" class="block text-gray-700 hover:text-purple-600 font-semibold">Événements</a>
+                <a href="./#equipe" class="block text-gray-700 hover:text-purple-600 font-semibold">L'Équipe</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Section -->
+    <section class="pt-32 pb-20 min-h-screen gradient-bg relative overflow-hidden">
+        <div class="absolute inset-0 paw-pattern opacity-10"></div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="text-center mb-12 text-white fade-in">
+                <div class="text-8xl mb-6 floating">🐾</div>
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
+                    Rejoignez la meute !
+                </h1>
+                <p class="text-xl md:text-2xl font-light drop-shadow-lg">
+                    Devenez membre des Patounes et profitez d'avantages exclusifs
+                </p>
+            </div>
+
+            <!-- Avantages Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                    <div class="text-5xl mb-3">✨</div>
+                    <h3 class="font-bold text-gray-800 mb-2">Événements exclusifs</h3>
+                    <p class="text-gray-600 text-sm">Accès prioritaire</p>
+                </div>
+                <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                    <div class="text-5xl mb-3">🎁</div>
+                    <h3 class="font-bold text-gray-800 mb-2">Goodies</h3>
+                    <p class="text-gray-600 text-sm">Cadeaux membres</p>
+                </div>
+                <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                    <div class="text-5xl mb-3">💰</div>
+                    <h3 class="font-bold text-gray-800 mb-2">Réductions</h3>
+                    <p class="text-gray-600 text-sm">Chez nos partenaires</p>
+                </div>
+                <div class="bg-white/95 backdrop-blur rounded-2xl p-6 text-center shadow-xl">
+                    <div class="text-5xl mb-3">💜</div>
+                    <h3 class="font-bold text-gray-800 mb-2">Communauté</h3>
+                    <p class="text-gray-600 text-sm">Safe & inclusive</p>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-3xl p-8 md:p-12 shadow-2xl pulse-glow">
+                    <div class="text-center mb-10">
+                        <h2 class="text-4xl font-bold gradient-text mb-3">Formulaire d'adhésion</h2>
+                        <p class="text-gray-600 text-lg">Remplissez vos informations pour devenir membre 💜</p>
+                    </div>
+
+                    <!-- Progress Indicator -->
+                    <div class="step-indicator mb-10">
+                        <div class="step active"></div>
+                        <div class="step"></div>
+                        <div class="step"></div>
+                    </div>
+
+                    <form id="adhesionForm" class="space-y-6">
+                        <!-- Pseudo -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                Pseudo / Nom de scène
+                                <span class="text-gray-400 font-normal text-base">(optionnel)</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="paw-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="pseudo"
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="Votre pseudo dans la communauté"
+                                >
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Comment souhaitez-vous être appelé·e dans la meute ?</p>
+                        </div>
+
+                        <!-- Nom & Prénom -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                    Prénom *
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </span>
+                                    <input 
+                                        type="text" 
+                                        id="prenom"
+                                        required
+                                        class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                        placeholder="Prénom"
+                                    >
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                    Nom *
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                    </span>
+                                    <input 
+                                        type="text" 
+                                        id="nom"
+                                        required
+                                        class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                        placeholder="Nom"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date de naissance -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                Date de naissance *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="date" 
+                                    id="naissance"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                >
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Vous devez avoir 18 ans ou plus pour adhérer</p>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                Adresse email *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="mail-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="email" 
+                                    id="email"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="votre@email.com"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Mot de passe -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                Mot de passe *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="password" 
+                                    id="password"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="••••••••"
+                                >
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Minimum 8 caractères</p>
+                        </div>
+
+                        <!-- Confirmation mot de passe -->
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2 text-lg">
+                                Confirmer le mot de passe *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-2xl">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                </span>
+                                <input 
+                                    type="password" 
+                                    id="confirmPassword"
+                                    required
+                                    class="w-full pl-14 pr-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
+                                    placeholder="••••••••"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Conditions générales -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-100">
+                            <label class="flex items-start gap-4 cursor-pointer group">
+                                <input 
+                                    type="checkbox" 
+                                    id="cgu"
+                                    required 
+                                    class="w-6 h-6 mt-1 rounded border-2 border-gray-300 text-purple-600 focus:ring-purple-500 flex-shrink-0 cursor-pointer"
+                                >
+                                <span class="text-gray-700 leading-relaxed">
+                                    J'accepte les <a href="#" class="text-purple-600 font-bold hover:underline">conditions générales d'utilisation</a> et la <a href="#" class="text-purple-600 font-bold hover:underline">politique de confidentialité</a> de l'association Les Patounes *
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6">
+                            <label class="flex items-start gap-4 cursor-pointer group">
+                                <input 
+                                    type="checkbox" 
+                                    id="newsletter"
+                                    class="w-6 h-6 mt-1 rounded border-2 border-gray-300 text-purple-600 focus:ring-purple-500 flex-shrink-0 cursor-pointer"
+                                >
+                                <span class="text-gray-700 leading-relaxed">
+                                    Je souhaite recevoir la newsletter et les informations sur les événements des Patounes par email
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-6">
+                            <button type="submit" class="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3">
+                                <span>Valider mon adhésion</span>
+                                <span class="text-2xl">🐾</span>
+                            </button>
+                        </div>
+
+                        <p class="text-center text-gray-500 text-sm">
+                            * Champs obligatoires
+                        </p>
+                    </form>
+
+                    <div class="mt-10 pt-8 border-t-2 border-gray-100 text-center">
+                        <p class="text-gray-600 text-lg">
+                            Vous avez déjà un compte ? 
+                            <a href="./login" class="text-purple-600 hover:text-purple-700 font-bold hover:underline">
+                                Connectez-vous
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="mt-8 bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl flex-shrink-0">ℹ️</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Après votre inscription</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Vous recevrez un email de confirmation avec les instructions pour finaliser votre adhésion et effectuer le paiement de la cotisation annuelle. 
+                                Notre équipe validera ensuite votre inscription et vous accéderez à tous les avantages membres ! 💜
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <img src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1" alt="" class="h-[3rem] rounded-2xl">
+                    <span class="text-2xl font-bold">Les Patounes</span>
+                </div>
+                <p class="text-white/80">© 2025 Les Patounes - Tous droits réservés 🌈🐾</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Form submission
+        document.getElementById('adhesionForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const prenom = document.getElementById('prenom').value;
+            const nom = document.getElementById('nom').value;
+            const naissance = document.getElementById('naissance').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const cgu = document.getElementById('cgu').checked;
+
+            // Validation
+            if (!prenom || !nom || !naissance || !email || !password || !confirmPassword) {
+                alert('❌ Veuillez remplir tous les champs obligatoires !');
+                return;
+            }
+
+            if (!cgu) {
+                alert('❌ Vous devez accepter les conditions générales d\'utilisation pour continuer.');
+                return;
+            }
+
+            // Check age (18+)
+            const birthDate = new Date(naissance);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                alert('❌ Vous devez avoir 18 ans ou plus pour adhérer à l\'association.');
+                return;
+            }
+
+            // Check password match
+            if (password !== confirmPassword) {
+                alert('❌ Les mots de passe ne correspondent pas !');
+                return;
+            }
+
+            // Check password length
+            if (password.length < 8) {
+                alert('❌ Le mot de passe doit contenir au moins 8 caractères !');
+                return;
+            }
+
+            // Success
+            alert('🎉 Inscription réussie !\n\nBienvenue dans la meute des Patounes ! 🐾\n\nVous allez recevoir un email de confirmation à ' + email + ' avec les instructions pour finaliser votre adhésion.\n\nÀ très bientôt ! 💜');
+            
+            // Reset form
+            e.target.reset();
+            
+            // Update progress
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => step.classList.add('active'));
+            
+            setTimeout(() => {
+                steps.forEach(step => step.classList.remove('active'));
+                steps[0].classList.add('active');
+            }, 2000);
+        });
+
+        // Real-time password match validation
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+
+        confirmPassword.addEventListener('input', () => {
+            if (confirmPassword.value && password.value !== confirmPassword.value) {
+                confirmPassword.style.borderColor = '#ef4444';
+            } else {
+                confirmPassword.style.borderColor = '#e5e7eb';
+            }
+        });
+    </script>
+</body>
+</html>
