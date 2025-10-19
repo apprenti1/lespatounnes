@@ -20,13 +20,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="text-4xl">
-              <img
-                src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1"
-                alt="Les Patounes"
-                className="h-[3rem] rounded-2xl"
-              />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Les Patounes"
+              className="h-[3rem] rounded-2xl"
+            />
             <span className="text-2xl font-bold gradient-text">Les Patounes</span>
           </Link>
 

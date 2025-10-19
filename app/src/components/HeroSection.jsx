@@ -39,7 +39,7 @@ export default function HeroSection({
                 <span>{emoji}</span>
               ) : (
                 <img
-                  src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1"
+                  src="/logo.png"
                   alt="Les Patounes"
                   style={{ width: '10rem', borderRadius: '2rem' }}
                 />

@@ -7,13 +7,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-5xl">
-                <img
-                  src="https://v-images.cdnsw.com/Root/gfnwt/les-patounes-2-.png?s=YqFEk3A=&webp_compatible=1"
-                  alt="Les Patounes"
-                  className="h-[5rem] rounded-2xl"
-                />
-              </span>
+              <img
+                src="/logo.png"
+                alt="Les Patounes"
+                className="h-[5rem] rounded-2xl"
+              />
               <span className="text-3xl font-bold">Les Patounes</span>
             </div>
             <p className="text-white/90 text-lg leading-relaxed">
