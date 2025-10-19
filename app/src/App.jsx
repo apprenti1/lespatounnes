@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -9,6 +10,31 @@ import Contact from './pages/Contact';
 import './styles/globals.css';
 
 function App() {
+  useEffect(() => {
+    // Gestion du smooth scroll pour les ancres
+    const handleAnchorClick = (e) => {
+      const target = e.target.closest('a');
+      if (!target) return;
+
+      const href = target.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const element = document.querySelector(href);
+        if (element) {
+          const offset = 80; // Hauteur de la navbar
+          const elementPosition = element.offsetTop - offset;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+        }
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+    return () => document.removeEventListener('click', handleAnchorClick);
+  }, []);
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
