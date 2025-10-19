@@ -65,8 +65,8 @@ export default function Events() {
       badgeColor: 'bg-purple-100 text-purple-600',
       gradient: 'from-purple-600 to-pink-600',
       description:
-        'Créer des liens forts et authentiques entre les participants à travers des moments d'échange et de partage privilégiés.',
-      frequency: 'Tout au long de l'année',
+        "Créer des liens forts et authentiques entre les participants à travers des moments d'échange et de partage privilégiés.",
+      frequency: "Tout au long de l'année",
       icon: 'people-outline',
     },
   ];
