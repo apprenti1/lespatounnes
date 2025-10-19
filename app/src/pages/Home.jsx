@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <>
       <HeroSection
-        emoji="logo"
+        emoji="img"
         title="Les Patounes"
         subtitle="Communauté Puppy LGBT+ à Paris"
         description='Un espace inclusif, bienveillant et "pawsitif" 🌈'

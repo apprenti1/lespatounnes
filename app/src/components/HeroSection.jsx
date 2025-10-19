@@ -35,14 +35,14 @@ export default function HeroSection({
         <div className="text-center fade-in">
           {emoji && (
             <div className="text-8xl md:text-9xl mb-6 floating flex justify-center">
-              {typeof emoji === 'string' ? (
-                <span>{emoji}</span>
-              ) : (
+              {emoji === 'img' ? (
                 <img
                   src="/logo.png"
                   alt="Les Patounes"
                   style={{ width: '10rem', borderRadius: '2rem' }}
                 />
+              ) : (
+                <span>{emoji}</span>
               )}
             </div>
           )}
