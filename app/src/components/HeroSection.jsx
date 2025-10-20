@@ -9,7 +9,7 @@ export default function HeroSection({
   backgroundImage = "https://media.joomeo.com/large/68f186f9e8f11.jpg"
 }) {
   return (
-    <section id="accueil" className="pt-20 relative overflow-hidden">
+    <section id="accueil" className="navbar-padding relative overflow-hidden">
       {/* Hero Image Background */}
       <div
         className="absolute inset-0 z-0"
@@ -24,7 +24,7 @@ export default function HeroSection({
 
       {/* Content */}
       <div
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-6 text-white"
+        className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-6 text-white ${emoji && emoji !== 'img' ? 'navbar-padding' : ''}`}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -104,11 +104,11 @@ export default function HeroSection({
       {/* Junction Line */}
       <div
         style={{
-          height: '1px',
+          height: '6px',
           backgroundColor: '#F9FAFB',
           width: '100%',
           position: 'absolute',
-          bottom: 0,
+          bottom: '-3px',
         }}
       ></div>
     </section>

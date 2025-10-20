@@ -20,6 +20,7 @@ export default function Contact() {
   return (
     <>
       <HeroSection
+        emoji="📬"
         title="Contactez nous"
         subtitle="Une question ? Une suggestion ? N'hésitez pas à nous écrire 🐾"
       />

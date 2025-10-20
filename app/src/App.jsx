@@ -7,6 +7,10 @@ import Events from './pages/Events';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
+import Partners from './pages/Partners';
+import Shop from './pages/Shop';
+import Story from './pages/Story';
+import Photos from './pages/Photos';
 import './styles/globals.css';
 
 function App() {
@@ -45,9 +49,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/partners" element={<div className="pt-32 text-center">Page Partenaires (À venir)</div>} />
-          <Route path="/shop" element={<div className="pt-32 text-center">Page Boutique (À venir)</div>} />
-          <Route path="/story" element={<div className="pt-32 text-center">Page Histoire (À venir)</div>} />
+          <Route path="/partners" element={<Partners />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/story" element={<Story />} />
+          <Route path="/photos" element={<Photos />} />
         </Routes>
         <Footer />
       </div>

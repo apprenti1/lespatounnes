@@ -125,6 +125,41 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Join Section */}
+          <div className="py-20 bg-gray-50 paw-pattern rounded-3xl">
+            <div className="flex flex-col md:flex-row items-center gap-8 p-8">
+              {/* Texte à gauche */}
+              <div className="flex-1">
+                <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
+                  Rejoignez la meute !
+                </h3>
+                <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                  En devenant membre des Patounes, vous intégrez une communauté bienveillante et
+                  inclusive où chacun peut s'exprimer librement.
+                </p>
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  Profitez d'événements exclusifs, de remises chez nos partenaires, et soutenez le
+                  développement de la scène Puppy parisienne.
+                </p>
+                <Link
+                  to="/events"
+                  className="inline-flex items-center gap-3 btn-primary text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl"
+                >
+                  <span className="text-2xl">🐾</span> Plus d'Events ?
+                </Link>
+              </div>
+
+              {/* Image à droite */}
+              <div className="flex-1 w-full md:w-auto">
+                <img
+                  src="https://media.joomeo.com/large/68f186f9e8f11.jpg"
+                  alt="Adhésion Les Patounes"
+                  className="w-full h-auto rounded-2xl shadow-2xl object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* CTA */}
           <div className="mt-16 text-center bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-10 md:p-16">
             <h3 className="text-3xl font-bold text-gray-800 mb-4">
