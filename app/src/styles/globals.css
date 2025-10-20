@@ -204,3 +204,16 @@ textarea:focus {
 .step.active {
   background: linear-gradient(90deg, #667eea, #764ba2);
 }
+
+/* Navbar Padding Compensation */
+/* Ajuste le padding-top des pages selon la hauteur de la navbar */
+.navbar-padding {
+  padding-top: 5rem !important; /* Hauteur navbar mobile et desktop > 1140px (80px) */
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  /* Entre tablette (md) et avant xl */
+  .navbar-padding {
+    padding-top: 8.125rem !important; /* Hauteur navbar sur deux lignes (130px) */
+  }
+}
