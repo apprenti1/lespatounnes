@@ -4,21 +4,50 @@ import { Link } from 'react-router-dom';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      alert('❌ Veuillez remplir tous les champs !');
-      return;
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la connexion');
+      }
+
+      // Stocker le token et les infos utilisateur
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      alert(
+        `🐾 Connexion réussie !\n\nBienvenue ${data.user.firstName || data.user.email} !\n\nVous êtes maintenant connecté 💜`
+      );
+
+      // Redirection vers la page d'accueil
+      window.location.href = '/';
+    } catch (err) {
+      setError(err.message);
+      alert('❌ ' + err.message);
+    } finally {
+      setLoading(false);
     }
-    alert(
-      '🐾 Connexion réussie !\n\nBienvenue dans votre espace membre Les Patounes 💜\n\nVous allez être redirigé vers votre tableau de bord...'
-    );
   };
 
   return (
     <>
-      <section className="pt-32 pb-20 min-h-screen gradient-bg relative overflow-hidden">
+      <section className="navbar-padding pb-20 min-h-screen gradient-bg relative overflow-hidden">
         <div className="absolute inset-0 paw-pattern opacity-10"></div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,9 +127,10 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3"
+                  disabled={loading}
+                  className="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Se connecter</span>
+                  <span>{loading ? 'Connexion en cours...' : 'Se connecter'}</span>
                   <span className="text-2xl">🐾</span>
                 </button>
               </form>

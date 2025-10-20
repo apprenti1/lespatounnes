@@ -13,9 +13,12 @@ export default function Register() {
     cgu: false,
     newsletter: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!formData.prenom || !formData.nom || !formData.naissance || !formData.email || !formData.password || !formData.confirmPassword) {
       alert('❌ Veuillez remplir tous les champs obligatoires !');
@@ -50,14 +53,50 @@ export default function Register() {
       return;
     }
 
-    alert(
-      `🎉 Inscription réussie !\n\nBienvenue dans la meute des Patounes ! 🐾\n\nVous allez recevoir un email de confirmation à ${formData.email} avec les instructions pour finaliser votre adhésion.\n\nÀ très bientôt ! 💜`
-    );
-    e.target.reset();
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          username: formData.pseudo || null,
+          firstName: formData.prenom,
+          lastName: formData.nom,
+          birthDate: formData.naissance,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de l\'inscription');
+      }
+
+      // Stocker le token et les infos utilisateur
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      alert(
+        `🎉 Inscription réussie !\n\nBienvenue dans la meute des Patounes, ${formData.prenom} ! 🐾\n\nVous êtes maintenant membre 💜`
+      );
+
+      // Redirection vers la page d'accueil
+      window.location.href = '/';
+    } catch (err) {
+      setError(err.message);
+      alert('❌ ' + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <section className="pt-32 pb-20 min-h-screen gradient-bg relative overflow-hidden">
+    <section className="navbar-padding pb-20 min-h-screen gradient-bg relative overflow-hidden">
       <div className="absolute inset-0 paw-pattern opacity-10"></div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -220,9 +259,10 @@ export default function Register() {
               <div className="pt-6">
                 <button
                   type="submit"
-                  className="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3"
+                  disabled={loading}
+                  className="w-full btn-primary text-white py-5 rounded-xl font-bold text-xl shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Valider mon adhésion</span>
+                  <span>{loading ? 'Inscription en cours...' : 'Valider mon adhésion'}</span>
                   <span className="text-2xl">🐾</span>
                 </button>
               </div>
