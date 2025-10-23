@@ -22,11 +22,17 @@ export default function Footer() {
           <div>
             <h4 className="text-2xl font-bold mb-6">Contact</h4>
             <div className="space-y-4">
+              <a
+                href="mailto:lespatounes75@gmail.com"
+                className="flex items-center gap-3 text-white/90 hover:text-white transition text-lg"
+              >
+                <span className="text-2xl">📧</span> lespatounes75@gmail.com
+              </a>
               <Link
                 to="/contact"
                 className="flex items-center gap-3 text-white/90 hover:text-white transition text-lg"
               >
-                <span className="text-2xl">📧</span> contact@lespatounes.fr
+                <span className="text-2xl">💬</span> Formulaire de contact
               </Link>
               <a
                 href="https://instagram.com/lespatounesfr"

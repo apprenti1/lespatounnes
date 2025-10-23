@@ -204,18 +204,25 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
             {/* Team Member 1 - Loufy */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="relative w-40 h-40 mx-auto mb-6">
-                {/* Image de profil (dessous) */}
-                <img
-                  src="/loufypp.jpg"
-                  alt="Loufy - Président"
-                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
-                />
-                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/90 to-pink-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                  🐺
+              <a
+                href="https://www.instagram.com/pup_loufy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <div className="relative w-40 h-40 mx-auto mb-6">
+                  {/* Image de profil (dessous) */}
+                  <img
+                    src="/loufypp.jpg"
+                    alt="Loufy - Président"
+                    className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                  />
+                  {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/90 to-pink-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                    🐺
+                  </div>
                 </div>
-              </div>
+              </a>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Loufy</h3>
               <p className="text-purple-600 font-bold text-lg mb-4">Président & Fondateur</p>
               <p className="text-gray-600 leading-relaxed">
@@ -227,20 +234,27 @@ export default function Home() {
 
             {/* Team Member 2 - Tau */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="relative w-40 h-40 mx-auto mb-6">
-                {/* Image de profil (dessous) */}
-                <img
-                  src="/taupp.jpg"
-                  alt="Tau - Trésorier"
-                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
-                />
-                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/90 to-purple-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                  🐕
+              <a
+                href="https://www.instagram.com/thepuptau"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <div className="relative w-40 h-40 mx-auto mb-6">
+                  {/* Image de profil (dessous) */}
+                  <img
+                    src="/taupp.jpg"
+                    alt="Tau - Trésorier"
+                    className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                  />
+                  {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/90 to-emerald-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                    🐕
+                  </div>
                 </div>
-              </div>
+              </a>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Tau</h3>
-              <p className="text-blue-600 font-bold text-lg mb-4">Trésorier</p>
+              <p className="text-green-600 font-bold text-lg mb-4">Trésorier</p>
               <p className="text-gray-600 leading-relaxed">
                 Veille avec rigueur et bienveillance à la gestion de l'association. Toujours à
                 l'écoute, il contribue à garantir la stabilité et la continuité de nos actions
@@ -250,18 +264,25 @@ export default function Home() {
 
             {/* Team Member 3 - Draikon */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="relative w-40 h-40 mx-auto mb-6">
-                {/* Image de profil (dessous) */}
-                <img
-                  src="draiconpp.jpg"
-                  alt="Draikon - Secrétaire"
-                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
-                />
-                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/90 to-orange-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                  🦴
+              <a
+                href="https://www.instagram.com/draikonpup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <div className="relative w-40 h-40 mx-auto mb-6">
+                  {/* Image de profil (dessous) */}
+                  <img
+                    src="draiconpp.jpg"
+                    alt="Draikon - Secrétaire"
+                    className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                  />
+                  {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/90 to-orange-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                    🦴
+                  </div>
                 </div>
-              </div>
+              </a>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Draikon</h3>
               <p className="text-pink-600 font-bold text-lg mb-4">Secrétaire</p>
               <p className="text-gray-600 leading-relaxed">
