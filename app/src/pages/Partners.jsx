@@ -11,7 +11,7 @@ export default function Partners() {
       isLink: true,
     },
     {
-      href: '/contact',
+      href: '/suggerer-partenaire',
       text: 'Suggérer une enseigne 🐾',
       className:
         'bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg',
