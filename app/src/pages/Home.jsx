@@ -1,5 +1,6 @@
 import HeroSection from '../components/HeroSection';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Home() {
   const heroStats = [
@@ -18,6 +19,7 @@ export default function Home() {
     {
       href: '/events',
       text: 'Nos événements',
+      isLink: true,
       className:
         'border-2 border-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-purple-600 transition shadow-lg',
     },
@@ -104,11 +106,11 @@ export default function Home() {
           <div className="relative bg-white rounded-3xl overflow-hidden mb-10 shadow-2xl card-hover">
             <div className="image-card h-96 relative">
               <img
-                src="https://lespatounes.sitew.org/fs/Root/ep61a-Affiche-Les-Patounes-Tous-les-jeudis-2-q85_w_1920.jpg"
+                src="/qonasse-banner.jpg"
                 alt="Affiche Les Patounes"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/60 to-black/20"></div>
               <div className="absolute bottom-0 left-0 right-0 p-10 text-white flex justify-center items-center flex-col h-full">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-5xl">🍻</span>
@@ -131,28 +133,38 @@ export default function Home() {
               {/* Texte à gauche */}
               <div className="flex-1">
                 <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
-                  Rejoignez la meute !
+                  Les Patounes fêtent Halloween !
                 </h3>
-                <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  En devenant membre des Patounes, vous intégrez une communauté bienveillante et
-                  inclusive où chacun peut s'exprimer librement.
-                </p>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Profitez d'événements exclusifs, de remises chez nos partenaires, et soutenez le
-                  développement de la scène Puppy parisienne.
+                  Un bonbon ou on mord !<br/>
+                  <br/>
+                  À l'occasion d'Halloween,<br/>
+                  retrouvez nous au Freedj le vendredi 31 octobre à 18h30.<br/>
+                  Tournée des bars du Marais et distribution de bonbons pour l'occasion.<br/>
+                  <br/>
+                  Aucune obligation mais...<br/>
+                  Venez déguisé ! Des verres offerts pour les plus beaux costumes.
+                  <br/>
+                  <br/>
+                  Soirée pleine de surprises et de convivialité, profitez de l'ambiance festive du quartier.
+                  N'hésite pas à inviter tes amis :3 . 
+                  <br/>
+                  <br/>
+                  L'ffiche de l'événement, réalisée par l'artiste LaGoulue, est disponible à l'achat pour un souvenir de cette merveilleuse soirée 😀.
                 </p>
                 <Link
-                  to="/events"
+                  to="https://www.helloasso.com/associations/association-les-patounes/boutiques/affiches?_gl=1%2a7jbbz1%2a_gcl_au%2aMTAxNjU2MzkyNy4xNzU3NDM1MjI4LjI0ODE3MTM4Mi4xNzYwMzY5MDUzLjE3NjAzNjkyNzI."
+                  target="_blank"
                   className="inline-flex items-center gap-3 btn-primary text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl"
                 >
-                  <span className="text-2xl">🐾</span> Plus d'Events ?
+                  <span className="text-2xl">🐾</span> Acheter l'affiche
                 </Link>
               </div>
 
               {/* Image à droite */}
               <div className="flex-1 w-full md:w-auto">
                 <img
-                  src="https://media.joomeo.com/large/68f186f9e8f11.jpg"
+                  src="/halloween.jpg"
                   alt="Adhésion Les Patounes"
                   className="w-full h-auto rounded-2xl shadow-2xl object-cover"
                 />
@@ -190,10 +202,19 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
-            {/* Team Member 1 */}
+            {/* Team Member 1 - Loufy */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
-                🐺
+              <div className="relative w-40 h-40 mx-auto mb-6">
+                {/* Image de profil (dessous) */}
+                <img
+                  src="/loufypp.jpg"
+                  alt="Loufy - Président"
+                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                />
+                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/90 to-pink-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                  🐺
+                </div>
               </div>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Loufy</h3>
               <p className="text-purple-600 font-bold text-lg mb-4">Président & Fondateur</p>
@@ -204,10 +225,19 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Team Member 2 */}
+            {/* Team Member 2 - Tau */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
-                🐕
+              <div className="relative w-40 h-40 mx-auto mb-6">
+                {/* Image de profil (dessous) */}
+                <img
+                  src="/taupp.jpg"
+                  alt="Tau - Trésorier"
+                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                />
+                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/90 to-purple-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                  🐕
+                </div>
               </div>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Tau</h3>
               <p className="text-blue-600 font-bold text-lg mb-4">Trésorier</p>
@@ -218,10 +248,19 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Team Member 3 */}
+            {/* Team Member 3 - Draikon */}
             <div className="bg-white rounded-3xl p-8 text-center card-hover shadow-xl">
-              <div className="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-orange-500 rounded-full flex items-center justify-center text-7xl shadow-2xl">
-                🦴
+              <div className="relative w-40 h-40 mx-auto mb-6">
+                {/* Image de profil (dessous) */}
+                <img
+                  src="draiconpp.jpg"
+                  alt="Draikon - Secrétaire"
+                  className="absolute inset-0 w-full h-full object-cover rounded-full shadow-2xl"
+                />
+                {/* Overlay gradient + emoji (dessus, apparaît au hover) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/90 to-orange-500/90 rounded-full flex items-center justify-center text-7xl shadow-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                  🦴
+                </div>
               </div>
               <h3 className="text-3xl font-bold text-gray-800 mb-2">Draikon</h3>
               <p className="text-pink-600 font-bold text-lg mb-4">Secrétaire</p>
@@ -259,7 +298,9 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto"
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Merci pour votre inscription ! 🐾 Vous recevrez bientôt nos actualités.');
+                toast.success('Merci pour votre inscription ! 🐾 Vous recevrez bientôt nos actualités.', {
+                  position: 'top-center',
+                });
                 e.target.reset();
               }}
             >
