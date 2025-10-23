@@ -77,7 +77,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export default function Register() {
           const selectedMembership = membershipOptions.find(opt => opt.id === formData.adhesion);
 
           // Créer le checkout HelloAsso
-          const checkoutResponse = await fetch('http://localhost:3000/helloasso/create-membership-checkout', {
+          const checkoutResponse = await fetch(`${import.meta.env.VITE_API_URL}/helloasso/create-membership-checkout`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
