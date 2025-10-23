@@ -4,16 +4,18 @@ import { Link } from 'react-router-dom';
 export default function Partners() {
   const heroButtons = [
     {
-      href: '/contact',
+      href: '/devenir-partenaire',
       text: 'Devenir partenaire 🤝',
       className:
         'bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg',
+      isLink: true,
     },
     {
       href: '/contact',
       text: 'Suggérer une enseigne 🐾',
       className:
         'bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg',
+      isLink: true,
     },
   ];
 

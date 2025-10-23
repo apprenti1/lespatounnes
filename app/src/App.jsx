@@ -17,6 +17,7 @@ import Admin from './pages/Admin';
 import Profile from './pages/Profile';
 import MentionsLegales from './pages/MentionsLegales';
 import RGPD from './pages/RGPD';
+import DevenirPartenaire from './pages/DevenirPartenaire';
 import './styles/globals.css';
 
 function App() {
@@ -75,6 +76,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/rgpd" element={<RGPD />} />
+          <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
         </Routes>
         <Footer />
       </div>
