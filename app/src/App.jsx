@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +20,17 @@ import RGPD from './pages/RGPD';
 import DevenirPartenaire from './pages/DevenirPartenaire';
 import SuggererPartenaire from './pages/SuggererPartenaire';
 import './styles/globals.css';
+
+// Composant pour scroll vers le haut à chaque changement de route
+function ScrollToTop() {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return null;
+}
 
 function App() {
   useEffect(() => {
@@ -49,6 +60,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <ToastContainer
