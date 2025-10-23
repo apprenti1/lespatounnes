@@ -15,6 +15,8 @@ import Story from './pages/Story';
 import Photos from './pages/Photos';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
+import MentionsLegales from './pages/MentionsLegales';
+import RGPD from './pages/RGPD';
 import './styles/globals.css';
 
 function App() {
@@ -71,6 +73,8 @@ function App() {
           <Route path="/photos" element={<Photos />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
+          <Route path="/rgpd" element={<RGPD />} />
         </Routes>
         <Footer />
       </div>

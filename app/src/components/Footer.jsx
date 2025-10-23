@@ -42,6 +42,18 @@ export default function Footer() {
               >
                 <span className="text-2xl">📱</span> @lespatounesfr
               </a>
+              <Link
+                to="/mentions-legales"
+                className="flex items-center gap-3 text-white/90 hover:text-white transition text-lg"
+              >
+                <span className="text-2xl">📄</span> Mentions légales
+              </Link>
+              <Link
+                to="/rgpd"
+                className="flex items-center gap-3 text-white/90 hover:text-white transition text-lg"
+              >
+                <span className="text-2xl">🔒</span> RGPD
+              </Link>
             </div>
           </div>
 
