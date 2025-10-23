@@ -41,7 +41,7 @@ export default function Story() {
                 />
               </div>
               <p className="text-sm text-gray-500 mt-3 text-center italic">
-                Crédit photo : PuppyPlayScooby lors du PupNic Pride 2025
+                Crédit photo : Audrey Barein lors du PupNic Pride 2025 à Paris
               </p>
             </div>
 
