@@ -56,19 +56,6 @@ export default function Footer() {
               </Link>
             </div>
           </div>
-
-          <div>
-            <h4 className="text-2xl font-bold mb-6">Crédits</h4>
-            <div className="space-y-2 text-white/80">
-              <p>
-                🎨 Affiches par <span className="font-bold">LaGoulue</span>
-              </p>
-              <p>
-                📸 Photos par <span className="font-bold">Scooby</span>
-              </p>
-              <p>🌈 Association LGBT+ inclusive</p>
-            </div>
-          </div>
         </div>
 
         <div className="border-t border-white/20 pt-8 text-center">
