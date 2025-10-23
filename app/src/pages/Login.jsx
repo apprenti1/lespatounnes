@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 import { Link } from 'react-router-dom';
 
@@ -31,15 +32,18 @@ export default function Login() {
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      alert(
-        `🐾 Connexion réussie !\n\nBienvenue ${data.user.firstName || data.user.email} !\n\nVous êtes maintenant connecté 💜`
+      toast.success(
+        `🐾 Bienvenue ${data.user.username || data.user.firstName || data.user.email} ! Vous êtes connecté 💜`,
+        { position: 'top-center' }
       );
 
-      // Redirection vers la page d'accueil
-      window.location.href = '/';
+      // Redirection vers la page d'accueil après un court délai
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
     } catch (err) {
       setError(err.message);
-      alert('❌ ' + err.message);
+      toast.error(`❌ ${err.message}`, { position: 'top-center' });
     } finally {
       setLoading(false);
     }

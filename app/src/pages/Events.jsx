@@ -71,15 +71,44 @@ export default function Events() {
     },
   ];
 
+  const heroButtons = [
+    {
+      href: '#evenements',
+      text: 'Voir tous les événements',
+      className:
+        'bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg',
+    },
+    {
+      href: 'https://instagram.com/lespatounesfr',
+      text: 'Suivre sur Instagram',
+      className:
+        'border-2 border-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-purple-600 transition shadow-lg',
+    },
+  ];
+
   return (
     <>
       <HeroSection
         emoji="🎉"
         title="Nos Événements"
         subtitle="Découvrez toutes nos initiatives et rejoignez la meute 🐾"
+        buttons={heroButtons}
       />
 
-      {/* Featured Event */}
+      {/* Section à venir */}
+      <section className="py-20 bg-gray-50 paw-pattern">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6">
+            Nos Événements en cours de préparation
+          </h2>
+          <p className="text-xl text-gray-600">
+            Nos évents seront bientôt disponibles ! 🐾
+          </p>
+        </div>
+      </section>
+      
+{/* 
+      {Featured Event}
       <section className="py-20 bg-gray-50 paw-pattern -mt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -94,7 +123,7 @@ export default function Events() {
           <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl card-hover">
             <div className="image-card h-96 md:h-[500px] relative">
               <img
-                src="https://lespatounes.sitew.org/fs/Root/ep61a-Affiche-Les-Patounes-Tous-les-jeudis-2-q85_w_1920.jpg"
+                src="/qonasse-banner.jpg"
                 alt="Affiche Les Patounes"
                 className="w-full h-full object-cover"
               />
@@ -130,8 +159,8 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Events Grid */}
-      <section className="py-20 bg-white">
+      {Events Grid}
+      <section id="evenements" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
@@ -174,7 +203,7 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Calendar CTA */}
+      {Calendar CTA}
       <section className="py-20 bg-gray-50 paw-pattern">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-10 md:p-16 text-white text-center shadow-2xl card-hover">
@@ -197,7 +226,7 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Participation Info */}
+      {Participation Info}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -260,6 +289,7 @@ export default function Events() {
           </div>
         </div>
       </section>
+ */}
     </>
   );
 }

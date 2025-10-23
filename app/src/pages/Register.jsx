@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 export default function Register() {
@@ -12,21 +13,41 @@ export default function Register() {
     confirmPassword: '',
     cgu: false,
     newsletter: false,
+    adhesion: 'standard', // Adhésion par défaut
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+
+  const membershipOptions = [
+    {
+      id: 'standard',
+      name: 'Standard',
+      price: 10,
+      emoji: '🐾',
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      price: 25,
+      emoji: '✨',
+    },
+    {
+      id: 'support',
+      name: 'Soutien',
+      price: 50,
+      emoji: '💜',
+    },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     if (!formData.prenom || !formData.nom || !formData.naissance || !formData.email || !formData.password || !formData.confirmPassword) {
-      alert('❌ Veuillez remplir tous les champs obligatoires !');
+      toast.error('❌ Veuillez remplir tous les champs obligatoires !', { position: 'top-center' });
       return;
     }
 
     if (!formData.cgu) {
-      alert("❌ Vous devez accepter les conditions générales d'utilisation pour continuer.");
+      toast.error("❌ Vous devez accepter les conditions générales d'utilisation pour continuer.", { position: 'top-center' });
       return;
     }
 
@@ -39,17 +60,17 @@ export default function Register() {
     }
 
     if (age < 18) {
-      alert("❌ Vous devez avoir 18 ans ou plus pour adhérer à l'association.");
+      toast.error("❌ Vous devez avoir 18 ans ou plus pour adhérer à l'association.", { position: 'top-center' });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      alert('❌ Les mots de passe ne correspondent pas !');
+      toast.error('❌ Les mots de passe ne correspondent pas !', { position: 'top-center' });
       return;
     }
 
     if (formData.password.length < 8) {
-      alert('❌ Le mot de passe doit contenir au moins 8 caractères !');
+      toast.error('❌ Le mot de passe doit contenir au moins 8 caractères !', { position: 'top-center' });
       return;
     }
 
@@ -81,15 +102,49 @@ export default function Register() {
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      alert(
-        `🎉 Inscription réussie !\n\nBienvenue dans la meute des Patounes, ${formData.prenom} ! 🐾\n\nVous êtes maintenant membre 💜`
+      toast.success(
+        `🎉 Compte créé avec succès ${formData.prenom} ! 🐾`,
+        { position: 'top-center', autoClose: 2000 }
       );
 
-      // Redirection vers la page d'accueil
-      window.location.href = '/';
+      // Redirection vers HelloAsso pour le paiement de l'adhésion
+      setTimeout(async () => {
+        try {
+          toast.info('Redirection vers HelloAsso pour votre adhésion...', { position: 'top-center' });
+
+          const selectedMembership = membershipOptions.find(opt => opt.id === formData.adhesion);
+
+          // Créer le checkout HelloAsso
+          const checkoutResponse = await fetch('http://localhost:3000/helloasso/create-membership-checkout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              firstName: formData.prenom,
+              lastName: formData.nom,
+              email: formData.email,
+              amount: selectedMembership.price,
+            }),
+          });
+
+          const checkoutData = await checkoutResponse.json();
+
+          if (checkoutResponse.ok && checkoutData.redirectUrl) {
+            // Rediriger vers HelloAsso
+            window.location.href = checkoutData.redirectUrl;
+          } else {
+            throw new Error('Erreur lors de la création du paiement');
+          }
+        } catch (error) {
+          toast.error('Erreur lors de la redirection vers le paiement. Vous pourrez adhérer depuis votre profil.', { position: 'top-center' });
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        }
+      }, 1500);
     } catch (err) {
-      setError(err.message);
-      alert('❌ ' + err.message);
+      toast.error(`❌ ${err.message}`, { position: 'top-center' });
     } finally {
       setLoading(false);
     }
@@ -99,7 +154,7 @@ export default function Register() {
     <section className="navbar-padding pb-20 min-h-screen gradient-bg relative overflow-hidden">
       <div className="absolute inset-0 paw-pattern opacity-10"></div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="navbar-padding relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 text-white fade-in">
           <div className="text-8xl mb-6 floating">🐾</div>
           <h1 className="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
@@ -135,6 +190,43 @@ export default function Register() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Choix de l'adhésion */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200">
+                <label className="block text-gray-800 font-bold mb-4 text-xl">
+                  Choisissez votre formule d'adhésion *
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {membershipOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      className={`cursor-pointer rounded-xl p-4 border-2 transition-all duration-300 ${
+                        formData.adhesion === option.id
+                          ? 'bg-purple-500 border-purple-600 text-white shadow-lg scale-105'
+                          : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-md'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="adhesion"
+                        value={option.id}
+                        checked={formData.adhesion === option.id}
+                        onChange={(e) => setFormData({ ...formData, adhesion: e.target.value })}
+                        className="sr-only"
+                      />
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">{option.emoji}</div>
+                        <div className={`font-bold text-lg mb-1 ${formData.adhesion === option.id ? 'text-white' : 'text-gray-800'}`}>
+                          {option.name}
+                        </div>
+                        <div className={`text-2xl font-bold ${formData.adhesion === option.id ? 'text-white' : 'text-purple-600'}`}>
+                          {option.price}€
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-gray-700 font-semibold mb-2 text-lg">
                   Pseudo / Nom de scène{' '}

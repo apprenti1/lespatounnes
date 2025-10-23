@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 
 export default function Contact() {
@@ -11,11 +12,27 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(
-      '🐾 Merci pour votre message !\n\nNous avons bien reçu votre demande et nous vous répondrons dans les plus brefs délais.\n\nÀ très bientôt !\nL\'équipe des Patounes 💜'
+    toast.success(
+      '🐾 Merci pour votre message ! Nous vous répondrons dans les plus brefs délais. L\'équipe des Patounes 💜',
+      { position: 'top-center', autoClose: 4000 }
     );
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
+
+  const heroButtons = [
+    {
+      href: '#formulaire',
+      text: 'Envoyer un message',
+      className:
+        'bg-white text-purple-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg',
+    },
+    {
+      href: 'https://instagram.com/lespatounesfr',
+      text: 'Instagram',
+      className:
+        'border-2 border-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-purple-600 transition shadow-lg',
+    },
+  ];
 
   return (
     <>
@@ -23,6 +40,7 @@ export default function Contact() {
         emoji="📬"
         title="Contactez nous"
         subtitle="Une question ? Une suggestion ? N'hésitez pas à nous écrire 🐾"
+        buttons={heroButtons}
       />
 
       <section className="py-20 pt-0 bg-gray-50 paw-pattern -mt-1">
@@ -55,7 +73,7 @@ export default function Contact() {
             </a>
           </div>
 
-          <div className="max-w-3xl mx-auto mb-32">
+          <div id="formulaire" className="max-w-3xl mx-auto mb-32">
             <div className="bg-white rounded-3xl p-10 md:p-12 shadow-2xl">
               <div className="text-center mb-10">
                 <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
