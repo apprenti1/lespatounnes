@@ -46,9 +46,9 @@ export default function Navbar() {
     { path: '/', label: 'Accueil' },
     { path: '/events', label: 'Événements' },
     { path: '/partners', label: 'Partenaires' },
-    { path: '/shop', label: 'Boutique' },
+    /* { path: '/shop', label: 'Boutique' }, */
     { path: '/story', label: 'Histoire' },
-    { path: '/photos', label: 'Photos' },
+    /* { path: '/photos', label: 'Photos' }, */
     { path: '/contact', label: 'Contact' },
   ];
 

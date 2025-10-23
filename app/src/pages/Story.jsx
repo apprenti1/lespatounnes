@@ -1,4 +1,5 @@
 import HeroSection from '../components/HeroSection';
+import { Link } from 'react-router-dom';
 
 export default function Story() {
   const heroButtons = [
@@ -115,13 +116,13 @@ export default function Story() {
             <div>
               <div className="image-card rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="/loufypp.jpg"
+                  src="/loufystory.jpg"
                   alt="Loufy - Fondateur des Patounes"
                   className="w-full h-[700px] object-cover"
                 />
               </div>
               <p className="text-sm text-gray-500 mt-3 text-center italic">
-                Crédit photo : Puppy Scooby
+                Crédit Photo : Inconnu
               </p>
             </div>
           </div>
@@ -136,11 +137,14 @@ export default function Story() {
             <div>
               <div className="image-card rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800"
+                  src="/storyengagement.jpg"
                   alt="Événements Les Patounes"
-                  className="w-full h-[600px] object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
+                <p className="text-sm text-gray-500 mt-3 text-center italic">
+                  Crédit photo : PixUtopix
+                </p>
             </div>
 
             {/* Texte */}
@@ -225,7 +229,7 @@ export default function Story() {
                 
                 <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mt-6">
                   <p className="text-center text-gray-700">
-                    📅 <span className="font-bold">Retrouvez toutes nos activités</span> sur notre agenda ou suivez-nous sur Instagram <a href="https://instagram.com/lespatounesfr" className="text-purple-600 font-bold hover:underline">@lespatounesfr</a> pour ne rien manquer !
+                    📅 <span className="font-bold">Retrouvez toutes nos activités</span> sur la page <Link to="/events" className="text-purple-600 font-bold hover:underline">Événements</Link> ou suivez-nous sur Instagram <a href="https://instagram.com/lespatounesfr" className="text-purple-600 font-bold hover:underline">@lespatounesfr</a> pour ne rien manquer !
                   </p>
                 </div>
               </div>
