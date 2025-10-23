@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,13 +33,11 @@ export default function Navbar() {
   }, [location]);
 
   const handleLogout = () => {
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      setUser(null);
-      alert('🐾 Vous avez été déconnecté avec succès !');
-      navigate('/');
-    }
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    setUser(null);
+    toast.info('🐾 Vous avez été déconnecté avec succès !', { position: 'top-center' });
+    navigate('/');
   };
 
   const isActive = (path) => location.pathname === path;
@@ -60,12 +59,26 @@ export default function Navbar() {
     <>
       {user ? (
         <>
-          <div className="flex items-center space-x-2 px-3 py-2 h-[42px] bg-purple-50 rounded-lg border-2 border-purple-200">
+          <Link
+            to="/profile"
+            className="flex items-center space-x-2 px-3 py-2 h-[42px] bg-purple-50 rounded-lg border-2 border-purple-200 hover:bg-purple-100 hover:border-purple-300 transition-all duration-300"
+            title="Mon profil"
+          >
             <ion-icon name="person-circle" class="text-2xl text-purple-600"></ion-icon>
             <span className="font-semibold text-purple-700 text-sm">
               {user.username || user.firstName || user.email.split('@')[0]}
             </span>
-          </div>
+          </Link>
+          {user.role === 'ADMIN' && (
+            <Link
+              to="/admin"
+              className="h-[42px] px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+              title="Panel Admin"
+            >
+              <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
+              <span className="text-sm">Admin</span>
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="h-[42px] w-[42px] bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center"
@@ -84,11 +97,18 @@ export default function Navbar() {
             <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
           </Link>
           <Link
-            to="/register"
+            to="https://www.helloasso.com/associations/association-les-patounes/adhesions/adhesions"
+            target="_blank"
             className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl"
           >
             Adhérer
           </Link>
+          {/* <Link
+            to="/register"
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl"
+          >
+            Adhérer
+          </Link> */}
         </>
       )}
     </>
@@ -212,12 +232,28 @@ export default function Navbar() {
           <div className="flex items-center space-x-4 pt-4">
             {user ? (
               <>
-                <div className="flex items-center space-x-2 px-3 py-2 h-[42px] bg-purple-50 rounded-lg border-2 border-purple-200 w-fit">
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-2 px-3 py-2 h-[42px] bg-purple-50 rounded-lg border-2 border-purple-200 w-fit hover:bg-purple-100 hover:border-purple-300 transition-all duration-300"
+                  title="Mon profil"
+                >
                   <ion-icon name="person-circle" class="text-2xl text-purple-600"></ion-icon>
                   <span className="font-semibold text-purple-700 text-sm">
                     {user.username || user.firstName || user.email.split('@')[0]}
                   </span>
-                </div>
+                </Link>
+                {user.role === 'ADMIN' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="h-[42px] px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+                    title="Panel Admin"
+                  >
+                    <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
+                    <span className="text-sm">Admin</span>
+                  </Link>
+                )}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
@@ -240,12 +276,20 @@ export default function Navbar() {
                   <ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
                 </Link>
                 <Link
-                  to="/register"
+                  to="https://www.helloasso.com/associations/association-les-patounes/adhesions/adhesions"
+                  target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl"
                 >
                   Adhérer
                 </Link>
+                {/* <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl"
+                >
+                  Adhérer
+                </Link> */}
               </>
             )}
           </div>
