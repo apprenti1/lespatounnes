@@ -41,12 +41,26 @@ export default function RGPD() {
                 <div className="pl-12 space-y-2 text-gray-700 text-lg">
                   <p>Nous collectons uniquement les données nécessaires à nos activités :</p>
                   <ul className="list-disc list-inside space-y-1 mt-3">
-                    <li><strong>Identité :</strong> nom, prénom</li>
-                    <li><strong>Coordonnées :</strong> e‑mail, numéro de téléphone (facultatif)</li>
+                    <li><strong>Coordonnées :</strong> e‑mail</li>
                     <li><strong>Contenu visuel :</strong> photos / vidéos lors d'événements, avec consentement</li>
-                    <li><strong>Données liées aux adhésions, dons, inscriptions événements et achats sur la boutique :</strong> via HelloAsso, puis centralisées dans le back office interne</li>
-                    <li><strong>Données d'accès à l'espace membre :</strong> identifiants, n° d'adhérent</li>
+                    <li><strong>Données d'accès à l'espace membre :</strong> identifiants, mot de passe sécurisé</li>
                   </ul>
+                  <div className="mt-4 p-4 bg-purple-100 rounded-lg border-l-4 border-purple-600">
+                    <p className="font-semibold text-purple-900 mb-2">ℹ️ Traitement des paiements par HelloAsso</p>
+                    <p className="text-gray-800 leading-relaxed">
+                      Les paiements, adhésions, dons et inscriptions aux événements sont gérés par notre partenaire <strong>HelloAsso</strong>.
+                      Dans ce cadre, HelloAsso collecte et traite directement les données suivantes : nom, prénom, date de naissance, e‑mail.
+                      Ces informations sont traitées par HelloAsso conformément à leur propre politique de confidentialité disponible sur{' '}
+                      <a
+                        href="https://www.helloasso.com/confidentialite"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+                      >
+                        helloasso.com/confidentialite
+                      </a>.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -104,10 +118,10 @@ export default function RGPD() {
                 </h2>
                 <div className="pl-12 space-y-2 text-gray-700 text-lg">
                   <ul className="list-disc list-inside space-y-1">
-                    <li><strong>Plateforme HelloAsso :</strong> dons, adhésions, inscriptions événements, achats sur la boutique</li>
-                    <li><strong>Collecte directe via le site internet et back office interne :</strong> gestion complète des adhérents et centralisation des données</li>
+                    <li><strong>Plateforme HelloAsso (tierce partie) :</strong> collecte et traite directement les données de paiement (nom, prénom, date de naissance, e‑mail) pour les dons, adhésions, inscriptions événements et achats sur la boutique. Ces données sont gérées par HelloAsso selon leur propre politique de confidentialité.</li>
+                    <li><strong>Collecte directe via le site internet :</strong> création de compte utilisateur (e‑mail, mot de passe)</li>
                     <li><strong>Réseaux sociaux :</strong> Instagram pour diffusion visuelle avec consentement</li>
-                    <li><strong>Sécurité :</strong> accès restreint aux responsables, mots de passe forts, sauvegardes régulières</li>
+                    <li><strong>Sécurité :</strong> accès restreint aux responsables, mots de passe chiffrés, connexion HTTPS, sauvegardes régulières</li>
                   </ul>
                 </div>
               </div>
@@ -173,10 +187,10 @@ export default function RGPD() {
                 <div className="pl-12 space-y-2 text-gray-700 text-lg">
                   <ul className="list-disc list-inside space-y-1">
                     <li>Aucun transfert hors UE</li>
-                    <li>Partage limité à des tiers uniquement avec consentement explicite, par exemple :
+                    <li>Partage limité à des tiers de confiance :
                       <ul className="list-circle list-inside ml-6 mt-2 space-y-1">
-                        <li><strong>HelloAsso :</strong> plateforme de paiement et gestion des dons / adhésions / inscriptions / boutique</li>
-                        <li><strong>Partenaires :</strong> pour communication ou organisation d'événements</li>
+                        <li><strong>HelloAsso (plateforme de paiement) :</strong> traite directement les données de paiement (nom, prénom, date de naissance, e‑mail) pour les dons, adhésions, inscriptions et achats. HelloAsso est responsable du traitement de ces données selon leur propre politique de confidentialité.</li>
+                        <li><strong>Partenaires :</strong> uniquement avec consentement explicite pour communication ou organisation d'événements</li>
                       </ul>
                     </li>
                   </ul>
