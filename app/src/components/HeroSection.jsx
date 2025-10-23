@@ -1,3 +1,6 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
 export default function HeroSection({
   emoji,
   title,
@@ -60,13 +63,23 @@ export default function HeroSection({
           {buttons && buttons.length > 0 && (
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-12">
               {buttons.map((button, index) => (
-                <a
-                  key={index}
-                  href={button.href}
-                  className={button.className}
-                >
-                  {button.text}
-                </a>
+                button.isLink ? (
+                  <Link
+                    key={index}
+                    to={button.href}
+                    className={button.className}
+                  >
+                    {button.text}
+                  </Link>
+                ) : (
+                  <a
+                    key={index}
+                    href={button.href}
+                    className={button.className}
+                  >
+                    {button.text}
+                  </a>
+                )
               ))}
             </div>
           )}
