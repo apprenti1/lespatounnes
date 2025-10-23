@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,6 +13,8 @@ import Partners from './pages/Partners';
 import Shop from './pages/Shop';
 import Story from './pages/Story';
 import Photos from './pages/Photos';
+import Admin from './pages/Admin';
+import Profile from './pages/Profile';
 import './styles/globals.css';
 
 function App() {
@@ -43,6 +47,18 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
@@ -53,6 +69,8 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/story" element={<Story />} />
           <Route path="/photos" element={<Photos />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <Footer />
       </div>
