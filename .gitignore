@@ -55,7 +55,6 @@ playwright-report/
 .turbo/
 
 # Prisma
-api/prisma/migrations/
 api/node_modules/.prisma/
 *.prisma.client/
 
