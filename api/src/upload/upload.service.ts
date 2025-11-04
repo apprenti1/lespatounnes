@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Express } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ResizeService, ResponsiveImages } from './resize.service';
 
 @Injectable()
 export class UploadService {
   private uploadDir = 'uploads';
 
-  constructor() {
+  constructor(private resizeService: ResizeService) {
     // Créer le dossier uploads s'il n'existe pas
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
@@ -15,14 +16,16 @@ export class UploadService {
   }
 
   /**
-   * Upload un ou plusieurs fichiers images et retourne les routes publiques d'accès
+   * Upload un ou plusieurs fichiers images et retourne les routes publiques d'accès avec versions responsive
    * @param files - Fichiers à uploader
    * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
+   * @param createResponsive - Créer les versions responsive (par défaut true)
    */
-  uploadFiles(
+  async uploadFiles(
     files: Express.Multer.File[],
-    maxSizeInMB: number = 10
-  ): { publicPath: string; filename: string }[] {
+    maxSizeInMB: number = 10,
+    createResponsive: boolean = true
+  ): Promise<{ publicPath: string; filename: string; responsive?: ResponsiveImages }[]> {
     if (!files || files.length === 0) {
       throw new Error('Aucun fichier n\'a été fourni');
     }
@@ -56,11 +59,25 @@ export class UploadService {
       const filepath = path.join(this.uploadDir, filename);
       fs.writeFileSync(filepath, file.buffer);
 
-      // Ajouter à la liste des fichiers uploadés
-      uploadedFiles.push({
+      const uploadInfo: any = {
         publicPath: `/uploads/${filename}`,
         filename,
-      });
+      };
+
+      // Créer les versions responsive si demandé
+      if (createResponsive) {
+        try {
+          uploadInfo.responsive = await this.resizeService.createResponsiveImages(
+            filepath,
+            filename
+          );
+        } catch (error) {
+          console.error(`Erreur lors du redimensionnement de ${filename}:`, error);
+          // Ne pas lever d'erreur, continuer avec juste l'image originale
+        }
+      }
+
+      uploadedFiles.push(uploadInfo);
     }
 
     return uploadedFiles;
@@ -70,12 +87,14 @@ export class UploadService {
    * Upload un fichier unique (alias pour uploadFiles avec un seul fichier)
    * @param file - Fichier à uploader
    * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
+   * @param createResponsive - Créer les versions responsive (par défaut true)
    */
-  uploadFile(
+  async uploadFile(
     file: Express.Multer.File,
-    maxSizeInMB: number = 10
-  ): { publicPath: string; filename: string } {
-    const result = this.uploadFiles([file], maxSizeInMB);
+    maxSizeInMB: number = 10,
+    createResponsive: boolean = true
+  ): Promise<{ publicPath: string; filename: string; responsive?: ResponsiveImages }> {
+    const result = await this.uploadFiles([file], maxSizeInMB, createResponsive);
     return result[0];
   }
 
@@ -87,7 +106,7 @@ export class UploadService {
   }
 
   /**
-   * Supprimer un ou plusieurs fichiers uploadés
+   * Supprimer un ou plusieurs fichiers uploadés (original + versions responsive)
    */
   deleteFiles(filenames: string[]): { deleted: string[]; failed: string[] } {
     const deleted = [];
@@ -95,6 +114,17 @@ export class UploadService {
 
     for (const filename of filenames) {
       const filepath = this.getFilePath(filename);
+
+      // Supprimer les versions responsive
+      try {
+        const responsiveResult = this.resizeService.deleteResponsiveImages(filename);
+        deleted.push(...responsiveResult.deleted);
+        failed.push(...responsiveResult.failed);
+      } catch (error) {
+        console.error(`Erreur lors de la suppression des versions responsive de ${filename}:`, error);
+      }
+
+      // Supprimer le fichier original
       if (fs.existsSync(filepath)) {
         try {
           fs.unlinkSync(filepath);

@@ -136,15 +136,15 @@ export class ResizeService {
   }
 
   /**
-   * Supprime toutes les versions responsive d'une image
+   * Supprime uniquement les versions responsive d'une image (préserve l'original)
    * @param baseFilename - Nom du fichier (avec extension)
    */
   deleteResponsiveImages(baseFilename: string): { deleted: string[]; failed: string[] } {
     const extension = path.extname(baseFilename);
     const nameWithoutExt = path.basename(baseFilename, extension);
 
+    // Supprime UNIQUEMENT les variantes responsive, PAS l'original
     const variants = [
-      baseFilename,
       `${nameWithoutExt}-thumbnail${extension}`,
       `${nameWithoutExt}-small${extension}`,
       `${nameWithoutExt}-medium${extension}`,
