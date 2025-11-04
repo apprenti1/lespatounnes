@@ -73,7 +73,7 @@ export default function Partners() {
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong> sur votre shooting.<br/>' +
                    '<small><em>(sur présentation de votre carte de membre au photographe)</em></small><br/>',
       imageUrl: 'scooby.jpg',
-      websiteUrl: '/notfound',
+      websiteUrl: 'https://www.gregstudiophoto.fr/fetish',
     },
     {
       name: 'WOLF STUDIO - TAILS & PAWS',
@@ -91,7 +91,7 @@ export default function Partners() {
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong><br/>' +
                    'sur votre panier.',
       imageUrl: 'wolf.jpg',
-      websiteUrl: '',
+      websiteUrl: 'https://wolf-studio.fr',
     },
     {
       name: 'BMC STORE - Sexshop Parisien',
@@ -108,7 +108,7 @@ export default function Partners() {
                    'en magasin<br/>' +
                    '<small>(sur présentation de votre carte de membre en caisse)</small>.',
       imageUrl: 'bmc.jpg',
-      websiteUrl: '/notfound',
+      websiteUrl: 'https://www.bmc-store.com',
     },
     {
       name: 'Le Bouqet des Archives - Bistro Parisien',

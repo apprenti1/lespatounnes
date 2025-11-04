@@ -12,7 +12,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { UploadService } from './upload.service';
@@ -35,8 +35,8 @@ export class UploadController {
   @Roles('PHOTOGRAPHER')
   @UseInterceptors(FilesInterceptor('images', 100)) // Max 100 fichiers par requête
   async uploadPhotographerImages(
-    @UploadedFiles() files: Express.Multer.File[],
-    @Req() req: Request
+    @UploadedFiles() files: any[],
+    @Req() req: any
   ) {
     if (!files || files.length === 0) {
       throw new HttpException('Aucun fichier n\'a été fourni', HttpStatus.BAD_REQUEST);
@@ -66,7 +66,7 @@ export class UploadController {
   getImage(
     @Param('folder') folder: string,
     @Param('filename') filename: string,
-    @Res() res: Response
+    @Res() res: any
   ) {
     // Valider le dossier pour éviter les traversées de répertoires
     const allowedFolders = ['original', 'thumbnail', 'small', 'medium', 'large'];
