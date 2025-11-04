@@ -14,11 +14,6 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
     HelloAssoModule,
     UploadModule,
-    // Servir les fichiers du dossier uploads en tant que fichiers statiques
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],
