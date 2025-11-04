@@ -15,6 +15,7 @@ import Story from './pages/Story';
 import Photos from './pages/Photos';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
+import Photographer from './pages/Photographer';
 import MentionsLegales from './pages/MentionsLegales';
 import RGPD from './pages/RGPD';
 import DevenirPartenaire from './pages/DevenirPartenaire';
@@ -87,6 +88,7 @@ function App() {
           <Route path="/photos" element={<Photos />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/photographer" element={<Photographer />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/rgpd" element={<RGPD />} />
           <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
