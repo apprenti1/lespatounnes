@@ -79,6 +79,16 @@ export default function Navbar() {
               <span className="text-sm">Admin</span>
             </Link>
           )}
+          {user.role === 'PHOTOGRAPHER' && (
+            <Link
+              to="/photographer"
+              className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+              title="Panel Photographe"
+            >
+              <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+              <span className="text-sm">Photos</span>
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="h-[42px] w-[42px] bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center"
@@ -252,6 +262,17 @@ export default function Navbar() {
                   >
                     <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
                     <span className="text-sm">Admin</span>
+                  </Link>
+                )}
+                {user.role === 'PHOTOGRAPHER' && (
+                  <Link
+                    to="/photographer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+                    title="Panel Photographe"
+                  >
+                    <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                    <span className="text-sm">Photos</span>
                   </Link>
                 )}
                 <button
