@@ -62,7 +62,7 @@ export class UploadController {
    * GET /uploads/:folder/:filename
    * Exemple: /uploads/original/550e8400-e29b-41d4-a716-446655440000.jpg
    */
-  @Get(':folder/:filename')
+  @Get(':folder/:filename(*)')
   getImage(
     @Param('folder') folder: string,
     @Param('filename') filename: string,
