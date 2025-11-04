@@ -16,12 +16,18 @@ export class UploadService {
 
   /**
    * Upload un ou plusieurs fichiers images et retourne les routes publiques d'accès
+   * @param files - Fichiers à uploader
+   * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
    */
-  uploadFiles(files: Express.Multer.File[]): { publicPath: string; filename: string }[] {
+  uploadFiles(
+    files: Express.Multer.File[],
+    maxSizeInMB: number = 10
+  ): { publicPath: string; filename: string }[] {
     if (!files || files.length === 0) {
       throw new Error('Aucun fichier n\'a été fourni');
     }
 
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
     const uploadedFiles = [];
 
     for (const file of files) {
@@ -33,10 +39,10 @@ export class UploadService {
         );
       }
 
-      // Vérifier la taille (max 10MB par image)
-      if (file.size > 10 * 1024 * 1024) {
+      // Vérifier la taille
+      if (file.size > maxSizeInBytes) {
         throw new Error(
-          `L'image ${file.originalname} ne doit pas dépasser 10MB`
+          `L'image ${file.originalname} ne doit pas dépasser ${maxSizeInMB}MB`
         );
       }
 
@@ -62,9 +68,14 @@ export class UploadService {
 
   /**
    * Upload un fichier unique (alias pour uploadFiles avec un seul fichier)
+   * @param file - Fichier à uploader
+   * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
    */
-  uploadFile(file: Express.Multer.File): { publicPath: string; filename: string } {
-    const result = this.uploadFiles([file]);
+  uploadFile(
+    file: Express.Multer.File,
+    maxSizeInMB: number = 10
+  ): { publicPath: string; filename: string } {
+    const result = this.uploadFiles([file], maxSizeInMB);
     return result[0];
   }
 
