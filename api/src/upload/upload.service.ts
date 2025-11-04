@@ -1,37 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { Express } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ResizeService, ResponsiveImages } from './resize.service';
+import { v4 as uuidv4 } from 'uuid';
+import { ResizeService } from './resize.service';
+
+interface FileUpload {
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}
 
 @Injectable()
 export class UploadService {
-  private uploadDir = 'uploads';
+  private originalFolder = 'uploads/original';
 
   constructor(private resizeService: ResizeService) {
-    // Créer le dossier uploads s'il n'existe pas
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
+    // Créer le dossier uploads/original s'il n'existe pas
+    if (!fs.existsSync(this.originalFolder)) {
+      fs.mkdirSync(this.originalFolder, { recursive: true });
     }
   }
 
   /**
-   * Upload un ou plusieurs fichiers images et retourne les routes publiques d'accès avec versions responsive
+   * Upload un ou plusieurs fichiers images et retourne leur UUID
    * @param files - Fichiers à uploader
    * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
    * @param createResponsive - Créer les versions responsive (par défaut true)
+   * @returns Tableau d'UUID
    */
   async uploadFiles(
-    files: Express.Multer.File[],
+    files: FileUpload[],
     maxSizeInMB: number = 10,
     createResponsive: boolean = true
-  ): Promise<{ publicPath: string; filename: string; responsive?: ResponsiveImages }[]> {
+  ): Promise<string[]> {
     if (!files || files.length === 0) {
       throw new Error('Aucun fichier n\'a été fourni');
     }
 
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-    const uploadedFiles = [];
+    const uploadedUuids: string[] = [];
 
     for (const file of files) {
       // Vérifier que c'est une image
@@ -49,38 +57,28 @@ export class UploadService {
         );
       }
 
-      // Générer un nom de fichier unique avec timestamp
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(7);
+      // Générer un UUID avec extension
       const extension = path.extname(file.originalname);
-      const filename = `${timestamp}-${random}${extension}`;
+      const uuid = `${uuidv4()}${extension}`;
 
-      // Sauvegarder le fichier
-      const filepath = path.join(this.uploadDir, filename);
-      fs.writeFileSync(filepath, file.buffer);
-
-      const uploadInfo: any = {
-        publicPath: `/uploads/${filename}`,
-        filename,
-      };
+      // Sauvegarder le fichier original dans uploads/original
+      const originalPath = path.join(this.originalFolder, uuid);
+      fs.writeFileSync(originalPath, file.buffer);
 
       // Créer les versions responsive si demandé
       if (createResponsive) {
         try {
-          uploadInfo.responsive = await this.resizeService.createResponsiveImages(
-            filepath,
-            filename
-          );
+          await this.resizeService.createResponsiveImages(originalPath, uuid);
         } catch (error) {
-          console.error(`Erreur lors du redimensionnement de ${filename}:`, error);
+          console.error(`Erreur lors du redimensionnement de ${uuid}:`, error);
           // Ne pas lever d'erreur, continuer avec juste l'image originale
         }
       }
 
-      uploadedFiles.push(uploadInfo);
+      uploadedUuids.push(uuid);
     }
 
-    return uploadedFiles;
+    return uploadedUuids;
   }
 
   /**
@@ -88,70 +86,60 @@ export class UploadService {
    * @param file - Fichier à uploader
    * @param maxSizeInMB - Taille maximale en MB (par défaut 10MB)
    * @param createResponsive - Créer les versions responsive (par défaut true)
+   * @returns UUID du fichier
    */
   async uploadFile(
-    file: Express.Multer.File,
+    file: FileUpload,
     maxSizeInMB: number = 10,
     createResponsive: boolean = true
-  ): Promise<{ publicPath: string; filename: string; responsive?: ResponsiveImages }> {
+  ): Promise<string> {
     const result = await this.uploadFiles([file], maxSizeInMB, createResponsive);
     return result[0];
   }
 
   /**
-   * Obtenir le chemin complet d'un fichier uploadé
+   * Obtenir le chemin complet d'un fichier original
    */
-  getFilePath(filename: string): string {
-    return path.join(this.uploadDir, filename);
+  getFilePath(uuid: string): string {
+    return path.join(this.originalFolder, uuid);
   }
 
   /**
    * Supprimer un ou plusieurs fichiers uploadés (original + versions responsive)
    */
-  deleteFiles(filenames: string[]): { deleted: string[]; failed: string[] } {
-    const deleted = [];
-    const failed = [];
-
-    for (const filename of filenames) {
-      const filepath = this.getFilePath(filename);
+  deleteFiles(uuids: string[]): void {
+    for (const uuid of uuids) {
+      const filepath = this.getFilePath(uuid);
 
       // Supprimer les versions responsive
       try {
-        const responsiveResult = this.resizeService.deleteResponsiveImages(filename);
-        deleted.push(...responsiveResult.deleted);
-        failed.push(...responsiveResult.failed);
+        this.resizeService.deleteResponsiveImages(uuid);
       } catch (error) {
-        console.error(`Erreur lors de la suppression des versions responsive de ${filename}:`, error);
+        console.error(`Erreur lors de la suppression des versions responsive de ${uuid}:`, error);
       }
 
       // Supprimer le fichier original
       if (fs.existsSync(filepath)) {
         try {
           fs.unlinkSync(filepath);
-          deleted.push(filename);
         } catch (error) {
-          failed.push(filename);
+          console.error(`Erreur lors de la suppression de ${uuid}:`, error);
         }
-      } else {
-        failed.push(filename);
       }
     }
-
-    return { deleted, failed };
   }
 
   /**
-   * Supprimer un fichier unique (alias pour deleteFiles avec un seul fichier)
+   * Supprimer un fichier unique
    */
-  deleteFile(filename: string): boolean {
-    const result = this.deleteFiles([filename]);
-    return result.deleted.length > 0;
+  deleteFile(uuid: string): void {
+    this.deleteFiles([uuid]);
   }
 
   /**
    * Vérifier si un fichier existe
    */
-  fileExists(filename: string): boolean {
-    return fs.existsSync(this.getFilePath(filename));
+  fileExists(uuid: string): boolean {
+    return fs.existsSync(this.getFilePath(uuid));
   }
 }

@@ -9,82 +9,70 @@ export interface ResizeConfig {
   fit?: 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
 }
 
-export interface ResponsiveImages {
-  original: string;
-  thumbnail?: string;
-  small?: string;
-  medium?: string;
-  large?: string;
-}
-
 @Injectable()
 export class ResizeService {
   private uploadDir = 'uploads';
+  private folders = {
+    original: 'uploads/original',
+    thumbnail: 'uploads/thumbnail',
+    small: 'uploads/small',
+    medium: 'uploads/medium',
+    large: 'uploads/large',
+  };
 
   constructor() {
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
-    }
+    // Créer tous les dossiers
+    Object.values(this.folders).forEach((folder) => {
+      if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+      }
+    });
   }
 
   /**
    * Crée des versions responsive d'une image
    * @param imagePath - Chemin du fichier image original
-   * @param filename - Nom du fichier (sans extension)
-   * @returns Objet contenant les chemins des différentes versions
+   * @param uuid - UUID du fichier
+   * @returns void (les fichiers sont sauvegardés dans les dossiers respectifs)
    */
   async createResponsiveImages(
     imagePath: string,
-    filename: string
-  ): Promise<ResponsiveImages> {
+    uuid: string
+  ): Promise<void> {
     if (!fs.existsSync(imagePath)) {
       throw new Error(`Le fichier ${imagePath} n'existe pas`);
     }
 
-    const extension = path.extname(filename);
-    const nameWithoutExt = path.basename(filename, extension);
-    const responsiveImages: ResponsiveImages = {
-      original: `/uploads/${filename}`,
-    };
+    const extension = path.extname(uuid);
 
     try {
       // Thumbnail: 150x150
-      const thumbnailName = `${nameWithoutExt}-thumbnail${extension}`;
-      await this.resizeImage(imagePath, thumbnailName, {
+      await this.resizeImage(imagePath, this.folders.thumbnail, uuid, {
         width: 150,
         height: 150,
         fit: 'cover',
       });
-      responsiveImages.thumbnail = `/uploads/${thumbnailName}`;
 
       // Small: 400x300
-      const smallName = `${nameWithoutExt}-small${extension}`;
-      await this.resizeImage(imagePath, smallName, {
+      await this.resizeImage(imagePath, this.folders.small, uuid, {
         width: 400,
         height: 300,
         fit: 'cover',
       });
-      responsiveImages.small = `/uploads/${smallName}`;
 
       // Medium: 800x600
-      const mediumName = `${nameWithoutExt}-medium${extension}`;
-      await this.resizeImage(imagePath, mediumName, {
+      await this.resizeImage(imagePath, this.folders.medium, uuid, {
         width: 800,
         height: 600,
         fit: 'cover',
       });
-      responsiveImages.medium = `/uploads/${mediumName}`;
 
       // Large: 1200x900
-      const largeName = `${nameWithoutExt}-large${extension}`;
-      await this.resizeImage(imagePath, largeName, {
+      await this.resizeImage(imagePath, this.folders.large, uuid, {
         width: 1200,
         height: 900,
         fit: 'cover',
       });
-      responsiveImages.large = `/uploads/${largeName}`;
-
-      return responsiveImages;
     } catch (error) {
       console.error('Erreur lors du redimensionnement:', error);
       throw new Error(`Impossible de redimensionner l'image: ${error.message}`);
@@ -94,15 +82,17 @@ export class ResizeService {
   /**
    * Redimensionne une image avec la config spécifiée
    * @param sourcePath - Chemin du fichier source
-   * @param outputFilename - Nom du fichier de sortie
+   * @param folder - Dossier de destination
+   * @param filename - Nom du fichier de sortie
    * @param config - Configuration de redimensionnement
    */
   private async resizeImage(
     sourcePath: string,
-    outputFilename: string,
+    folder: string,
+    filename: string,
     config: ResizeConfig
   ): Promise<void> {
-    const outputPath = path.join(this.uploadDir, outputFilename);
+    const outputPath = path.join(folder, filename);
 
     await sharp(sourcePath)
       .resize(config.width, config.height, {
@@ -113,60 +103,27 @@ export class ResizeService {
   }
 
   /**
-   * Redimensionne une image avec une config personnalisée
-   * @param imagePath - Chemin du fichier image
-   * @param outputFilename - Nom du fichier de sortie
-   * @param config - Configuration personnalisée
-   */
-  async resizeCustom(
-    imagePath: string,
-    outputFilename: string,
-    config: ResizeConfig
-  ): Promise<string> {
-    if (!fs.existsSync(imagePath)) {
-      throw new Error(`Le fichier ${imagePath} n'existe pas`);
-    }
-
-    try {
-      await this.resizeImage(imagePath, outputFilename, config);
-      return `/uploads/${outputFilename}`;
-    } catch (error) {
-      throw new Error(`Impossible de redimensionner l'image: ${error.message}`);
-    }
-  }
-
-  /**
    * Supprime uniquement les versions responsive d'une image (préserve l'original)
-   * @param baseFilename - Nom du fichier (avec extension)
+   * @param uuid - UUID du fichier (avec extension)
    */
-  deleteResponsiveImages(baseFilename: string): { deleted: string[]; failed: string[] } {
-    const extension = path.extname(baseFilename);
-    const nameWithoutExt = path.basename(baseFilename, extension);
-
-    // Supprime UNIQUEMENT les variantes responsive, PAS l'original
-    const variants = [
-      `${nameWithoutExt}-thumbnail${extension}`,
-      `${nameWithoutExt}-small${extension}`,
-      `${nameWithoutExt}-medium${extension}`,
-      `${nameWithoutExt}-large${extension}`,
+  deleteResponsiveImages(uuid: string): void {
+    const foldersToDelete = [
+      this.folders.thumbnail,
+      this.folders.small,
+      this.folders.medium,
+      this.folders.large,
     ];
 
-    const deleted = [];
-    const failed = [];
-
-    for (const variant of variants) {
-      const filepath = path.join(this.uploadDir, variant);
+    for (const folder of foldersToDelete) {
+      const filepath = path.join(folder, uuid);
       if (fs.existsSync(filepath)) {
         try {
           fs.unlinkSync(filepath);
-          deleted.push(variant);
         } catch (error) {
-          failed.push(variant);
+          console.error(`Erreur lors de la suppression de ${filepath}:`, error);
         }
       }
     }
-
-    return { deleted, failed };
   }
 
   /**
