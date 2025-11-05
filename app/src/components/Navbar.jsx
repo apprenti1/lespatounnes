@@ -79,7 +79,7 @@ export default function Navbar() {
               <span className="text-sm">Admin</span>
             </Link>
           )}
-          {user.role === 'PHOTOGRAPHER' && (
+          {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
             <Link
               to="/photographer"
               className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
@@ -264,7 +264,7 @@ export default function Navbar() {
                     <span className="text-sm">Admin</span>
                   </Link>
                 )}
-                {user.role === 'PHOTOGRAPHER' && (
+                {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
                   <Link
                     to="/photographer"
                     onClick={() => setMobileMenuOpen(false)}

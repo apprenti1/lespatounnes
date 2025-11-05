@@ -29,14 +29,14 @@ export class UploadController {
   ) {}
 
   /**
-   * Route d'upload pour les photographes
+   * Route d'upload pour les photographes et admins
    * POST /uploads/photographer
-   * Authentification requise (rôle PHOTOGRAPHER)
+   * Authentification requise (rôle PHOTOGRAPHER ou ADMIN)
    * Pas de limite de taille
    */
   @Post('photographer')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('PHOTOGRAPHER')
+  @Roles('PHOTOGRAPHER', 'ADMIN')
   @UseInterceptors(FilesInterceptor('images', 100)) // Max 100 fichiers par requête
   async uploadPhotographerImages(
     @UploadedFiles() files: any[],
