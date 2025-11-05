@@ -172,7 +172,7 @@ export default function Photographer() {
     }
   };
 
-  if (!user || user.role !== 'PHOTOGRAPHER') {
+  if (!user || (user.role !== 'PHOTOGRAPHER' && user.role !== 'ADMIN')) {
     return null;
   }
 

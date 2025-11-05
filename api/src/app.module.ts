@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { HelloAssoModule } from './helloasso/helloasso.module';
 import { UploadModule } from './upload/upload.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
     HelloAssoModule,
     UploadModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
