@@ -56,7 +56,7 @@ export class UploadController {
       const uploadedUuids = await this.uploadService.uploadFiles(files, 999, false);
 
       // Créer les enregistrements Photo dans la base de données
-      const createdPhotos = [];
+      const createdPhotos: any[] = [];
       for (const uuid of uploadedUuids) {
         const photo = await this.prisma.photo.create({
           data: {
