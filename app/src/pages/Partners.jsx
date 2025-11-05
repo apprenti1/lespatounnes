@@ -146,7 +146,7 @@ export default function Partners() {
                    '<br/>' +
                    'Devenez adhérant et bénéficiez d\'un <strong>accès premium</strong> !<br/>',
       imageUrl: 'Playfetish.png',
-      websiteUrl: 'PlayFetish.com/@lespatounesfr',
+      websiteUrl: 'https://PlayFetish.com/@lespatounesfr',
     },
   ];
 
