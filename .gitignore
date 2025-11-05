@@ -107,3 +107,6 @@ api/.nest/
 
 # TypeScript
 *.tsbuildinfo
+
+# Uploads
+uploads/
