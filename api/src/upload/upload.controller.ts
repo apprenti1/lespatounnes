@@ -4,23 +4,29 @@ import {
   Get,
   Param,
   Res,
+  Body,
   HttpException,
   HttpStatus,
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  Req,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { UploadService } from './upload.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../guards/roles.decorator';
 
 @Controller('uploads')
 export class UploadController {
-  constructor(private uploadService: UploadService) {}
+  constructor(
+    private uploadService: UploadService,
+    private prisma: PrismaService,
+  ) {}
 
   /**
    * Route d'upload pour les photographes
@@ -34,19 +40,40 @@ export class UploadController {
   @UseInterceptors(FilesInterceptor('images', 100)) // Max 100 fichiers par requête
   async uploadPhotographerImages(
     @UploadedFiles() files: any[],
+    @Req() req: any,
+    @Body() body: any,
   ) {
     if (!files || files.length === 0) {
       throw new HttpException('Aucun fichier n\'a été fourni', HttpStatus.BAD_REQUEST);
     }
 
     try {
+      // Récupérer l'utilisateur depuis le token JWT
+      const userId = req.user.id;
+      const eventId = body.eventId || null;
+
       // Pas de limite de taille pour les photographes
-      const uploadedUuids = await this.uploadService.uploadFiles(files, 999, true);
+      const uploadedUuids = await this.uploadService.uploadFiles(files, 999, false);
+
+      // Créer les enregistrements Photo dans la base de données
+      const createdPhotos = [];
+      for (const uuid of uploadedUuids) {
+        const photo = await this.prisma.photo.create({
+          data: {
+            image: uuid,
+            userId: userId,
+            eventId: eventId || undefined,
+            tags: [],
+          },
+        });
+        createdPhotos.push(photo);
+      }
 
       return {
         success: true,
         count: uploadedUuids.length,
         uuids: uploadedUuids,
+        photos: createdPhotos,
         message: `${uploadedUuids.length} image(s) uploadée(s) avec succès`,
       };
     } catch (error) {
