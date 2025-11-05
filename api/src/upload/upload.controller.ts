@@ -82,24 +82,10 @@ export class UploadController {
   }
 
   /**
-   * Route publique pour récupérer les images
-   * GET /uploads/:folder/:subfolder/:filename
-   * Exemple: /uploads/original/550e8400-e29b-41d4-a716-446655440000.jpg
-   */
-  @Get(':folder/:subfolder/:filename')
-  getImageWithSubfolder(
-    @Param('folder') folder: string,
-    @Param('subfolder') subfolder: string,
-    @Param('filename') filename: string,
-    @Res() res: any
-  ) {
-    return this.serveImage(folder, subfolder, filename, res);
-  }
-
-  /**
    * Route protégée pour récupérer les photos de l'utilisateur
    * GET /uploads/user-photos
    * Authentification requise
+   * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('user-photos')
   @UseGuards(JwtGuard)
@@ -136,7 +122,22 @@ export class UploadController {
   }
 
   /**
-   * Route publique pour récupérer les images (variante)
+   * Route publique pour récupérer les images avec 3 paramètres
+   * GET /uploads/:folder/:subfolder/:filename
+   * Exemple: /uploads/thumbnail/550e8400-e29b-41d4-a716-446655440000.jpg
+   */
+  @Get(':folder/:subfolder/:filename')
+  getImageWithSubfolder(
+    @Param('folder') folder: string,
+    @Param('subfolder') subfolder: string,
+    @Param('filename') filename: string,
+    @Res() res: any
+  ) {
+    return this.serveImage(folder, subfolder, filename, res);
+  }
+
+  /**
+   * Route publique pour récupérer les images avec 2 paramètres
    * GET /uploads/:folder/:filename
    */
   @Get(':folder/:filename')
