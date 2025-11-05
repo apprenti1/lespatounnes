@@ -11,6 +11,7 @@ export default function Photographer() {
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState('');
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function Photographer() {
       }
       setUser(parsedUser);
       fetchEvents(token);
+      fetchUserPhotos(token);
     } catch (error) {
       navigate('/login');
     }
@@ -53,6 +55,34 @@ export default function Photographer() {
       console.error('Erreur lors du chargement des événements:', error);
     } finally {
       setLoadingEvents(false);
+    }
+  };
+
+  const fetchUserPhotos = async (token) => {
+    setLoadingPhotos(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/user-photos`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Mapper les photos pour extraire juste les UUIDs pour l'affichage
+        const photoUuids = data.photos.map((photo) => ({
+          uuid: photo.image,
+          id: photo.id,
+          createdAt: photo.createdAt,
+          event: photo.event,
+          tags: photo.tags,
+        }));
+        setUploadedImages(photoUuids);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des photos:', error);
+    } finally {
+      setLoadingPhotos(false);
     }
   };
 
@@ -99,7 +129,10 @@ export default function Photographer() {
         throw new Error(data.message || 'Erreur lors de l\'upload');
       }
 
-      setUploadedImages((prevImages) => [...prevImages, ...data.uuids]);
+      // Rafraîchir la liste des photos depuis la base de données
+      const token = localStorage.getItem('accessToken');
+      await fetchUserPhotos(token);
+
       setFiles([]);
       toast.success(`✅ ${data.count} image(s) uploadée(s) avec succès!`, {
         position: 'top-center',
@@ -250,27 +283,37 @@ export default function Photographer() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {uploadedImages.map((uuid, index) => (
-                    <div key={index} className="group">
+                  {uploadedImages.map((photo) => (
+                    <div key={photo.id} className="group">
                       <div className="relative overflow-hidden rounded-xl shadow-lg">
                         {/* Afficher la version thumbnail */}
                         <img
-                          src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${uuid}`}
-                          alt={`Photo ${index + 1}`}
+                          src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.uuid}`}
+                          alt={`Photo ${photo.id}`}
                           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
-                            e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${uuid}`;
+                            e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.uuid}`;
                           }}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
                             <p className="text-sm font-semibold mb-2">UUID:</p>
-                            <p className="text-xs break-all px-4">{uuid}</p>
+                            <p className="text-xs break-all px-4">{photo.uuid}</p>
                           </div>
                         </div>
                       </div>
-                      <div className="mt-2 text-center">
-                        <p className="text-xs text-gray-500 truncate">{uuid}</p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs text-gray-500 truncate">{photo.uuid}</p>
+                        {photo.event && (
+                          <p className="text-xs text-purple-600 font-semibold">{photo.event.title}</p>
+                        )}
+                        <p className="text-xs text-gray-400">
+                          {new Date(photo.createdAt).toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </p>
                       </div>
                     </div>
                   ))}

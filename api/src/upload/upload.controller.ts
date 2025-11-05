@@ -97,6 +97,45 @@ export class UploadController {
   }
 
   /**
+   * Route protégée pour récupérer les photos de l'utilisateur
+   * GET /uploads/user-photos
+   * Authentification requise
+   */
+  @Get('user-photos')
+  @UseGuards(JwtGuard)
+  async getUserPhotos(@Req() req: any) {
+    try {
+      const userId = req.user.id;
+
+      const photos = await this.prisma.photo.findMany({
+        where: { userId: userId },
+        select: {
+          id: true,
+          image: true,
+          createdAt: true,
+          tags: true,
+          event: {
+            select: {
+              id: true,
+              title: true,
+              date: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return {
+        success: true,
+        count: photos.length,
+        photos: photos,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
    * Route publique pour récupérer les images (variante)
    * GET /uploads/:folder/:filename
    */
