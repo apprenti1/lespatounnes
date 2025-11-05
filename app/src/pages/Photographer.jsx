@@ -8,6 +8,9 @@ export default function Photographer() {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState('');
+  const [loadingEvents, setLoadingEvents] = useState(false);
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -27,10 +30,31 @@ export default function Photographer() {
         return;
       }
       setUser(parsedUser);
+      fetchEvents(token);
     } catch (error) {
       navigate('/login');
     }
   }, [navigate]);
+
+  const fetchEvents = async (token) => {
+    setLoadingEvents(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/events`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setEvents(Array.isArray(data) ? data : data.data || []);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des événements:', error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
 
   const handleFileSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -54,6 +78,11 @@ export default function Photographer() {
       files.forEach((file) => {
         formData.append('images', file);
       });
+
+      // Ajouter eventId si sélectionné
+      if (selectedEventId) {
+        formData.append('eventId', selectedEventId);
+      }
 
       const token = localStorage.getItem('accessToken');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/photographer`, {
@@ -107,6 +136,29 @@ export default function Photographer() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-3xl p-8 shadow-2xl pulse-glow">
               <h2 className="text-2xl font-bold gradient-text mb-6">Uploader des photos</h2>
+
+              {/* Sélection d'événement */}
+              <div className="mb-6">
+                <label className="block text-gray-700 font-semibold mb-3">
+                  Événement (optionnel)
+                </label>
+                <select
+                  value={selectedEventId}
+                  onChange={(e) => setSelectedEventId(e.target.value)}
+                  disabled={loadingEvents}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-300 bg-white disabled:opacity-50"
+                >
+                  <option value="">-- Aucun événement --</option>
+                  {events.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.title} ({new Date(event.date).toLocaleDateString('fr-FR')})
+                    </option>
+                  ))}
+                </select>
+                {loadingEvents && (
+                  <p className="text-gray-500 text-sm mt-2">Chargement des événements...</p>
+                )}
+              </div>
 
               {/* Zone de drop */}
               <div className="border-3 border-dashed border-purple-300 rounded-2xl p-8 text-center bg-purple-50 mb-6 cursor-pointer hover:border-purple-500 hover:bg-purple-100 transition-all duration-300">
