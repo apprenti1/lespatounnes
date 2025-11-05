@@ -136,6 +136,18 @@ export default function Partners() {
       imageUrl: 'furrjoi.jpg',
       websiteUrl: 'https://furrjoi.com/home',
     },
+    {
+      name: 'PlayFetish - Rencontres Kinkys',
+      description: 'PlayFetish, le site gratuit dédié Fetish & Kink !<br/>' +
+                   'Chat, petites annonces,<br/>' +
+                   'découvres les membres fétichistes proches de toi.<br/>' +
+                   'Aucune censure, sans pub, ni collecte de données<br/>' +
+                   'et 100% Made in France !<br/>' +
+                   '<br/>' +
+                   'Devenez adhérant et bénéficiez d\'un <strong>accès premium</strong> !<br/>',
+      imageUrl: 'Playfetish.png',
+      websiteUrl: 'PlayFetish.com/@lespatounesfr',
+    },
   ];
 
   return (
