@@ -26,8 +26,8 @@ export default function Photographer() {
 
     try {
       const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== 'PHOTOGRAPHER') {
-        toast.error('Accès réservé aux photographes');
+      if (parsedUser.role !== 'PHOTOGRAPHER' && parsedUser.role !== 'ADMIN') {
+        toast.error('Accès réservé aux photographes et admins');
         navigate('/');
         return;
       }
@@ -172,7 +172,7 @@ export default function Photographer() {
     }
   };
 
-  if (!user || (user.role !== 'PHOTOGRAPHER' && user.role !== 'ADMIN')) {
+  if (!user) {
     return null;
   }
 
