@@ -12,6 +12,7 @@ export default function Photographer() {
   const [selectedEventId, setSelectedEventId] = useState('');
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [expandedFolders, setExpandedFolders] = useState({});
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -84,6 +85,34 @@ export default function Photographer() {
     } finally {
       setLoadingPhotos(false);
     }
+  };
+
+  const toggleFolder = (folderId) => {
+    setExpandedFolders((prev) => ({
+      ...prev,
+      [folderId]: !prev[folderId],
+    }));
+  };
+
+  const groupPhotosByEvent = (photos) => {
+    const grouped = {};
+
+    photos.forEach((photo) => {
+      const folderId = photo.event ? `event-${photo.event.id}` : 'no-event';
+      const folderKey = photo.event ? photo.event.title : 'Autres photos';
+
+      if (!grouped[folderId]) {
+        grouped[folderId] = {
+          id: folderId,
+          title: folderKey,
+          event: photo.event || null,
+          photos: [],
+        };
+      }
+      grouped[folderId].photos.push(photo);
+    });
+
+    return Object.values(grouped);
   };
 
   const handleFileSelect = (e) => {
@@ -281,39 +310,72 @@ export default function Photographer() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {uploadedImages.map((photo) => (
-                    <div key={photo.id} className="group">
-                      <div className="relative overflow-hidden rounded-xl shadow-lg">
-                        {/* Afficher la version thumbnail */}
-                        <img
-                          src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.uuid}`}
-                          alt={`Photo ${photo.id}`}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                          onError={(e) => {
-                            e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.uuid}`;
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
-                            <p className="text-sm font-semibold mb-2">UUID:</p>
-                            <p className="text-xs break-all px-4">{photo.uuid}</p>
+                <div className="space-y-4">
+                  {groupPhotosByEvent(uploadedImages).map((folder) => (
+                    <div key={folder.id} className="border rounded-lg overflow-hidden">
+                      {/* En-tête du dossier */}
+                      <button
+                        onClick={() => toggleFolder(folder.id)}
+                        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">
+                            {expandedFolders[folder.id] ? '📂' : '📁'}
+                          </span>
+                          <div className="text-left">
+                            <h3 className="font-semibold text-gray-800">{folder.title}</h3>
+                            <p className="text-xs text-gray-500">
+                              {folder.photos.length} photo{folder.photos.length > 1 ? 's' : ''}
+                            </p>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-2 space-y-1">
-                        <p className="text-xs text-gray-500 truncate">{photo.uuid}</p>
-                        {photo.event && (
-                          <p className="text-xs text-purple-600 font-semibold">{photo.event.title}</p>
-                        )}
-                        <p className="text-xs text-gray-400">
-                          {new Date(photo.createdAt).toLocaleDateString('fr-FR', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
+                        <span
+                          className={`text-lg transition-transform ${
+                            expandedFolders[folder.id] ? 'rotate-180' : ''
+                          }`}
+                        >
+                          ▼
+                        </span>
+                      </button>
+
+                      {/* Contenu du dossier */}
+                      {expandedFolders[folder.id] && (
+                        <div className="p-4 bg-gray-50">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {folder.photos.map((photo) => (
+                              <div key={photo.id} className="group">
+                                <div className="relative overflow-hidden rounded-xl shadow-lg">
+                                  {/* Afficher la version thumbnail */}
+                                  <img
+                                    src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.uuid}`}
+                                    alt={`Photo ${photo.id}`}
+                                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                                    onError={(e) => {
+                                      e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.uuid}`;
+                                    }}
+                                  />
+                                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
+                                      <p className="text-sm font-semibold mb-2">UUID:</p>
+                                      <p className="text-xs break-all px-4">{photo.uuid}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="mt-2 space-y-1">
+                                  <p className="text-xs text-gray-500 truncate">{photo.uuid}</p>
+                                  <p className="text-xs text-gray-400">
+                                    {new Date(photo.createdAt).toLocaleDateString('fr-FR', {
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric',
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
