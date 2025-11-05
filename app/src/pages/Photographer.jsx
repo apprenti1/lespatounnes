@@ -130,7 +130,6 @@ export default function Photographer() {
       }
 
       // Rafraîchir la liste des photos depuis la base de données
-      const token = localStorage.getItem('accessToken');
       await fetchUserPhotos(token);
 
       setFiles([]);
