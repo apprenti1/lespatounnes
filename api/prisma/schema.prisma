@@ -31,5 +31,51 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  photos Photo[]
+
   @@map("users")
+}
+
+model Image {
+  id        String    @id @default(cuid())
+  image     String
+  label     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  events Event[]
+
+  @@map("images")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  imageId     String?
+  image       Image?    @relation(fields: [imageId], references: [id])
+  lieu        String
+  date        DateTime
+  recurrence  String?
+  onlyUsers   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  photos Photo[]
+
+  @@map("events")
+}
+
+model Photo {
+  id        String    @id @default(cuid())
+  image     String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags      String[]  @default([])
+  eventId   String?
+  event     Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("photos")
 }

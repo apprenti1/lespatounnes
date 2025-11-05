@@ -107,8 +107,7 @@ export default function Events() {
         </div>
       </section>
       
-{/* 
-      {Featured Event}
+      {/* {Featured Event} */}
       <section className="py-20 bg-gray-50 paw-pattern -mt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -159,7 +158,7 @@ export default function Events() {
         </div>
       </section>
 
-      {Events Grid}
+      {/* {Events Grid} */}
       <section id="evenements" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -203,7 +202,7 @@ export default function Events() {
         </div>
       </section>
 
-      {Calendar CTA}
+      {/* {Calendar CTA} */}
       <section className="py-20 bg-gray-50 paw-pattern">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-10 md:p-16 text-white text-center shadow-2xl card-hover">
@@ -226,7 +225,7 @@ export default function Events() {
         </div>
       </section>
 
-      {Participation Info}
+      {/* {Participation Info} */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -289,7 +288,6 @@ export default function Events() {
           </div>
         </div>
       </section>
- */}
     </>
   );
 }
