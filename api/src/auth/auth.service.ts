@@ -91,4 +91,28 @@ export class AuthService {
       },
     };
   }
+
+  async getAvailableUsernames(search?: string) {
+    const where = search
+      ? {
+          username: {
+            not: null,
+            contains: search,
+            mode: 'insensitive' as any,
+          },
+        }
+      : {
+          username: {
+            not: null,
+          },
+        };
+
+    const users = await this.prisma.user.findMany({
+      where,
+      select: { username: true },
+      orderBy: { username: 'asc' },
+    });
+
+    return users.map((user) => user.username);
+  }
 }
