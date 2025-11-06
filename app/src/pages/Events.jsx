@@ -1,75 +1,34 @@
+import { useState, useEffect } from 'react';
 import HeroSection from '../components/HeroSection';
 import { Link } from 'react-router-dom';
 
 export default function Events() {
-  const events = [
-    {
-      emoji: '🎉',
-      title: 'Événements Mensuels',
-      badge: 'Mensuel',
-      badgeColor: 'bg-blue-100 text-blue-600',
-      gradient: 'from-blue-500 to-purple-500',
-      description:
-        'Un événement spécial chaque mois pour renforcer les liens de notre communauté et découvrir de nouvelles activités ensemble.',
-      frequency: '1 fois par mois',
-      icon: 'calendar-outline',
-    },
-    {
-      emoji: '🌞',
-      title: 'Pique-niques & Sorties',
-      badge: 'Saisonnier',
-      badgeColor: 'bg-pink-100 text-pink-600',
-      gradient: 'from-pink-500 to-orange-500',
-      description:
-        'Des moments conviviaux en plein air pour se retrouver dans une ambiance détendue et profiter du beau temps tous ensemble.',
-      frequency: 'Printemps & Été',
-      icon: 'sunny-outline',
-    },
-    {
-      emoji: '🎭',
-      title: 'Événements Thématiques',
-      badge: 'Spécial',
-      badgeColor: 'bg-green-100 text-green-600',
-      gradient: 'from-green-500 to-teal-500',
-      description:
-        'Des événements sur plusieurs jours avec des thématiques créatives et immersives pour vivre des expériences inoubliables.',
-      frequency: 'Événements exceptionnels',
-      icon: 'sparkles-outline',
-    },
-    {
-      emoji: '📸',
-      title: 'Calendrier Puppy 2026',
-      badge: 'Projet 2026',
-      badgeColor: 'bg-yellow-100 text-yellow-600',
-      gradient: 'from-yellow-500 to-red-500',
-      description:
-        'Un projet collectif qui mettra en avant nos membres et nos valeurs à travers un calendrier photographique unique et créatif.',
-      frequency: 'À venir en 2026',
-      icon: 'camera-outline',
-    },
-    {
-      emoji: '✨',
-      title: 'Soirées Spéciales',
-      badge: 'Régulier',
-      badgeColor: 'bg-indigo-100 text-indigo-600',
-      gradient: 'from-indigo-500 to-purple-500',
-      description:
-        'Des soirées thématiques festives et inclusives pour célébrer ensemble notre communauté dans une ambiance unique et bienveillante.',
-      frequency: 'Plusieurs fois par an',
-      icon: 'moon-outline',
-    },
-    {
-      emoji: '🤝',
-      title: 'Rencontres & Networking',
-      badge: 'Continu',
-      badgeColor: 'bg-purple-100 text-purple-600',
-      gradient: 'from-purple-600 to-pink-600',
-      description:
-        "Créer des liens forts et authentiques entre les participants à travers des moments d'échange et de partage privilégiés.",
-      frequency: "Tout au long de l'année",
-      icon: 'people-outline',
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUpcomingEvents();
+  }, []);
+
+  const fetchUpcomingEvents = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/events`);
+      if (response.ok) {
+        const data = await response.json();
+        // Filtrer les événements futurs et présents (date >= aujourd'hui)
+        const now = new Date();
+        const filtered = (Array.isArray(data) ? data : data.data || [])
+          .filter((event) => new Date(event.date) >= now)
+          .sort((a, b) => new Date(a.date) - new Date(b.date));
+        setUpcomingEvents(filtered);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des événements:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const heroButtons = [
     {
@@ -95,18 +54,6 @@ export default function Events() {
         buttons={heroButtons}
       />
 
-      {/* Section à venir */}
-      <section className="py-20 bg-gray-50 paw-pattern">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6">
-            Nos Événements en cours de préparation
-          </h2>
-          <p className="text-xl text-gray-600">
-            Nos évents seront bientôt disponibles ! 🐾
-          </p>
-        </div>
-      </section>
-      
       {/* {Featured Event} */}
       <section className="py-20 bg-gray-50 paw-pattern -mt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,34 +118,90 @@ export default function Events() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100"
-              >
-                <div
-                  className={`h-48 bg-gradient-to-br ${event.gradient} flex items-center justify-center relative overflow-hidden`}
-                >
-                  <div className="absolute inset-0 paw-pattern opacity-20"></div>
-                  <span className="text-7xl relative z-10">{event.emoji}</span>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-2xl font-bold text-gray-800">{event.title}</h3>
-                    <span className={`event-badge ${event.badgeColor} flex-shrink-0`}>
-                      {event.badge}
-                    </span>
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">⏳</div>
+              <p className="text-gray-600 text-lg">Chargement des événements...</p>
+            </div>
+          ) : upcomingEvents.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">📭</div>
+              <p className="text-gray-600 text-lg">Aucun événement pour le moment</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {upcomingEvents.map((event) => {
+                // Générer une couleur aléatoire pour chaque événement
+                const gradients = [
+                  'from-blue-500 to-purple-500',
+                  'from-pink-500 to-orange-500',
+                  'from-green-500 to-teal-500',
+                  'from-yellow-500 to-red-500',
+                  'from-indigo-500 to-purple-500',
+                  'from-purple-600 to-pink-600',
+                ];
+                const gradient = gradients[upcomingEvents.indexOf(event) % gradients.length];
+
+                return (
+                  <div
+                    key={event.id}
+                    className="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border-2 border-gray-100"
+                  >
+                    {/* Image ou dégradé */}
+                    {event.image ? (
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          srcSet={`
+                            ${import.meta.env.VITE_API_URL}/uploads/thumbnail/${event.image} 150w,
+                            ${import.meta.env.VITE_API_URL}/uploads/small/${event.image} 400w,
+                            ${import.meta.env.VITE_API_URL}/uploads/medium/${event.image} 800w,
+                            ${import.meta.env.VITE_API_URL}/uploads/large/${event.image} 1200w
+                          `}
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                          src={`${import.meta.env.VITE_API_URL}/uploads/medium/${event.image}`}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`h-48 bg-gradient-to-br ${gradient} flex items-center justify-center relative overflow-hidden`}
+                      >
+                        <div className="absolute inset-0 paw-pattern opacity-20"></div>
+                        <span className="text-7xl relative z-10">📅</span>
+                      </div>
+                    )}
+
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="text-2xl font-bold text-gray-800">{event.title}</h3>
+                          <p className="text-sm text-purple-600 font-semibold mt-1">
+                            {new Date(event.date).toLocaleDateString('fr-FR', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        {event.onlyUsers && (
+                          <span className="event-badge bg-purple-100 text-purple-600 flex-shrink-0">
+                            👥 Membres
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-gray-600 mb-4 leading-relaxed line-clamp-2">{event.description}</p>
+
+                      <div className="flex items-center gap-2 text-purple-600 font-semibold">
+                        <ion-icon name="location-outline" class="text-xl"></ion-icon>
+                        <span className="text-sm">{event.lieu || 'À déterminer'}</span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-600 mb-4 leading-relaxed">{event.description}</p>
-                  <div className="flex items-center gap-2 text-purple-600 font-semibold">
-                    <ion-icon name={event.icon} class="text-xl"></ion-icon>
-                    <span>{event.frequency}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
