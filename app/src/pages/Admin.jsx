@@ -1,6 +1,40 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 
 export default function Admin() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  // Vérifier l'authentification et le rôle
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    const token = localStorage.getItem('accessToken');
+
+    if (!token || !userData) {
+      toast.error('Vous devez être connecté pour accéder à cette page');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser.role !== 'ADMIN') {
+        toast.error('Accès réservé aux administrateurs');
+        navigate('/');
+        return;
+      }
+      setUser(parsedUser);
+    } catch (error) {
+      toast.error('Erreur lors de la vérification de l\'authentification');
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  if (!user) {
+    return null;
+  }
   const heroStats = [
     { emoji: '👥', value: '~80', label: 'Personnes par événement' },
     { emoji: '💜', value: '64', label: 'Adhérents' },
@@ -44,11 +78,14 @@ export default function Admin() {
               <p className="text-gray-600">Visualiser et gérer les adhérents</p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-xl card-hover">
+            <button
+              onClick={() => navigate('/admin/events')}
+              className="bg-white rounded-2xl p-8 shadow-xl card-hover hover:shadow-2xl transition-all duration-300 cursor-pointer text-center"
+            >
               <div className="text-5xl mb-4">📅</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Gestion des événements</h3>
               <p className="text-gray-600">Créer et modifier les événements</p>
-            </div>
+            </button>
 
             <div className="bg-white rounded-2xl p-8 shadow-xl card-hover">
               <div className="text-5xl mb-4">🪄</div>
