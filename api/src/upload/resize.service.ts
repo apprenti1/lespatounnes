@@ -28,7 +28,19 @@ export class ResizeService {
       large: path.join(this.baseDir, 'large'),
     };
 
-    // Les dossiers seront créés au moment de l'upload
+    // Créer tous les dossiers au démarrage
+    this.ensureFoldersExist();
+  }
+
+  /**
+   * S'assurer que tous les dossiers existent
+   */
+  private ensureFoldersExist(): void {
+    Object.values(this.folders).forEach((folder) => {
+      if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+      }
+    });
   }
 
   /**
