@@ -1,6 +1,120 @@
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 
 export default function Photos() {
+  const [photos, setPhotos] = useState([]);
+  const [filteredPhotos, setFilteredPhotos] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showTaggedByMe, setShowTaggedByMe] = useState(false);
+  const [showNoEvent, setShowNoEvent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Récupérer l'utilisateur connecté
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+      }
+    }
+  }, []);
+
+  // Récupérer toutes les photos au chargement
+  useEffect(() => {
+    fetchAllPhotos();
+  }, []);
+
+  // Filtrer les photos selon tous les critères
+  useEffect(() => {
+    let result = photos;
+
+    // Filtre "Je suis taggé"
+    if (showTaggedByMe && user) {
+      result = result.filter((photo) =>
+        photo.tags && photo.tags.includes(user.username)
+      );
+    }
+
+    // Filtre "Sans événement"
+    if (showNoEvent) {
+      result = result.filter((photo) => !photo.event);
+    }
+
+    // Filtre par événement (seulement si showNoEvent est false)
+    if (!showNoEvent && selectedEventId !== '') {
+      result = result.filter((photo) => photo.event && photo.event.id === selectedEventId);
+    }
+
+    // Filtre de recherche par tags ou noms
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((photo) => {
+        const tagsMatch = photo.tags && photo.tags.some((tag) => tag.toLowerCase().includes(query));
+        const nameMatch = photo.user?.username && photo.user.username.toLowerCase().includes(query);
+        return tagsMatch || nameMatch;
+      });
+    }
+
+    setFilteredPhotos(result);
+  }, [selectedEventId, photos, showTaggedByMe, showNoEvent, searchQuery, user]);
+
+  const fetchAllPhotos = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/all`);
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des photos');
+      }
+
+      const data = await response.json();
+      setPhotos(data.photos || []);
+
+      // Extraire les événements uniques des photos
+      const uniqueEvents = {};
+      data.photos.forEach((photo) => {
+        if (photo.event && !uniqueEvents[photo.event.id]) {
+          uniqueEvents[photo.event.id] = photo.event;
+        }
+      });
+
+      setEvents(Object.values(uniqueEvents).sort((a, b) => new Date(b.date) - new Date(a.date)));
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Impossible de charger les photos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openPhotoModal = (photo) => {
+    setSelectedPhoto(photo);
+    setIsModalOpen(true);
+  };
+
+  const closePhotoModal = () => {
+    setIsModalOpen(false);
+    setSelectedPhoto(null);
+  };
+
+  const downloadPhoto = (photo) => {
+    const photoUrl = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.image}`;
+    const link = document.createElement('a');
+    link.href = photoUrl;
+    link.download = `photo_${photo.id}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const heroButtons = [
     {
       href: '#galerie',
@@ -20,17 +134,300 @@ export default function Photos() {
         buttons={heroButtons}
       />
 
-      {/* Section à venir */}
-      <section className="py-20 bg-gray-50 paw-pattern">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6">
-            Galerie en cours de construction
-          </h2>
-          <p className="text-xl text-gray-600">
-            Nos plus belles photos seront bientôt disponibles ici ! 🐾
-          </p>
+      {/* Section galerie */}
+      <section id="galerie" className="py-20 bg-gray-50 paw-pattern">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* En-tête et filtres */}
+          <div className="mb-12">
+            {/* Ligne de recherche et filtres rapides */}
+            <div className="mb-6 flex flex-col lg:flex-row gap-3 lg:items-end">
+              {/* Barre de recherche */}
+              <input
+                type="text"
+                placeholder="Rechercher par pseudo ou tag..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 px-6 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:outline-none transition-all duration-300"
+              />
+
+              {/* Bouton "Je suis taggé" pour utilisateurs connectés */}
+              {user && (
+                <button
+                  onClick={() => setShowTaggedByMe(!showTaggedByMe)}
+                  className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
+                    showTaggedByMe
+                      ? 'bg-pink-500 text-white shadow-lg'
+                      : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-pink-500'
+                  }`}
+                >
+                  👤 Je suis taggé
+                </button>
+              )}
+            </div>
+
+            {/* Filtre par événement et "Sans événement" */}
+            {events.length > 0 && (
+              <div>
+                <p className="text-sm font-semibold text-gray-600 mb-3">PAR ÉVÉNEMENT</p>
+                <div className="flex flex-wrap gap-3">
+                  {/* Bouton "Toutes les photos" */}
+                  <button
+                    onClick={() => {
+                      setSelectedEventId('');
+                      setShowNoEvent(false);
+                    }}
+                    className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                      selectedEventId === '' && !showNoEvent
+                        ? 'bg-purple-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-600'
+                    }`}
+                  >
+                    Toutes les photos
+                  </button>
+
+                  {/* Bouton "Sans événement" */}
+                  <button
+                    onClick={() => {
+                      setShowNoEvent(!showNoEvent);
+                      setSelectedEventId('');
+                    }}
+                    className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                      showNoEvent
+                        ? 'bg-orange-500 text-white shadow-lg'
+                        : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-orange-500'
+                    }`}
+                  >
+                    Sans événement
+                  </button>
+
+                  {events.map((event) => (
+                    <button
+                      key={event.id}
+                      onClick={() => {
+                        setSelectedEventId(event.id);
+                        setShowNoEvent(false);
+                      }}
+                      className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                        selectedEventId === event.id && !showNoEvent
+                          ? 'bg-purple-600 text-white shadow-lg'
+                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-600'
+                      }`}
+                    >
+                      {event.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Galerie */}
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">⏳</div>
+              <p className="text-gray-600 text-lg">Chargement des photos...</p>
+            </div>
+          ) : filteredPhotos.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">📭</div>
+              <p className="text-gray-600 text-lg">
+                {photos.length === 0
+                  ? 'Aucune photo pour le moment'
+                  : 'Aucune photo pour cet événement'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="group cursor-pointer"
+                  onClick={() => openPhotoModal(photo)}
+                >
+                  <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 h-64">
+                    {/* Image responsive */}
+                    <img
+                      srcSet={`
+                        ${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.image} 150w,
+                        ${import.meta.env.VITE_API_URL}/uploads/small/${photo.image} 400w,
+                        ${import.meta.env.VITE_API_URL}/uploads/medium/${photo.image} 800w,
+                        ${import.meta.env.VITE_API_URL}/uploads/large/${photo.image} 1200w
+                      `}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      src={`${import.meta.env.VITE_API_URL}/uploads/medium/${photo.image}`}
+                      alt="Photo galerie"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.image}`;
+                      }}
+                    />
+
+                    {/* Overlay au survol */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
+                        <p className="text-lg font-semibold">Voir en grand</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Infos photo */}
+                  <div className="mt-3 space-y-2">
+                    {/* Événement */}
+                    {photo.event && (
+                      <p className="text-xs text-purple-600 font-semibold">
+                        📅 {photo.event.title}
+                      </p>
+                    )}
+
+                    {/* Tags */}
+                    {photo.tags && photo.tags.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {photo.tags.slice(0, 3).map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-block bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {photo.tags.length > 3 && (
+                          <span className="inline-block text-gray-500 text-xs italic">
+                            +{photo.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Aucun tag</p>
+                    )}
+
+                    {/* Photographe */}
+                    {photo.user?.username && (
+                      <p className="text-xs text-gray-600">
+                        📷 {photo.user.username}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Modale de visualisation agrandie */}
+      {isModalOpen && selectedPhoto && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* En-tête */}
+            <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6 text-white flex justify-between items-center sticky top-0">
+              <h2 className="text-xl font-bold">Photo en grand</h2>
+              <button
+                onClick={closePhotoModal}
+                className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Contenu */}
+            <div className="p-6 space-y-6">
+              {/* Image */}
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-lg">
+                  <img
+                    srcSet={`
+                      ${import.meta.env.VITE_API_URL}/uploads/small/${selectedPhoto.image} 400w,
+                      ${import.meta.env.VITE_API_URL}/uploads/medium/${selectedPhoto.image} 800w,
+                      ${import.meta.env.VITE_API_URL}/uploads/large/${selectedPhoto.image} 1200w
+                    `}
+                    sizes="(max-width: 768px) 100vw, 800px"
+                    src={`${import.meta.env.VITE_API_URL}/uploads/large/${selectedPhoto.image}`}
+                    alt="Photo agrandie"
+                    className="w-full h-auto"
+                    onError={(e) => {
+                      e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${selectedPhoto.image}`;
+                    }}
+                  />
+                </div>
+
+                {/* Bouton de téléchargement */}
+                <button
+                  onClick={() => downloadPhoto(selectedPhoto)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Télécharger l'originale
+                </button>
+              </div>
+
+              {/* Informations */}
+              <div className="space-y-4 border-t pt-6">
+                {/* Événement */}
+                {selectedPhoto.event && (
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-2">📅 Événement</h3>
+                    <p className="text-gray-700">{selectedPhoto.event.title}</p>
+                    <p className="text-sm text-gray-600">
+                      {new Date(selectedPhoto.event.date).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                )}
+
+                {/* Photographe */}
+                {selectedPhoto.user?.username && (
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-2">📷 Photographe</h3>
+                    <p className="text-gray-700">{selectedPhoto.user.username}</p>
+                  </div>
+                )}
+
+                {/* Tags */}
+                {selectedPhoto.tags && selectedPhoto.tags.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-3">🏷️ Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPhoto.tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Date */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">📌 Uploadée le</h3>
+                  <p className="text-gray-700">
+                    {new Date(selectedPhoto.createdAt).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* Bouton fermer */}
+              <button
+                onClick={closePhotoModal}
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

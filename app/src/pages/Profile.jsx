@@ -20,20 +20,27 @@ export default function Profile() {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
-    if (!userData) {
+    const token = localStorage.getItem('accessToken');
+
+    if (!userData || !token) {
       toast.error('Vous devez être connecté pour accéder à cette page');
       navigate('/login');
       return;
     }
 
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-    setFormData({
-      username: parsedUser.username || '',
-      firstName: parsedUser.firstName || '',
-      lastName: parsedUser.lastName || '',
-      email: parsedUser.email || '',
-    });
+    try {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      setFormData({
+        username: parsedUser.username || '',
+        firstName: parsedUser.firstName || '',
+        lastName: parsedUser.lastName || '',
+        email: parsedUser.email || '',
+      });
+    } catch (error) {
+      toast.error('Erreur lors de la vérification de l\'authentification');
+      navigate('/login');
+    }
   }, [navigate]);
 
   const handleUpdateProfile = (e) => {
