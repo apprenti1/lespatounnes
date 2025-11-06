@@ -13,6 +13,10 @@ export default function Photographer() {
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState({});
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editTags, setEditTags] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -92,6 +96,86 @@ export default function Photographer() {
       ...prev,
       [folderId]: !prev[folderId],
     }));
+  };
+
+  const openPhotoModal = (photo) => {
+    setSelectedPhoto(photo);
+    setEditTags(photo.tags.join(', '));
+    setIsModalOpen(true);
+  };
+
+  const closePhotoModal = () => {
+    setIsModalOpen(false);
+    setSelectedPhoto(null);
+    setEditTags('');
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!selectedPhoto) return;
+
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/photos/${selectedPhoto.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la suppression');
+      }
+
+      toast.success('✅ Photo supprimée avec succès!', { position: 'top-center' });
+      closePhotoModal();
+
+      // Rafraîchir la liste
+      const photoToken = localStorage.getItem('accessToken');
+      await fetchUserPhotos(photoToken);
+    } catch (error) {
+      toast.error(`❌ ${error.message}`, { position: 'top-center' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleUpdateTags = async () => {
+    if (!selectedPhoto) return;
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      const tags = editTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/photos/${selectedPhoto.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tags }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la mise à jour');
+      }
+
+      toast.success('✅ Tags mis à jour avec succès!', { position: 'top-center' });
+      closePhotoModal();
+
+      // Rafraîchir la liste
+      const photoToken = localStorage.getItem('accessToken');
+      await fetchUserPhotos(photoToken);
+    } catch (error) {
+      toast.error(`❌ ${error.message}`, { position: 'top-center' });
+    }
   };
 
   const groupPhotosByEvent = (photos) => {
@@ -343,7 +427,7 @@ export default function Photographer() {
                         <div className="p-4 bg-gray-50">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {folder.photos.map((photo) => (
-                              <div key={photo.id} className="group">
+                              <div key={photo.id} className="group cursor-pointer" onClick={() => openPhotoModal(photo)}>
                                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                                   {/* Afficher la version thumbnail */}
                                   <img
@@ -354,22 +438,27 @@ export default function Photographer() {
                                       e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.uuid}`;
                                     }}
                                   />
-                                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
-                                      <p className="text-sm font-semibold mb-2">UUID:</p>
-                                      <p className="text-xs break-all px-4">{photo.uuid}</p>
+                                      <p className="text-lg font-semibold">Gérer</p>
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-2 space-y-1">
-                                  <p className="text-xs text-gray-500 truncate">{photo.uuid}</p>
-                                  <p className="text-xs text-gray-400">
-                                    {new Date(photo.createdAt).toLocaleDateString('fr-FR', {
-                                      year: 'numeric',
-                                      month: 'long',
-                                      day: 'numeric',
-                                    })}
-                                  </p>
+                                <div className="mt-2 space-y-2">
+                                  {photo.tags && photo.tags.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1">
+                                      {photo.tags.map((tag, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="inline-block bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full"
+                                        >
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="text-xs text-gray-400 italic">Aucun tag</p>
+                                  )}
                                 </div>
                               </div>
                             ))}
@@ -411,6 +500,102 @@ export default function Photographer() {
           </div>
         </div>
       </div>
+
+      {/* Modale de gestion des photos */}
+      {isModalOpen && selectedPhoto && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in">
+            {/* En-tête de la modale */}
+            <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6 text-white flex justify-between items-center">
+              <h2 className="text-xl font-bold">Gérer la photo</h2>
+              <button
+                onClick={closePhotoModal}
+                className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Contenu */}
+            <div className="p-6 space-y-6">
+              {/* Aperçu de l'image */}
+              <div className="overflow-hidden rounded-lg">
+                <img
+                  src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${selectedPhoto.uuid}`}
+                  alt="Aperçu"
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${selectedPhoto.uuid}`;
+                  }}
+                />
+              </div>
+
+              {/* Édition des tags */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Tags (séparés par des virgules)
+                </label>
+                <textarea
+                  value={editTags}
+                  onChange={(e) => setEditTags(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                  placeholder="Ex: paris, soirée, pups"
+                  rows="3"
+                />
+              </div>
+
+              {/* Affichage des tags actuels */}
+              {selectedPhoto.tags && selectedPhoto.tags.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 mb-2">Tags actuels:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPhoto.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-block bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Boutons d'action */}
+              <div className="flex gap-3">
+                {/* Bouton Supprimer */}
+                <button
+                  onClick={handleDeletePhoto}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>🗑️</span>
+                  {isDeleting ? 'Suppression...' : 'Supprimer'}
+                </button>
+
+                {/* Bouton Enregistrer les tags */}
+                <button
+                  onClick={handleUpdateTags}
+                  className="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>💾</span>
+                  Enregistrer
+                </button>
+              </div>
+
+              {/* Bouton Fermer */}
+              <button
+                onClick={closePhotoModal}
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
