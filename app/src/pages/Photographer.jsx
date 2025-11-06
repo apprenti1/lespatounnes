@@ -430,9 +430,16 @@ export default function Photographer() {
                             {folder.photos.map((photo) => (
                               <div key={photo.id} className="group cursor-pointer" onClick={() => openPhotoModal(photo)}>
                                 <div className="relative overflow-hidden rounded-xl shadow-lg">
-                                  {/* Afficher la version thumbnail */}
+                                  {/* Afficher l'image responsive avec srcset */}
                                   <img
-                                    src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.uuid}`}
+                                    srcSet={`
+                                      ${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.uuid} 150w,
+                                      ${import.meta.env.VITE_API_URL}/uploads/small/${photo.uuid} 400w,
+                                      ${import.meta.env.VITE_API_URL}/uploads/medium/${photo.uuid} 800w,
+                                      ${import.meta.env.VITE_API_URL}/uploads/large/${photo.uuid} 1200w
+                                    `}
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    src={`${import.meta.env.VITE_API_URL}/uploads/medium/${photo.uuid}`}
                                     alt={`Photo ${photo.id}`}
                                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                                     onError={(e) => {
@@ -524,7 +531,13 @@ export default function Photographer() {
               {/* Aperçu de l'image */}
               <div className="overflow-hidden rounded-lg">
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${selectedPhoto.uuid}`}
+                  srcSet={`
+                    ${import.meta.env.VITE_API_URL}/uploads/small/${selectedPhoto.uuid} 400w,
+                    ${import.meta.env.VITE_API_URL}/uploads/medium/${selectedPhoto.uuid} 800w,
+                    ${import.meta.env.VITE_API_URL}/uploads/large/${selectedPhoto.uuid} 1200w
+                  `}
+                  sizes="(max-width: 768px) 100vw, 600px"
+                  src={`${import.meta.env.VITE_API_URL}/uploads/medium/${selectedPhoto.uuid}`}
                   alt="Aperçu"
                   className="w-full h-[50vh] object-cover"
                   onError={(e) => {
