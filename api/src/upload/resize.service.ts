@@ -28,8 +28,7 @@ export class ResizeService {
       large: path.join(this.baseDir, 'large'),
     };
 
-    // Créer tous les dossiers au démarrage
-    this.ensureFoldersExist();
+    // Les dossiers seront créés au moment de l'upload si nécessaire
   }
 
   /**
@@ -56,6 +55,9 @@ export class ResizeService {
     if (!fs.existsSync(imagePath)) {
       throw new Error(`Le fichier ${imagePath} n'existe pas`);
     }
+
+    // S'assurer que tous les dossiers responsive existent avant de créer les images
+    this.ensureFoldersExist();
 
     const extension = path.extname(uuid);
 
