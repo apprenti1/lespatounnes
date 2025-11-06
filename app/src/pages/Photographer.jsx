@@ -526,7 +526,7 @@ export default function Photographer() {
                 <img
                   src={`${import.meta.env.VITE_API_URL}/uploads/thumbnail/${selectedPhoto.uuid}`}
                   alt="Aperçu"
-                  className="w-full h-48 object-cover"
+                  className="w-full h-[50vh] object-cover"
                   onError={(e) => {
                     e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${selectedPhoto.uuid}`;
                   }}

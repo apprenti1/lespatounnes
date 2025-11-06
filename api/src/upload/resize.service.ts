@@ -92,6 +92,11 @@ export class ResizeService {
     filename: string,
     config: ResizeConfig
   ): Promise<void> {
+    // S'assurer que le dossier existe (au cas où il aurait été supprimé)
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
+
     const outputPath = path.join(folder, filename);
 
     await sharp(sourcePath)
