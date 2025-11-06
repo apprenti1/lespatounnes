@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
 export default function TagEditor({ value, onChange, placeholder = '' }) {
-  const [suggestions, setSuggestions] = useState([]);
+  const [allUsernames, setAllUsernames] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -13,7 +14,7 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/usernames`);
         const data = await response.json();
         if (data.success) {
-          setSuggestions(data.data || []);
+          setAllUsernames(data.data || []);
         }
       } catch (error) {
         console.error('Erreur lors du chargement des usernames:', error);
@@ -42,25 +43,15 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
 
     // Filtrer les suggestions basées sur l'input
     if (val.trim()) {
-      const filtered = suggestions.filter((username) =>
-        username.toLowerCase().includes(val.toLowerCase())
+      // Filtrer depuis la liste complète de tous les usernames
+      const filtered = allUsernames.filter((username) =>
+        username.toLowerCase().includes(val.toLowerCase()) && !tags.includes(username)
       );
-      setSuggestions(filtered.length > 0 ? filtered : suggestions);
+      setFilteredSuggestions(filtered);
       setShowSuggestions(true);
     } else {
-      // Recharger toutes les suggestions si l'input est vide
-      const fetchUsernames = async () => {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/usernames`);
-          const data = await response.json();
-          if (data.success) {
-            setSuggestions(data.data || []);
-          }
-        } catch (error) {
-          console.error('Erreur lors du chargement des usernames:', error);
-        }
-      };
-      fetchUsernames();
+      // Afficher tous les usernames quand l'input est vide
+      setFilteredSuggestions(allUsernames.filter((username) => !tags.includes(username)));
       setShowSuggestions(false);
     }
   };
@@ -145,9 +136,9 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
         </div>
 
         {/* Suggestions dropdown */}
-        {showSuggestions && inputValue && suggestions.length > 0 && (
+        {showSuggestions && inputValue && filteredSuggestions.length > 0 && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-            {suggestions.slice(0, 8).map((username, idx) => (
+            {filteredSuggestions.slice(0, 8).map((username, idx) => (
               <button
                 key={idx}
                 type="button"
@@ -163,7 +154,7 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
       </div>
 
       {/* Message si aucune suggestion */}
-      {inputValue && showSuggestions && suggestions.length === 0 && (
+      {inputValue && showSuggestions && filteredSuggestions.length === 0 && (
         <p className="text-xs text-gray-500 italic">
           Aucun pseudo trouvé. Appuyez sur Entrée pour créer un nouveau tag.
         </p>
