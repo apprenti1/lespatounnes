@@ -10,9 +10,10 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  UploadedFile,
   Req,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { UploadService } from './upload.service';
@@ -79,6 +80,75 @@ export class UploadController {
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * Route d'upload pour l'image d'un événement
+   * POST /uploads/event
+   * Authentification requise (rôle ADMIN)
+   */
+  @Post('event')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadEventImage(@UploadedFile() file: any) {
+    if (!file) {
+      throw new HttpException('Aucun fichier n\'a été fourni', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      // Upload l'image avec création des versions responsive (thumbnail, small, medium, large)
+      const uuid = await this.uploadService.uploadFile(file, 999, true);
+
+      return {
+        success: true,
+        uuid: uuid,
+        filename: uuid,
+        message: 'Image uploadée avec succès',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * Route publique pour récupérer TOUTES les photos
+   * GET /uploads/all
+   * Sans authentification
+   * IMPORTANT: Doit être AVANT les routes avec paramètres
+   */
+  @Get('all')
+  async getAllPhotos() {
+    try {
+      const photos = await this.prisma.photo.findMany({
+        select: {
+          id: true,
+          image: true,
+          createdAt: true,
+          tags: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          event: {
+            select: {
+              id: true,
+              title: true,
+              date: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return {
+        success: true,
+        count: photos.length,
+        photos: photos,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
