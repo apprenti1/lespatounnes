@@ -17,8 +17,15 @@ export class UploadService {
 
   constructor(private resizeService: ResizeService) {
     // Créer le dossier uploads/original s'il n'existe pas
-    if (!fs.existsSync(this.originalFolder)) {
-      fs.mkdirSync(this.originalFolder, { recursive: true });
+    this.ensureDirectoryExists(this.originalFolder);
+  }
+
+  /**
+   * S'assurer qu'un répertoire existe, le créer sinon
+   */
+  private ensureDirectoryExists(dir: string): void {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
   }
 
