@@ -13,11 +13,12 @@ interface FileUpload {
 
 @Injectable()
 export class UploadService {
-  private originalFolder = 'uploads/original';
+  private originalFolder: string;
 
   constructor(private resizeService: ResizeService) {
-    // Créer le dossier uploads/original s'il n'existe pas
-    this.ensureDirectoryExists(this.originalFolder);
+    // Utiliser un chemin absolu basé sur le répertoire de l'application
+    this.originalFolder = path.join(process.cwd(), 'uploads', 'original');
+    // Le dossier sera créé au moment de l'upload
   }
 
   /**
@@ -67,6 +68,9 @@ export class UploadService {
       // Générer un UUID avec extension
       const extension = path.extname(file.originalname);
       const uuid = `${uuidv4()}${extension}`;
+
+      // S'assurer que le dossier original existe
+      this.ensureDirectoryExists(this.originalFolder);
 
       // Sauvegarder le fichier original dans uploads/original
       const originalPath = path.join(this.originalFolder, uuid);
