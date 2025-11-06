@@ -11,22 +11,24 @@ export interface ResizeConfig {
 
 @Injectable()
 export class ResizeService {
-  private uploadDir = 'uploads';
-  private folders = {
-    original: 'uploads/original',
-    thumbnail: 'uploads/thumbnail',
-    small: 'uploads/small',
-    medium: 'uploads/medium',
-    large: 'uploads/large',
-  };
+  private baseDir: string;
+  private uploadDir: string;
+  private folders: { [key: string]: string };
 
   constructor() {
-    // Créer tous les dossiers
-    Object.values(this.folders).forEach((folder) => {
-      if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder, { recursive: true });
-      }
-    });
+    // Utiliser un chemin absolu basé sur le répertoire de l'application
+    this.baseDir = path.join(process.cwd(), 'uploads');
+    this.uploadDir = this.baseDir;
+
+    this.folders = {
+      original: path.join(this.baseDir, 'original'),
+      thumbnail: path.join(this.baseDir, 'thumbnail'),
+      small: path.join(this.baseDir, 'small'),
+      medium: path.join(this.baseDir, 'medium'),
+      large: path.join(this.baseDir, 'large'),
+    };
+
+    // Les dossiers seront créés au moment de l'upload
   }
 
   /**
