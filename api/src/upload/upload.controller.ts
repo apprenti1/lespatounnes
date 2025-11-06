@@ -53,7 +53,8 @@ export class UploadController {
       const eventId = body.eventId || null;
 
       // Pas de limite de taille pour les photographes
-      const uploadedUuids = await this.uploadService.uploadFiles(files, 999, false);
+      // Créer les versions responsive des images
+      const uploadedUuids = await this.uploadService.uploadFiles(files, 999, true);
 
       // Créer les enregistrements Photo dans la base de données
       const createdPhotos: any[] = [];
