@@ -25,6 +25,7 @@ export default function Photographer() {
     const token = localStorage.getItem('accessToken');
 
     if (!token || !userData) {
+      toast.error('Vous devez être connecté pour accéder à cette page');
       navigate('/login');
       return;
     }
@@ -40,6 +41,7 @@ export default function Photographer() {
       fetchEvents(token);
       fetchUserPhotos(token);
     } catch (error) {
+      toast.error('Erreur lors de la vérification de l\'authentification');
       navigate('/login');
     }
   }, [navigate]);

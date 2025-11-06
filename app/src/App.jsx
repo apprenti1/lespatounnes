@@ -14,6 +14,7 @@ import Shop from './pages/Shop';
 import Story from './pages/Story';
 import Photos from './pages/Photos';
 import Admin from './pages/Admin';
+import AdminEvents from './pages/AdminEvents';
 import Profile from './pages/Profile';
 import Photographer from './pages/Photographer';
 import MentionsLegales from './pages/MentionsLegales';
@@ -87,6 +88,7 @@ function App() {
           <Route path="/story" element={<Story />} />
           <Route path="/photos" element={<Photos />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/events" element={<AdminEvents />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photographer" element={<Photographer />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
