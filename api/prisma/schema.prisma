@@ -17,6 +17,7 @@ enum Role {
   USER
   ADMIN
   PHOTOGRAPHER
+  DEV
 }
 
 model User {
