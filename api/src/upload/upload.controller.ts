@@ -221,6 +221,28 @@ export class UploadController {
   }
 
   /**
+   * Route protégée pour régénérer les images responsives
+   * POST /uploads/regenerate-responsive
+   * Authentification requise (rôle DEV ou ADMIN)
+   * Supprime les images responsives existantes et les régénère à partir de l'original
+   */
+  @Post('regenerate-responsive')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles('DEV', 'ADMIN')
+  async regenerateResponsiveImages() {
+    try {
+      const result = await this.uploadService.regenerateAllResponsiveImages();
+      return {
+        success: true,
+        message: 'Images responsives régénérées avec succès',
+        result,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
    * Méthode interne pour servir les images
    */
   private serveImage(folder: string, filenameOrSubfolder: string, maybeFilename: string, res: any) {
