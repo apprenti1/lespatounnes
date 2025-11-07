@@ -115,4 +115,27 @@ export class AuthService {
 
     return users.map((user) => user.username);
   }
+
+  async getUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      success: true,
+      user,
+    };
+  }
 }

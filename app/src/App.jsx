@@ -37,6 +37,40 @@ function ScrollToTop() {
 
 function App() {
   useEffect(() => {
+    // Mettre à jour les infos utilisateur au chargement de la page
+    const refreshUserData = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user) {
+            // Mettre à jour localStorage avec les infos actualisées
+            localStorage.setItem('user', JSON.stringify(data.user));
+            // Déclencher un événement de stockage pour notifier les autres onglets
+            window.dispatchEvent(new Event('storage'));
+          }
+        } else if (response.status === 401) {
+          // Token invalide, déconnecter l'utilisateur
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données utilisateur:', error);
+      }
+    };
+
+    refreshUserData();
+  }, []);
+
+  useEffect(() => {
     // Gestion du smooth scroll pour les ancres
     const handleAnchorClick = (e) => {
       const target = e.target.closest('a');
