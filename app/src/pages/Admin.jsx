@@ -20,8 +20,8 @@ export default function Admin() {
 
     try {
       const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== 'ADMIN') {
-        toast.error('Accès réservé aux administrateurs');
+      if (parsedUser.role !== 'ADMIN' && parsedUser.role !== 'DEV') {
+        toast.error('Accès réservé aux administrateurs et développeurs');
         navigate('/');
         return;
       }
