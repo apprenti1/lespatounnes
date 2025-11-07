@@ -56,6 +56,42 @@ export default function Navbar() {
   const firstRowLinks = navLinks.slice(0, 4); // Accueil, Événements, Partenaires, Boutique
   const secondRowLinks = navLinks.slice(4); // Histoire, Photos, Contact
 
+  // Fonction pour compter les panneaux disponibles
+  const countAvailablePanels = () => {
+    if (!user) return 0;
+    let count = 0;
+    if (user.role === 'ADMIN' || user.role === 'DEV') count++; // Admin panel
+    if (user.role === 'ADMIN' || user.role === 'DEV') count++; // Dev panel
+    if (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') count++; // Photographer panel
+    return count;
+  };
+
+  // Fonction pour rendre un panneau unique sans dropdown
+  const renderSinglePanel = () => {
+    if (!user) return null;
+
+    if (user.role === 'ADMIN' || user.role === 'DEV') {
+      // Deux panneaux (Admin et Dev), afficher le dropdown
+      return null;
+    }
+
+    if (user.role === 'PHOTOGRAPHER') {
+      // Un seul panneau (Photos)
+      return (
+        <Link
+          to="/photographer"
+          className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+          title="Panel Photographe"
+        >
+          <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+          <span className="text-sm">Photos</span>
+        </Link>
+      );
+    }
+
+    return null;
+  };
+
   const renderAuthButtons = () => (
     <>
       {user ? (
@@ -71,8 +107,11 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Menu déroulant pour les panneaux spéciaux */}
-          {((user.role === 'ADMIN' || user.role === 'DEV') || (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV')) && (
+          {/* Afficher soit un bouton unique, soit un dropdown */}
+          {renderSinglePanel()}
+
+          {/* Menu déroulant pour les panneaux spéciaux (seulement si plusieurs panneaux) */}
+          {countAvailablePanels() > 1 && (
             <div className="relative group">
               <button
                 className="h-[42px] px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
@@ -281,8 +320,20 @@ export default function Navbar() {
                   </span>
                 </Link>
 
-                {/* Menu déroulant pour les panneaux spéciaux - Mobile */}
-                {((user.role === 'ADMIN' || user.role === 'DEV') || (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV')) && (
+                {/* Afficher soit un bouton unique, soit un dropdown - Mobile */}
+                {user.role === 'PHOTOGRAPHER' && (
+                  <Link
+                    to="/photographer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+                  >
+                    <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                    <span className="text-sm">Photos</span>
+                  </Link>
+                )}
+
+                {/* Menu déroulant pour les panneaux spéciaux - Mobile (seulement si plusieurs panneaux) */}
+                {countAvailablePanels() > 1 && (
                   <div className="w-full">
                     <button
                       onClick={() => setPanelsDropdownOpen(!panelsDropdownOpen)}
