@@ -153,4 +153,39 @@ export class UploadService {
   fileExists(uuid: string): boolean {
     return fs.existsSync(this.getFilePath(uuid));
   }
+
+  /**
+   * Régénérer toutes les images responsives à partir des originaux
+   * Supprime les versions actuelles et les recréent
+   */
+  async regenerateAllResponsiveImages(): Promise<{ processed: number; errors: number }> {
+    let processed = 0;
+    let errors = 0;
+
+    try {
+      // Lister tous les fichiers du dossier original
+      const files = fs.readdirSync(this.originalFolder);
+
+      for (const file of files) {
+        const originalPath = path.join(this.originalFolder, file);
+
+        try {
+          // Supprimer les versions responsive existantes
+          this.resizeService.deleteResponsiveImages(file);
+
+          // Recréer les versions responsive
+          await this.resizeService.createResponsiveImages(originalPath, file);
+          processed++;
+        } catch (error) {
+          console.error(`Erreur lors de la régénération de ${file}:`, error);
+          errors++;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la lecture du dossier original:', error);
+      throw new Error(`Impossible de régénérer les images: ${error.message}`);
+    }
+
+    return { processed, errors };
+  }
 }
