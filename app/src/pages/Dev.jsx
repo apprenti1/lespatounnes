@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '../hooks/useToast';
+import { toast } from 'react-toastify';
 
 export default function Dev() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [result, setResult] = useState(null);
@@ -21,7 +20,7 @@ export default function Dev() {
     }
 
     setLoading(false);
-  }, [navigate, toast]);
+  }, [navigate]);
 
   const handleRegenerateImages = async () => {
     setRegenerating(true);
