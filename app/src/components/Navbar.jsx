@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [panelsDropdownOpen, setPanelsDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,36 +70,52 @@ export default function Navbar() {
               {user.username || user.firstName || user.email.split('@')[0]}
             </span>
           </Link>
-          {(user.role === 'ADMIN' || user.role === 'DEV') && (
-            <Link
-              to="/admin"
-              className="h-[42px] px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-              title="Panel Admin"
-            >
-              <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
-              <span className="text-sm">Admin</span>
-            </Link>
+
+          {/* Menu déroulant pour les panneaux spéciaux */}
+          {((user.role === 'ADMIN' || user.role === 'DEV') || (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV')) && (
+            <div className="relative group">
+              <button
+                className="h-[42px] px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+                title="Panneaux spéciaux"
+              >
+                <ion-icon name="grid-outline" class="text-xl"></ion-icon>
+                <span className="text-sm">Panneaux</span>
+                <ion-icon name="chevron-down-outline" class="text-lg"></ion-icon>
+              </button>
+
+              {/* Dropdown menu */}
+              <div className="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-orange-50 text-gray-800 hover:text-orange-600 transition-colors first:rounded-t-lg border-b border-gray-100"
+                  >
+                    <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
+                    <span className="font-semibold">Admin</span>
+                  </Link>
+                )}
+                {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                  <Link
+                    to="/dev"
+                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-indigo-50 text-gray-800 hover:text-indigo-600 transition-colors border-b border-gray-100"
+                  >
+                    <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+                    <span className="font-semibold">Développeur</span>
+                  </Link>
+                )}
+                {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
+                  <Link
+                    to="/photographer"
+                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-cyan-50 text-gray-800 hover:text-cyan-600 transition-colors last:rounded-b-lg"
+                  >
+                    <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                    <span className="font-semibold">Photos</span>
+                  </Link>
+                )}
+              </div>
+            </div>
           )}
-          {(user.role === 'ADMIN' || user.role === 'DEV') && (
-            <Link
-              to="/dev"
-              className="h-[42px] px-4 bg-gradient-to-r from-slate-600 to-gray-700 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-              title="Panel Développeur"
-            >
-              <ion-icon name="settings-outline" class="text-xl"></ion-icon>
-              <span className="text-sm">Dev</span>
-            </Link>
-          )}
-          {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
-            <Link
-              to="/photographer"
-              className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-              title="Panel Photographe"
-            >
-              <ion-icon name="camera-outline" class="text-xl"></ion-icon>
-              <span className="text-sm">Photos</span>
-            </Link>
-          )}
+
           <button
             onClick={handleLogout}
             className="h-[42px] w-[42px] bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center"
@@ -263,38 +280,65 @@ export default function Navbar() {
                     {user.username || user.firstName || user.email.split('@')[0]}
                   </span>
                 </Link>
-                {(user.role === 'ADMIN' || user.role === 'DEV') && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="h-[42px] px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-                    title="Panel Admin"
-                  >
-                    <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
-                    <span className="text-sm">Admin</span>
-                  </Link>
-                )}
-                {(user.role === 'ADMIN' || user.role === 'DEV') && (
-                  <Link
-                    to="/dev"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="h-[42px] px-4 bg-gradient-to-r from-slate-600 to-gray-700 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-                    title="Panel Développeur"
-                  >
-                    <ion-icon name="settings-outline" class="text-xl"></ion-icon>
-                    <span className="text-sm">Dev</span>
-                  </Link>
-                )}
-                {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
-                  <Link
-                    to="/photographer"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
-                    title="Panel Photographe"
-                  >
-                    <ion-icon name="camera-outline" class="text-xl"></ion-icon>
-                    <span className="text-sm">Photos</span>
-                  </Link>
+
+                {/* Menu déroulant pour les panneaux spéciaux - Mobile */}
+                {((user.role === 'ADMIN' || user.role === 'DEV') || (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV')) && (
+                  <div className="w-full">
+                    <button
+                      onClick={() => setPanelsDropdownOpen(!panelsDropdownOpen)}
+                      className="w-full h-[42px] px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        <ion-icon name="grid-outline" class="text-xl"></ion-icon>
+                        <span className="text-sm">Panneaux</span>
+                      </div>
+                      <ion-icon name={panelsDropdownOpen ? "chevron-up-outline" : "chevron-down-outline"} class="text-lg"></ion-icon>
+                    </button>
+
+                    {panelsDropdownOpen && (
+                      <div className="mt-2 space-y-2">
+                        {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                          <Link
+                            to="/admin"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setPanelsDropdownOpen(false);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-3 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg transition-colors font-semibold"
+                          >
+                            <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
+                            <span>Admin</span>
+                          </Link>
+                        )}
+                        {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                          <Link
+                            to="/dev"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setPanelsDropdownOpen(false);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition-colors font-semibold"
+                          >
+                            <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+                            <span>Développeur</span>
+                          </Link>
+                        )}
+                        {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
+                          <Link
+                            to="/photographer"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setPanelsDropdownOpen(false);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-3 bg-cyan-50 hover:bg-cyan-100 text-cyan-600 rounded-lg transition-colors font-semibold"
+                          >
+                            <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                            <span>Photos</span>
+                          </Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
                 <button
                   onClick={() => {
