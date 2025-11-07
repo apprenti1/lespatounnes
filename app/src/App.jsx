@@ -17,6 +17,7 @@ import Admin from './pages/Admin';
 import AdminEvents from './pages/AdminEvents';
 import Profile from './pages/Profile';
 import Photographer from './pages/Photographer';
+import Dev from './pages/Dev';
 import MentionsLegales from './pages/MentionsLegales';
 import RGPD from './pages/RGPD';
 import DevenirPartenaire from './pages/DevenirPartenaire';
@@ -89,6 +90,7 @@ function App() {
           <Route path="/photos" element={<Photos />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/events" element={<AdminEvents />} />
+          <Route path="/dev" element={<Dev />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photographer" element={<Photographer />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
