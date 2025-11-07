@@ -27,11 +27,11 @@ export class EventsController {
 
   /**
    * POST /events
-   * Crée un nouvel événement (admin uniquement)
+   * Crée un nouvel événement (admin et dev)
    */
   @Post()
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'DEV')
   async create(@Body() createEventDto: any) {
     try {
       const event = await this.eventsService.create(createEventDto);
@@ -47,11 +47,11 @@ export class EventsController {
 
   /**
    * PATCH /events/:id
-   * Modifie un événement existant (admin uniquement)
+   * Modifie un événement existant (admin et dev)
    */
   @Patch(':id')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'DEV')
   async update(@Param('id') id: string, @Body() updateEventDto: any) {
     try {
       const event = await this.eventsService.update(id, updateEventDto);
@@ -67,11 +67,11 @@ export class EventsController {
 
   /**
    * DELETE /events/:id
-   * Supprime un événement (admin uniquement)
+   * Supprime un événement (admin et dev)
    */
   @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'DEV')
   async delete(@Param('id') id: string) {
     try {
       await this.eventsService.delete(id);

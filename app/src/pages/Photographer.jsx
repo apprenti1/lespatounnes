@@ -32,8 +32,8 @@ export default function Photographer() {
 
     try {
       const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== 'PHOTOGRAPHER' && parsedUser.role !== 'ADMIN') {
-        toast.error('Accès réservé aux photographes et admins');
+      if (parsedUser.role !== 'PHOTOGRAPHER' && parsedUser.role !== 'ADMIN' && parsedUser.role !== 'DEV') {
+        toast.error('Accès réservé aux photographes, admins et développeurs');
         navigate('/');
         return;
       }

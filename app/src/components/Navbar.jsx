@@ -69,7 +69,7 @@ export default function Navbar() {
               {user.username || user.firstName || user.email.split('@')[0]}
             </span>
           </Link>
-          {user.role === 'ADMIN' && (
+          {(user.role === 'ADMIN' || user.role === 'DEV') && (
             <Link
               to="/admin"
               className="h-[42px] px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
@@ -89,7 +89,7 @@ export default function Navbar() {
               <span className="text-sm">Dev</span>
             </Link>
           )}
-          {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
+          {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
             <Link
               to="/photographer"
               className="h-[42px] px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
@@ -263,7 +263,7 @@ export default function Navbar() {
                     {user.username || user.firstName || user.email.split('@')[0]}
                   </span>
                 </Link>
-                {user.role === 'ADMIN' && (
+                {(user.role === 'ADMIN' || user.role === 'DEV') && (
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}
@@ -285,7 +285,7 @@ export default function Navbar() {
                     <span className="text-sm">Dev</span>
                   </Link>
                 )}
-                {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
+                {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') && (
                   <Link
                     to="/photographer"
                     onClick={() => setMobileMenuOpen(false)}

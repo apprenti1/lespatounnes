@@ -37,7 +37,7 @@ export class UploadController {
    */
   @Post('photographer')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('PHOTOGRAPHER', 'ADMIN')
+  @Roles('PHOTOGRAPHER', 'ADMIN', 'DEV')
   @UseInterceptors(FilesInterceptor('images', 100)) // Max 100 fichiers par requête
   async uploadPhotographerImages(
     @UploadedFiles() files: any[],
