@@ -79,6 +79,16 @@ export default function Navbar() {
               <span className="text-sm">Admin</span>
             </Link>
           )}
+          {(user.role === 'ADMIN' || user.role === 'DEV') && (
+            <Link
+              to="/dev"
+              className="h-[42px] px-4 bg-gradient-to-r from-slate-600 to-gray-700 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+              title="Panel Développeur"
+            >
+              <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+              <span className="text-sm">Dev</span>
+            </Link>
+          )}
           {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
             <Link
               to="/photographer"
@@ -262,6 +272,17 @@ export default function Navbar() {
                   >
                     <ion-icon name="shield-checkmark-outline" class="text-xl"></ion-icon>
                     <span className="text-sm">Admin</span>
+                  </Link>
+                )}
+                {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                  <Link
+                    to="/dev"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="h-[42px] px-4 bg-gradient-to-r from-slate-600 to-gray-700 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-2"
+                    title="Panel Développeur"
+                  >
+                    <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+                    <span className="text-sm">Dev</span>
                   </Link>
                 )}
                 {(user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN') && (
