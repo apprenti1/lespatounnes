@@ -61,7 +61,7 @@ export default function Navbar() {
     if (!user) return 0;
     let count = 0;
     if (user.role === 'ADMIN' || user.role === 'DEV') count++; // Admin panel
-    if (user.role === 'ADMIN' || user.role === 'DEV') count++; // Dev panel
+    if (user.role === 'DEV') count++; // Dev panel (DEV ONLY)
     if (user.role === 'PHOTOGRAPHER' || user.role === 'ADMIN' || user.role === 'DEV') count++; // Photographer panel
     return count;
   };
@@ -70,13 +70,18 @@ export default function Navbar() {
   const renderSinglePanel = () => {
     if (!user) return null;
 
-    if (user.role === 'ADMIN' || user.role === 'DEV') {
-      // Deux panneaux (Admin et Dev), afficher le dropdown
+    // ADMIN: 2 panneaux (Admin + Photos) -> dropdown
+    if (user.role === 'ADMIN') {
       return null;
     }
 
+    // DEV: 3 panneaux (Admin + Dev + Photos) -> dropdown
+    if (user.role === 'DEV') {
+      return null;
+    }
+
+    // PHOTOGRAPHER: 1 panneau (Photos) -> bouton direct
     if (user.role === 'PHOTOGRAPHER') {
-      // Un seul panneau (Photos)
       return (
         <Link
           to="/photographer"
@@ -133,7 +138,7 @@ export default function Navbar() {
                     <span className="font-semibold">Admin</span>
                   </Link>
                 )}
-                {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                {user.role === 'DEV' && (
                   <Link
                     to="/dev"
                     className="flex items-center gap-3 w-full px-4 py-3 hover:bg-indigo-50 text-gray-800 hover:text-indigo-600 transition-colors border-b border-gray-100"
@@ -361,7 +366,7 @@ export default function Navbar() {
                             <span>Admin</span>
                           </Link>
                         )}
-                        {(user.role === 'ADMIN' || user.role === 'DEV') && (
+                        {user.role === 'DEV' && (
                           <Link
                             to="/dev"
                             onClick={() => {
