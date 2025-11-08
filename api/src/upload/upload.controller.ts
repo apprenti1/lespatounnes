@@ -223,12 +223,12 @@ export class UploadController {
   /**
    * Route protégée pour régénérer les images responsives
    * POST /uploads/regenerate-responsive
-   * Authentification requise (rôle DEV ou ADMIN)
+   * Authentification requise (rôle DEV seulement)
    * Supprime les images responsives existantes et les régénère à partir de l'original
    */
   @Post('regenerate-responsive')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('DEV', 'ADMIN')
+  @Roles('DEV')
   async regenerateResponsiveImages() {
     try {
       const result = await this.uploadService.regenerateAllResponsiveImages();

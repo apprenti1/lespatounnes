@@ -10,11 +10,11 @@ export default function Dev() {
 
   useEffect(() => {
     // Vérifier l'authentification et le rôle DEV
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    if (!token || (user.role !== 'ADMIN' && user.role !== 'DEV')) {
-      toast.error('Accès refusé. Vous devez être développeur ou administrateur.');
+    if (!token || user.role !== 'DEV') {
+      toast.error('Accès refusé. Vous devez être développeur.');
       navigate('/');
       return;
     }
@@ -27,7 +27,7 @@ export default function Dev() {
     setResult(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/uploads/regenerate-responsive`,
         {
