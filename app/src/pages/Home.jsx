@@ -151,18 +151,17 @@ export default function Home() {
                   🌈🐶
                 </p>
                 <Link
-                  to="https://www.helloasso.com/associations/association-les-patounes/boutiques/affiches?_gl=1%2a7jbbz1%2a_gcl_au%2aMTAxNjU2MzkyNy4xNzU3NDM1MjI4LjI0ODE3MTM4Mi4xNzYwMzY5MDUzLjE3NjAzNjkyNzI."
-                  target="_blank"
+                  to="/calendar"
                   className="inline-flex items-center gap-3 btn-primary text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl"
                 >
-                  <span className="text-2xl">🐾</span> Acheter l'affiche
+                  <span className="text-2xl">🐾</span> Précommander
                 </Link>
               </div>
 
               {/* Image à droite */}
               <div className="flex-1 w-full md:w-auto">
                 <img
-                  src="/halloween.jpg"
+                  src="/calendrier2026.jpg"
                   alt="Adhésion Les Patounes"
                   className="w-full h-auto rounded-2xl shadow-2xl object-cover"
                 />
