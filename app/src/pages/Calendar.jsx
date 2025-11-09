@@ -26,11 +26,11 @@ export default function Calendar() {
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden card-hover">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
               {/* Image à gauche - en grand et centrée verticalement */}
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center bg-gray-100">
                 <img
                   src="/calendrier2026.jpg"
                   alt="Calendrier des Pups 2026"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                 />
               </div>
 
