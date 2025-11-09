@@ -90,7 +90,7 @@ export default function Calendar() {
 
                 <div className="flex justify-center md:justify-start mt-8">
                   <Link
-                    to="https://www.helloasso.com/associations/association-les-patounes/boutiques/affiches?_gl=1%2a7jbbz1%2a_gcl_au%2aMTAxNjU2MzkyNy4xNzU3NDM1MjI4LjI0ODE3MTM4Mi4xNzYwMzY5MDUzLjE3NjAzNjkyNzI."
+                    to="https://www.helloasso.com/associations/association-les-patounes/boutiques/precommande-calendrier-puppy-2026"
                     target="_blank"
                     className="inline-flex items-center gap-3 btn-primary text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all"
                   >
