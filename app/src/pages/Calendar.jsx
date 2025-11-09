@@ -24,18 +24,17 @@ export default function Calendar() {
           </div>
 
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden card-hover">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-              {/* Image à gauche - en grand et centrée verticalement */}
-              <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                <img
-                  src="/calendrier2026.jpg"
-                  alt="Calendrier des Pups 2026"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
+            {/* Image en haut - proportions respectées */}
+            <div className="w-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center py-12 px-4">
+              <img
+                src="/calendrier2026.jpg"
+                alt="Calendrier des Pups 2026"
+                className="max-w-md md:max-w-xl h-auto object-contain"
+              />
+            </div>
 
-              {/* Texte formaté à droite */}
-              <div className="p-10 md:p-16 flex flex-col justify-center">
+            {/* Texte en bas */}
+            <div className="p-10 md:p-16 flex flex-col justify-start">
                 <div className="space-y-6 text-gray-700">
                   <p className="text-base leading-relaxed">
                     Né au sein de l'association <span className="font-bold text-purple-600">Les Patounes</span>, le <span className="font-bold text-purple-600">Calendrier des Pups 2026</span> est bien plus qu'un simple objet décoratif : c'est une œuvre collective, un voyage visuel et émotionnel au cœur de la découverte de soi.
@@ -98,7 +97,6 @@ export default function Calendar() {
                     <span className="text-2xl">🐾</span> Précommander
                   </Link>
                 </div>
-              </div>
             </div>
           </div>
         </div>
