@@ -22,6 +22,7 @@ import MentionsLegales from './pages/MentionsLegales';
 import RGPD from './pages/RGPD';
 import DevenirPartenaire from './pages/DevenirPartenaire';
 import SuggererPartenaire from './pages/SuggererPartenaire';
+import Calendar from './pages/Calendar';
 import './styles/globals.css';
 
 // Composant pour scroll vers le haut à chaque changement de route
@@ -131,6 +132,7 @@ function App() {
           <Route path="/rgpd" element={<RGPD />} />
           <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
           <Route path="/suggerer-partenaire" element={<SuggererPartenaire />} />
+          <Route path="/calendar" element={<Calendar />} />
         </Routes>
         <Footer />
       </div>

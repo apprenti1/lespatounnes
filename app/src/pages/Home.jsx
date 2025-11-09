@@ -133,24 +133,22 @@ export default function Home() {
               {/* Texte à gauche */}
               <div className="flex-1">
                 <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
-                  Les Patounes fêtent Halloween !
+                  Le Calendrier des Pups 2026<br/>
+                  n’est pas qu’un simple calendrier !
                 </h3>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Un bonbon ou on mord !<br/>
+                  c’est une véritable aventure artistique et humaine.<br/>
+                  Réalisé par PuppyPlay Scooby et l’association Les Patounes,<br/>
+                  il réunit 29 modèles à travers 12 thématiques<br/>
+                  retraçant la découverte de soi dans le PuppyPlay.<br/>
                   <br/>
-                  À l'occasion d'Halloween,<br/>
-                  retrouvez nous au Freedj le vendredi 31 octobre à 18h30.<br/>
-                  Tournée des bars du Marais et distribution de bonbons pour l'occasion.<br/>
+                  D’une timide exploration jusqu’à une liberté pleinement assumée.<br/>
                   <br/>
-                  Aucune obligation mais...<br/>
-                  Venez déguisé ! Des verres offerts pour les plus beaux costumes.
-                  <br/>
-                  <br/>
-                  Soirée pleine de surprises et de convivialité, profitez de l'ambiance festive du quartier.
-                  N'hésite pas à inviter tes amis :3 . 
-                  <br/>
-                  <br/>
-                  L'ffiche de l'événement, réalisée par l'artiste LaGoulue, est disponible à l'achat pour un souvenir de cette merveilleuse soirée 😀.
+                  Imprimé en format mural A3, sur papier haut de gamme<br/>
+                  avec reliure métallique, il s’inspire des grands classiques<br/>
+                  comme les Dieux du Stade ou les Pompiers, tout en célébrant<br/>
+                  la diversité, la fierté et la bienveillance de notre communauté<br/>
+                  🌈🐶
                 </p>
                 <Link
                   to="https://www.helloasso.com/associations/association-les-patounes/boutiques/affiches?_gl=1%2a7jbbz1%2a_gcl_au%2aMTAxNjU2MzkyNy4xNzU3NDM1MjI4LjI0ODE3MTM4Mi4xNzYwMzY5MDUzLjE3NjAzNjkyNzI."
