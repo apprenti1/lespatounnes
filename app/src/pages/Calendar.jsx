@@ -29,7 +29,7 @@ export default function Calendar() {
               <img
                 src="/calendrier2026.jpg"
                 alt="Calendrier des Pups 2026"
-                className="max-w-md md:max-w-xl h-auto object-contain"
+                className="max-w-md md:max-w-xl h-auto object-contain rounded-2xl shadow-lg"
               />
             </div>
 
