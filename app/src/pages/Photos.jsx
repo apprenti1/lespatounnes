@@ -66,11 +66,6 @@ export default function Photos() {
     };
   }, [hasMore, isLoadingMore, currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
 
-  // Store loadPhotos in ref so observer can access latest version
-  useEffect(() => {
-    loadPhotosRef.current = loadPhotos;
-  }, [loadPhotos]);
-
   // Charger les photos avec les filtres actuels
   const loadPhotos = useCallback(async (pageNum = 1) => {
     console.log('[loadPhotos] Called with pageNum:', pageNum);
@@ -165,6 +160,11 @@ export default function Photos() {
       loadPhotosInFlightRef.current = false;
     }
   }, []);
+
+  // Store loadPhotos in ref so observer can access it
+  useEffect(() => {
+    loadPhotosRef.current = loadPhotos;
+  }, [loadPhotos]);
 
   // Charger les photos au montage
   useEffect(() => {
