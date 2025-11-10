@@ -62,10 +62,14 @@ export class ResizeService {
     const extension = path.extname(uuid);
 
     try {
+      // Récupérer les métadonnées de l'image pour maintenir les proportions
+      const metadata = await sharp(imagePath).metadata();
+      const aspectRatio = (metadata?.width || 1) / (metadata?.height || 1);
+
       // Thumbnail: 150x150
       await this.resizeImage(imagePath, this.folders.thumbnail, uuid, {
         width: 150,
-        height: 150,
+        height: Math.round(150 / aspectRatio),
         fit: 'cover',
       });
 
@@ -166,3 +170,4 @@ export class ResizeService {
     }
   }
 }
+
