@@ -157,8 +157,6 @@ export default function Photos() {
 
   // Fonction pour charger la page suivante (infinite scroll)
   const loadNextPage = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
-
     setIsLoadingMore(true);
     try {
       const token = localStorage.getItem('accessToken');
@@ -206,14 +204,15 @@ export default function Photos() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user, isLoadingMore, hasMore]);
+  }, [currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
 
   // Intersection Observer pour infinite scroll
   useEffect(() => {
-    if (!observerTarget.current || !hasMore || isLoadingMore) return;
+    if (!observerTarget.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
+        // Utiliser les valeurs actuelles de hasMore et isLoadingMore via closure
         if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
           loadNextPage();
         }
@@ -223,7 +222,7 @@ export default function Photos() {
 
     observer.observe(observerTarget.current);
     return () => observer.disconnect();
-  }, [hasMore, isLoadingMore, loadNextPage]);
+  }, [loadNextPage]);
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
