@@ -229,9 +229,16 @@ export class UploadController {
 
       const whereClause = whereConditions.length > 0 ? ` WHERE ${whereConditions.join(' AND ')}` : ' WHERE 1=1';
 
-      // Single optimized query to fetch both count and paginated results
-      // Using window function to avoid counting all rows unnecessarily
-      const photosWithCount: any = await this.prisma.$queryRawUnsafe(
+      // Get total count with optimized query
+      const countResult: any = await this.prisma.$queryRawUnsafe(
+        `SELECT COUNT(DISTINCT p.id)::integer as total FROM photos p
+         LEFT JOIN users u ON p."userId" = u.id${whereClause}`,
+        ...params
+      );
+      const totalCount = countResult[0].total;
+
+      // Get paginated photos
+      const photos: any = await this.prisma.$queryRawUnsafe(
         `SELECT
           p.id,
           p.image,
@@ -251,8 +258,7 @@ export class UploadController {
               'date', e.date
             )
             ELSE NULL
-          END as "event",
-          COUNT(*) OVER() as "totalCount"
+          END as "event"
         FROM photos p
         LEFT JOIN users u ON p."userId" = u.id
         LEFT JOIN events e ON p."eventId" = e.id${whereClause}
@@ -261,16 +267,14 @@ export class UploadController {
         ...params
       );
 
-      const totalCount = photosWithCount.length > 0 ? parseInt(photosWithCount[0].totalCount, 10) : 0;
-
       return {
         success: true,
-        count: photosWithCount?.length || 0,
+        count: photos?.length || 0,
         totalCount: totalCount,
         page: page,
         limit: limit,
         totalPages: Math.ceil(totalCount / limit),
-        photos: photosWithCount,
+        photos: photos,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
