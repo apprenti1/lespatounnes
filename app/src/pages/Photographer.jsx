@@ -513,10 +513,10 @@ export default function Photographer() {
 
       {/* Modale de gestion des photos */}
       {isModalOpen && selectedPhoto && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-in flex flex-col max-h-[90vh] my-auto">
             {/* En-tête de la modale */}
-            <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6 text-white flex justify-between items-center">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6 text-white flex justify-between items-center flex-shrink-0">
               <h2 className="text-xl font-bold">Gérer la photo</h2>
               <button
                 onClick={closePhotoModal}
@@ -528,8 +528,8 @@ export default function Photographer() {
               </button>
             </div>
 
-            {/* Contenu */}
-            <div className="p-6 space-y-6">
+            {/* Contenu scrollable */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
               {/* Aperçu de l'image */}
               <div className="overflow-hidden rounded-lg">
                 <img
@@ -560,6 +560,10 @@ export default function Photographer() {
                 />
               </div>
 
+            </div>
+
+            {/* Footer sticky avec boutons */}
+            <div className="bg-gray-50 border-t border-gray-200 p-6 space-y-3 flex-shrink-0">
               {/* Boutons d'action */}
               <div className="flex gap-3">
                 {/* Bouton Supprimer */}
