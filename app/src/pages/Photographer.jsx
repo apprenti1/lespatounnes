@@ -19,6 +19,10 @@ export default function Photographer() {
   const [editTags, setEditTags] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Folder photo display state - limit photos per folder
+  const [folderDisplayLimits, setFolderDisplayLimits] = useState({});
+  const PHOTOS_PER_FOLDER = 12;
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -221,6 +225,20 @@ export default function Photographer() {
     setExpandedFolders((prev) => ({
       ...prev,
       [folderId]: !prev[folderId],
+    }));
+    // Initialize display limit for this folder when opening
+    if (!folderDisplayLimits[folderId]) {
+      setFolderDisplayLimits((prev) => ({
+        ...prev,
+        [folderId]: PHOTOS_PER_FOLDER,
+      }));
+    }
+  };
+
+  const loadMorePhotosInFolder = (folderId) => {
+    setFolderDisplayLimits((prev) => ({
+      ...prev,
+      [folderId]: (prev[folderId] || PHOTOS_PER_FOLDER) + PHOTOS_PER_FOLDER,
     }));
   };
 
@@ -558,7 +576,7 @@ export default function Photographer() {
                       {expandedFolders[folder.id] && (
                         <div className="p-4 bg-gray-50">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {folder.photos.map((photo) => (
+                            {folder.photos.slice(0, folderDisplayLimits[folder.id] || PHOTOS_PER_FOLDER).map((photo) => (
                               <div key={photo.id} className="group cursor-pointer" onClick={() => openPhotoModal(photo)}>
                                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                                   {/* Afficher l'image responsive avec srcset */}
@@ -602,6 +620,17 @@ export default function Photographer() {
                               </div>
                             ))}
                           </div>
+
+                          {/* Load more button if there are more photos in this folder */}
+                          {folder.photos.length > (folderDisplayLimits[folder.id] || PHOTOS_PER_FOLDER) && (
+                            <button
+                              onClick={() => loadMorePhotosInFolder(folder.id)}
+                              className="mt-4 w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                              <span>⬇️</span>
+                              Charger plus ({folder.photos.length - (folderDisplayLimits[folder.id] || PHOTOS_PER_FOLDER)} restantes)
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
