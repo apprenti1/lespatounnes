@@ -205,39 +205,60 @@ export class UploadController {
   }
 
   /**
-   * Route protégée pour récupérer la liste des tags et noms d'utilisateurs pour autocomplete
-   * GET /uploads/tags/autocomplete
+   * Route protégée pour rechercher des tags et noms d'utilisateurs pour autocomplete
+   * GET /uploads/tags/autocomplete?search=query
    * Authentification requise
-   * Retourne les tags des photos ET les noms d'utilisateurs
+   * Paramètres:
+   *   - search (optionnel): Chaîne de recherche pour filtrer les résultats
+   * Retourne les tags des photos ET les noms d'utilisateurs filtrés
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('tags/autocomplete')
   @UseGuards(JwtGuard)
   async getTagsAutocomplete(@Req() req: any) {
     try {
-      // Récupérer les tags des photos
+      const search = (req.query.search || '').trim().toLowerCase();
+      const limit = 10; // Limiter le nombre de résultats
+
+      // Rechercher les tags des photos
       const photoTags = await this.prisma.photoTag.findMany({
         select: {
           name: true,
         },
+        where: search
+          ? {
+              name: {
+                search: search,
+              },
+            }
+          : undefined,
         orderBy: {
           name: 'asc',
         },
+        take: limit,
       });
 
-      // Récupérer les noms d'utilisateurs
+      // Rechercher les noms d'utilisateurs
       const users = await this.prisma.user.findMany({
         select: {
           username: true,
         },
-        where: {
-          username: {
-            not: null,
-          },
-        },
+        where: search
+          ? {
+              username: {
+                not: null,
+                search: search,
+              },
+            }
+          : {
+              username: {
+                not: null,
+              },
+            },
         orderBy: {
           username: 'asc',
         },
+        take: limit,
       });
 
       // Combiner et dédupliquer
@@ -255,7 +276,7 @@ export class UploadController {
 
       return {
         success: true,
-        tags: Array.from(allTags).sort(),
+        tags: Array.from(allTags).sort().slice(0, limit),
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);

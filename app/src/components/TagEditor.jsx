@@ -7,28 +7,6 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
-  // Charger les tags et usernames disponibles au montage
-  useEffect(() => {
-    const fetchTagsAndUsernames = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/tags/autocomplete`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        if (data.success) {
-          setAllUsernames(data.tags || []);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des tags et usernames:', error);
-      }
-    };
-
-    fetchTagsAndUsernames();
-  }, []);
-
   // Initialiser les tags depuis la prop value
   useEffect(() => {
     if (value) {
@@ -42,21 +20,35 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
     onChange(tags.join(', '));
   }, [tags]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const val = e.target.value;
     setInputValue(val);
 
-    // Filtrer les suggestions basées sur l'input
     if (val.trim()) {
-      // Filtrer depuis la liste complète de tous les usernames
-      const filtered = allUsernames.filter((username) =>
-        username.toLowerCase().includes(val.toLowerCase()) && !tags.includes(username)
-      );
-      setFilteredSuggestions(filtered);
-      setShowSuggestions(true);
+      try {
+        // Faire un appel API au backend avec la recherche
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/uploads/tags/autocomplete?search=${encodeURIComponent(val)}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.success) {
+          // Filtrer pour exclure les tags déjà ajoutés
+          const filtered = (data.tags || []).filter((tag) => !tags.includes(tag));
+          setFilteredSuggestions(filtered);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des suggestions:', error);
+      }
     } else {
-      // Afficher tous les usernames quand l'input est vide
-      setFilteredSuggestions(allUsernames.filter((username) => !tags.includes(username)));
+      // Quand l'input est vide, on affiche pas les suggestions
+      setFilteredSuggestions([]);
       setShowSuggestions(false);
     }
   };
