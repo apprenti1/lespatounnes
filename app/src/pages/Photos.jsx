@@ -191,36 +191,84 @@ export default function Photos() {
   // Intersection Observer pour infinite scroll
   useEffect(() => {
     const target = observerTarget.current;
-    console.log('[IntersectionObserver] Setup - target:', target, 'target height:', target?.offsetHeight);
-    if (!target) return;
+    console.log('[IntersectionObserver] Setup - target:', target);
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      console.log('[IntersectionObserver] Target rect:', {
+        top: rect.top,
+        bottom: rect.bottom,
+        height: rect.height,
+        offsetHeight: target.offsetHeight,
+        offsetTop: target.offsetTop,
+        parentElement: target.parentElement?.className,
+      });
+    }
+    if (!target) {
+      console.warn('[IntersectionObserver] No target found!');
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log('[IntersectionObserver] Callback - entries:', entries.length, 'isIntersecting:', entries[0]?.isIntersecting);
+        console.log('[IntersectionObserver] Callback triggered!');
+        entries.forEach((entry, idx) => {
+          console.log(`[IntersectionObserver] Entry ${idx}:`, {
+            isIntersecting: entry.isIntersecting,
+            boundingClientRect: {
+              top: entry.boundingClientRect.top,
+              bottom: entry.boundingClientRect.bottom,
+              height: entry.boundingClientRect.height,
+            },
+            intersectionRatio: entry.intersectionRatio,
+            rootBounds: entry.rootBounds,
+          });
+        });
 
         if (entries[0]?.isIntersecting) {
           const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
-          console.log('[IntersectionObserver] Intersection detected - page:', page, 'canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
+          console.log('[IntersectionObserver] ✅ Intersection detected - page:', page, 'canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
 
           if (canLoadMore && !isLoading && !isLoadingPhotos) {
-            console.log('[IntersectionObserver] Loading page:', page + 1);
+            console.log('[IntersectionObserver] 🚀 Loading page:', page + 1);
             loadPhotosRef.current?.(page + 1);
           } else {
-            console.log('[IntersectionObserver] Skipped - canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
+            console.log('[IntersectionObserver] ⏭️ Skipped - canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
           }
         }
       },
-      { threshold: 0.1, rootMargin: '200px' } // Added rootMargin to detect element earlier
+      { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: '100px' }
     );
 
     observer.observe(target);
-    console.log('[IntersectionObserver] Observer attached to target');
+    console.log('[IntersectionObserver] ✅ Observer attached to target');
+
+    // Fallback: Manual scroll detection since IntersectionObserver might not work
+    const handleScroll = () => {
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (isVisible) {
+        console.log('[Scroll Fallback] 📍 Target is visible in viewport - checking if should load...');
+        const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
+        console.log('[Scroll Fallback] canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
+
+        if (canLoadMore && !isLoading && !isLoadingPhotos) {
+          console.log('[Scroll Fallback] 🚀 Loading page:', page + 1);
+          loadPhotosRef.current?.(page + 1);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       console.log('[IntersectionObserver] Cleanup - unobserving target');
       observer.unobserve(target);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Empty deps - loadPhotos is stable and we read from stateRef
+  }, []); // Empty deps - loadPhotosRef, stateRef are mutable refs, not deps
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
