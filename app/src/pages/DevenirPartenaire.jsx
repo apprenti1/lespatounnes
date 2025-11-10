@@ -41,8 +41,6 @@ export default function DevenirPartenaire() {
 
     try {
       // TODO: Envoyer le formulaire au backend
-      console.log('Formulaire soumis :', formData);
-
       toast.success(
         '✅ Votre demande a été envoyée avec succès ! Nous vous recontacterons rapidement.',
         { position: 'top-center' }
