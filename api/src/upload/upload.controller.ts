@@ -24,6 +24,10 @@ import { Roles } from '../guards/roles.decorator';
 
 @Controller('uploads')
 export class UploadController {
+  private tagsCacheLastUpdate: number = 0;
+  private tagsCacheData: string[] = [];
+  private readonly TAGS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   constructor(
     private uploadService: UploadService,
     private prisma: PrismaService,
@@ -175,7 +179,7 @@ export class UploadController {
       const userRole = req.user.role;
       const page = Math.max(1, parseInt(req.query.page || '1', 10));
       const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '12', 10)));
-      const skip = (page - 1) * limit;
+      const offset = (page - 1) * limit;
 
       // Récupérer les filtres
       const eventId = req.query.eventId || null;
@@ -183,82 +187,99 @@ export class UploadController {
       const search = (req.query.search || '').trim().toLowerCase();
       const taggedByUsername = req.query.taggedByUsername || null;
 
-      // Construire la clause WHERE
-      let whereClause: any = {};
+      // Construire les conditions WHERE avec paramètres liés
+      const params: any[] = [];
+      let whereConditions: string[] = [];
 
       // Les photographes voient seulement leurs propres photos, les admins/devs voient tout
       if (userRole !== 'ADMIN' && userRole !== 'DEV') {
-        whereClause.userId = userId;
+        whereConditions.push(`p."userId" = $${params.length + 1}`);
+        params.push(userId);
       }
 
       // Filtre par événement
       if (noEvent) {
-        whereClause.event = null;
+        whereConditions.push(`p."eventId" IS NULL`);
       } else if (eventId) {
-        whereClause.eventId = eventId;
+        whereConditions.push(`p."eventId" = $${params.length + 1}`);
+        params.push(eventId);
       }
 
-      // Récupérer le nombre total AVANT d'appliquer les filtres texte (pour la pagination)
-      const countBeforeTextFilter = await this.prisma.photo.count({
-        where: whereClause,
-      });
-
-      // Récupérer les photos paginées
-      let photos = await this.prisma.photo.findMany({
-        where: whereClause,
-        select: {
-          id: true,
-          image: true,
-          createdAt: true,
-          tags: true,
-          userId: true,
-          user: {
-            select: {
-              username: true,
-            },
-          },
-          event: {
-            select: {
-              id: true,
-              title: true,
-              date: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip: skip,
-        take: limit,
-      });
-
-      // Filtrer par recherche texte ou par utilisateur taguée (côté serveur)
-      if (search || taggedByUsername) {
-        photos = photos.filter((photo) => {
-          // Filtre par utilisateur taguée
-          if (taggedByUsername) {
-            return photo.tags && photo.tags.includes(taggedByUsername);
-          }
-
-          // Filtre par recherche texte (tags ou nom d'utilisateur)
-          if (search) {
-            const tagsMatch = photo.tags && photo.tags.some((tag) => tag.toLowerCase().includes(search));
-            const nameMatch = photo.user?.username && photo.user.username.toLowerCase().includes(search);
-            return tagsMatch || nameMatch;
-          }
-
-          return true;
-        });
+      // Filtre par tag spécifique (utilisateur taggé) - match exact
+      if (taggedByUsername) {
+        // tags est un tableau text[], donc utiliser l'opérateur @> (contient)
+        whereConditions.push(`p.tags @> ARRAY[$${params.length + 1}]::text[]`);
+        params.push(taggedByUsername);
       }
+
+      // Filtre par recherche texte (tags OU nom d'utilisateur)
+      if (search) {
+        const searchWithWildcard = `%${search}%`;
+        whereConditions.push(`(
+          p.tags @> ARRAY[$${params.length + 1}]::text[]
+          OR EXISTS (
+            SELECT 1 FROM unnest(p.tags) AS tag
+            WHERE tag ILIKE $${params.length + 2}
+          )
+          OR u.username ILIKE $${params.length + 2}
+        )`);
+        params.push(search);
+        params.push(searchWithWildcard);
+      }
+
+      const whereClause = whereConditions.length > 0 ? ` WHERE ${whereConditions.join(' AND ')}` : ' WHERE 1=1';
+
+      // Requête optimisée pour compter le nombre total
+      // On utilise une sous-requête pour éviter les JOINs inutiles si possible
+      const countResult: any = await this.prisma.$queryRawUnsafe(
+        `SELECT COUNT(DISTINCT p.id) as total FROM photos p
+         LEFT JOIN users u ON p."userId" = u.id${whereClause}`,
+        ...params
+      );
+      const totalCount = parseInt(countResult[0].total, 10);
+
+      // Requête optimisée pour récupérer les photos paginées
+      // On récupère les données en une seule requête bien structurée
+      const photos: any = await this.prisma.$queryRawUnsafe(
+        `SELECT
+          p.id,
+          p.image,
+          p."createdAt",
+          p.tags,
+          p."userId",
+          json_build_object(
+            'id', u.id,
+            'email', u.email,
+            'username', u.username,
+            'role', u.role
+          ) as "user",
+          CASE
+            WHEN p."eventId" IS NOT NULL THEN json_build_object(
+              'id', e.id,
+              'title', e.title,
+              'date', e.date
+            )
+            ELSE NULL
+          END as "event"
+        FROM photos p
+        LEFT JOIN users u ON p."userId" = u.id
+        LEFT JOIN events e ON p."eventId" = e.id${whereClause}
+        ORDER BY p."createdAt" DESC
+        LIMIT ${limit} OFFSET ${offset}`,
+        ...params
+      );
 
       return {
         success: true,
-        count: photos.length,
-        totalCount: countBeforeTextFilter,
+        count: photos?.length || 0,
+        totalCount: totalCount,
         page: page,
         limit: limit,
-        totalPages: Math.ceil(countBeforeTextFilter / limit),
+        totalPages: Math.ceil(totalCount / limit),
         photos: photos,
       };
     } catch (error) {
+      console.error('Erreur getUserPhotos:', error);
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -277,56 +298,77 @@ export class UploadController {
   async getTagsAutocomplete(@Req() req: any) {
     try {
       const search = (req.query.search || '').trim().toLowerCase();
-      const limit = 10; // Limiter le nombre de résultats
+      const limit = 10;
 
-      // Rechercher les tags des photos
+      // Si pas de recherche, utiliser le cache pour les tags complets
+      let allTags = new Set<string>();
+
+      if (!search) {
+        // Vérifier le cache
+        const now = Date.now();
+        if (now - this.tagsCacheLastUpdate < this.TAGS_CACHE_DURATION && this.tagsCacheData.length > 0) {
+          return {
+            success: true,
+            tags: this.tagsCacheData.slice(0, limit),
+          };
+        }
+
+        // Cache expiré, récupérer tous les tags
+        const allPhotoTags = await this.prisma.photoTag.findMany({
+          orderBy: { name: 'asc' },
+        });
+
+        const allUsers = await this.prisma.user.findMany({
+          select: { username: true },
+          where: { username: { not: null } },
+          orderBy: { username: 'asc' },
+        });
+
+        allPhotoTags.forEach((t) => allTags.add(t.name));
+        allUsers.forEach((u) => {
+          if (u.username) {
+            allTags.add(u.username);
+          }
+        });
+
+        // Mettre en cache
+        const sortedTags = Array.from(allTags).sort();
+        this.tagsCacheData = sortedTags;
+        this.tagsCacheLastUpdate = now;
+
+        return {
+          success: true,
+          tags: sortedTags.slice(0, limit),
+        };
+      }
+
+      // Avec recherche, filtrer directement
       const photoTags = await this.prisma.photoTag.findMany({
-        select: {
-          name: true,
+        select: { name: true },
+        where: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
         },
-        where: search
-          ? {
-              name: {
-                search: search,
-              },
-            }
-          : undefined,
-        orderBy: {
-          name: 'asc',
-        },
+        orderBy: { name: 'asc' },
         take: limit,
       });
 
-      // Rechercher les noms d'utilisateurs
       const users = await this.prisma.user.findMany({
-        select: {
-          username: true,
+        select: { username: true },
+        where: {
+          username: {
+            not: null,
+            contains: search,
+            mode: 'insensitive',
+          },
         },
-        where: search
-          ? {
-              username: {
-                not: null,
-                search: search,
-              },
-            }
-          : {
-              username: {
-                not: null,
-              },
-            },
-        orderBy: {
-          username: 'asc',
-        },
+        orderBy: { username: 'asc' },
         take: limit,
       });
 
-      // Combiner et dédupliquer
-      const allTags = new Set<string>();
-
-      // Ajouter les tags des photos
       photoTags.forEach((t) => allTags.add(t.name));
-
-      // Ajouter les noms d'utilisateurs
       users.forEach((u) => {
         if (u.username) {
           allTags.add(u.username);
