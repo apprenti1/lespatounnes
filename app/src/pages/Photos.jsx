@@ -23,6 +23,20 @@ export default function Photos() {
   const observerTarget = useRef(null);
   const initialLoadDone = useRef(false);
 
+  // Refs to store current state and prevent duplicate requests
+  const stateRef = useRef({
+    hasMore,
+    isLoadingMore,
+    currentPage,
+    selectedEventId,
+    showNoEvent,
+    searchQuery,
+    showTaggedByMe,
+    user,
+    isLoadingPhotos: false, // Flag to prevent duplicate requests
+  });
+  const loadPhotosInFlightRef = useRef(false);
+
   // Récupérer l'utilisateur connecté (une fois au montage)
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -36,8 +50,36 @@ export default function Photos() {
     initialLoadDone.current = true;
   }, []);
 
+  // Mettre à jour la ref avec les valeurs actuelles ET les filtres
+  useEffect(() => {
+    stateRef.current = {
+      hasMore,
+      isLoadingMore,
+      currentPage,
+      selectedEventId,
+      showNoEvent,
+      searchQuery,
+      showTaggedByMe,
+      user,
+      isLoadingPhotos: stateRef.current.isLoadingPhotos, // Preserve the flag
+    };
+  }, [hasMore, isLoadingMore, currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
+
   // Charger les photos avec les filtres actuels
   const loadPhotos = useCallback(async (pageNum = 1) => {
+    // Récupérer les filtres depuis la ref pour avoir les valeurs à jour
+    const { selectedEventId: eventId, showNoEvent: noEvent, searchQuery: query, showTaggedByMe: taggedByMe, user: currentUser, isLoadingPhotos } = stateRef.current;
+
+    // Prevent duplicate requests - only allow one request at a time
+    if (isLoadingPhotos) {
+      console.warn('[loadPhotos] Already loading, skipping duplicate request for page:', pageNum);
+      return;
+    }
+
+    // Mark as loading
+    stateRef.current.isLoadingPhotos = true;
+    loadPhotosInFlightRef.current = true;
+
     if (pageNum === 1) {
       setLoading(true);
     } else {
@@ -50,21 +92,23 @@ export default function Photos() {
       params.append('page', pageNum.toString());
       params.append('limit', '12');
 
-      if (selectedEventId) {
-        params.append('eventId', selectedEventId);
+      if (eventId) {
+        params.append('eventId', eventId);
       }
 
-      if (showNoEvent) {
+      if (noEvent) {
         params.append('noEvent', 'true');
       }
 
-      if (searchQuery.trim()) {
-        params.append('search', searchQuery);
+      if (query?.trim()) {
+        params.append('search', query);
       }
 
-      if (showTaggedByMe && user?.username) {
-        params.append('taggedByUsername', user.username);
+      if (taggedByMe && currentUser?.username) {
+        params.append('taggedByUsername', currentUser.username);
       }
+
+      console.log('[loadPhotos] Fetching page:', pageNum, 'URL:', `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`);
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`,
@@ -82,8 +126,11 @@ export default function Photos() {
 
       if (pageNum === 1) {
         setFilteredPhotos(newPhotos);
+        setCurrentPage(1);
+        setTotalPages(data.totalPages);
+        setHasMore(1 < data.totalPages);
         // Extraire les événements uniques seulement à la première page
-        if (!selectedEventId && !showNoEvent) {
+        if (!eventId && !noEvent) {
           const uniqueEvents = {};
           newPhotos.forEach((photo) => {
             if (photo.event && !uniqueEvents[photo.event.id]) {
@@ -94,11 +141,9 @@ export default function Photos() {
         }
       } else {
         setFilteredPhotos((prev) => [...prev, ...newPhotos]);
+        setCurrentPage(pageNum);
+        setHasMore(pageNum < data.totalPages);
       }
-
-      setCurrentPage(pageNum);
-      setTotalPages(data.totalPages);
-      setHasMore(pageNum < data.totalPages);
     } catch (error) {
       console.error('Erreur:', error);
       toast.error('Impossible de charger les photos');
@@ -108,37 +153,54 @@ export default function Photos() {
       } else {
         setIsLoadingMore(false);
       }
+      // Clear the in-flight flag
+      stateRef.current.isLoadingPhotos = false;
+      loadPhotosInFlightRef.current = false;
     }
-  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
+  }, []);
 
   // Charger les photos au montage
   useEffect(() => {
     if (!initialLoadDone.current) return;
+    console.log('[Mount] Loading initial photos');
     loadPhotos(1);
-  }, []);
+  }, []); // Empty deps - loadPhotos is stable from useCallback with empty deps
 
   // Charger les photos quand les filtres changent
+  // Reset to page 1 when filters change
   useEffect(() => {
     if (!initialLoadDone.current) return;
+    console.log('[Filters Changed] Resetting to page 1 with new filters:', {
+      selectedEventId,
+      showNoEvent,
+      searchQuery,
+      showTaggedByMe,
+    });
+    setCurrentPage(1);
+    setHasMore(true);
     loadPhotos(1);
-  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe]);
+  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe]); // Filter deps only, not loadPhotos
 
   // Intersection Observer pour infinite scroll
   useEffect(() => {
-    if (!observerTarget.current || !hasMore || isLoadingMore) return;
+    const target = observerTarget.current;
+    if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          loadPhotos(currentPage + 1);
+        if (entries[0].isIntersecting) {
+          const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page } = stateRef.current;
+          if (canLoadMore && !isLoading) {
+            loadPhotos(page + 1);
+          }
         }
       },
       { threshold: 0.1 }
     );
 
-    observer.observe(observerTarget.current);
-    return () => observer.disconnect();
-  }, [currentPage, hasMore, isLoadingMore, loadPhotos]);
+    observer.observe(target);
+    return () => observer.unobserve(target);
+  }, []);
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
@@ -363,9 +425,9 @@ export default function Photos() {
                 </div>
               )}
 
-              {/* Observer target pour infinite scroll */}
-              {hasMore && filteredPhotos.length > 0 && (
-                <div ref={observerTarget} className="h-4" />
+              {/* Observer target pour infinite scroll - toujours présent si on a des photos */}
+              {filteredPhotos.length > 0 && (
+                <div ref={observerTarget} className={hasMore ? "h-4" : "hidden"} />
               )}
             </div>
           )}
