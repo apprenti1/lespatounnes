@@ -153,11 +153,14 @@ export class UploadController {
   }
 
   /**
-   * Route protégée pour récupérer les photos
-   * GET /uploads/user-photos
+   * Route protégée pour récupérer les photos avec pagination
+   * GET /uploads/user-photos?page=1&limit=10
    * - Les photographes voient uniquement leurs propres photos
    * - Les admins et devs voient TOUTES les photos
    * Authentification requise
+   * Paramètres:
+   *   - page (optionnel, défaut 1): Numéro de page
+   *   - limit (optionnel, défaut 10): Nombre de photos par page
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('user-photos')
@@ -166,10 +169,19 @@ export class UploadController {
     try {
       const userId = req.user.id;
       const userRole = req.user.role;
+      const page = Math.max(1, parseInt(req.query.page || '1', 10));
+      const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '10', 10)));
+      const skip = (page - 1) * limit;
 
       // Les admins et devs voient toutes les photos, les autres voient seulement les leurs
       const whereClause = (userRole === 'ADMIN' || userRole === 'DEV') ? {} : { userId: userId };
 
+      // Récupérer le nombre total de photos
+      const totalCount = await this.prisma.photo.count({
+        where: whereClause,
+      });
+
+      // Récupérer les photos paginées
       const photos = await this.prisma.photo.findMany({
         where: whereClause,
         select: {
@@ -192,11 +204,17 @@ export class UploadController {
           },
         },
         orderBy: { createdAt: 'desc' },
+        skip: skip,
+        take: limit,
       });
 
       return {
         success: true,
         count: photos.length,
+        totalCount: totalCount,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(totalCount / limit),
         photos: photos,
       };
     } catch (error) {

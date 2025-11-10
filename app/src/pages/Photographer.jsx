@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TagEditor from '../components/TagEditor';
@@ -18,6 +18,13 @@ export default function Photographer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editTags, setEditTags] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const observerTarget = useRef(null);
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -66,33 +73,80 @@ export default function Photographer() {
     }
   };
 
-  const fetchUserPhotos = async (token) => {
-    setLoadingPhotos(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/user-photos`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Mapper les photos pour extraire juste les UUIDs pour l'affichage
-        const photoUuids = data.photos.map((photo) => ({
-          uuid: photo.image,
-          id: photo.id,
-          createdAt: photo.createdAt,
-          event: photo.event,
-          tags: photo.tags,
-        }));
-        setUploadedImages(photoUuids);
+  const fetchUserPhotos = useCallback(
+    async (token, page = 1, append = false) => {
+      const isFirstPage = page === 1;
+      if (isFirstPage) {
+        setLoadingPhotos(true);
+      } else {
+        setIsLoadingMore(true);
       }
-    } catch (error) {
-      console.error('Erreur lors du chargement des photos:', error);
-    } finally {
-      setLoadingPhotos(false);
-    }
-  };
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/uploads/user-photos?page=${page}&limit=10`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          // Mapper les photos pour extraire juste les UUIDs pour l'affichage
+          const photoUuids = data.photos.map((photo) => ({
+            uuid: photo.image,
+            id: photo.id,
+            createdAt: photo.createdAt,
+            event: photo.event,
+            tags: photo.tags,
+            username: photo.user.username,
+          }));
+
+          // Ajouter les photos existantes ou remplacer
+          if (append) {
+            setUploadedImages((prev) => [...prev, ...photoUuids]);
+          } else {
+            setUploadedImages(photoUuids);
+          }
+
+          setCurrentPage(page);
+          setTotalPages(data.totalPages);
+          setHasMore(page < data.totalPages);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des photos:', error);
+      } finally {
+        if (isFirstPage) {
+          setLoadingPhotos(false);
+        } else {
+          setIsLoadingMore(false);
+        }
+      }
+    },
+    []
+  );
+
+  // Intersection Observer pour infinite scroll
+  useEffect(() => {
+    if (!observerTarget.current || !hasMore || isLoadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          const token = localStorage.getItem('accessToken');
+          if (token) {
+            fetchUserPhotos(token, currentPage + 1, true);
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(observerTarget.current);
+    return () => observer.disconnect();
+  }, [currentPage, hasMore, isLoadingMore, fetchUserPhotos]);
 
   const toggleFolder = (folderId) => {
     setExpandedFolders((prev) => ({
@@ -137,7 +191,8 @@ export default function Photographer() {
 
       // Rafraîchir la liste
       const photoToken = localStorage.getItem('accessToken');
-      await fetchUserPhotos(photoToken);
+      setCurrentPage(1);
+      await fetchUserPhotos(photoToken, 1, false);
     } catch (error) {
       toast.error(`❌ ${error.message}`, { position: 'top-center' });
     } finally {
@@ -175,7 +230,8 @@ export default function Photographer() {
 
       // Rafraîchir la liste
       const photoToken = localStorage.getItem('accessToken');
-      await fetchUserPhotos(photoToken);
+      setCurrentPage(1);
+      await fetchUserPhotos(photoToken, 1, false);
     } catch (error) {
       toast.error(`❌ ${error.message}`, { position: 'top-center' });
     }
@@ -478,6 +534,19 @@ export default function Photographer() {
                     </div>
                   ))}
                 </div>
+
+                {/* Infinite scroll loader */}
+                {isLoadingMore && (
+                  <div className="text-center py-8">
+                    <div className="inline-block">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                    </div>
+                    <p className="text-gray-500 mt-2">Chargement plus de photos...</p>
+                  </div>
+                )}
+
+                {/* Observer target pour infinite scroll */}
+                {hasMore && <div ref={observerTarget} className="h-4" />}
               )}
             </div>
           </div>
