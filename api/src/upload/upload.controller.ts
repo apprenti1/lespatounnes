@@ -153,14 +153,18 @@ export class UploadController {
   }
 
   /**
-   * Route protégée pour récupérer les photos avec pagination
-   * GET /uploads/user-photos?page=1&limit=10
+   * Route protégée pour récupérer les photos avec pagination et filtres
+   * GET /uploads/user-photos?page=1&limit=10&eventId=xxx&search=xxx&taggedByUsername=xxx
    * - Les photographes voient uniquement leurs propres photos
    * - Les admins et devs voient TOUTES les photos
    * Authentification requise
    * Paramètres:
    *   - page (optionnel, défaut 1): Numéro de page
-   *   - limit (optionnel, défaut 10): Nombre de photos par page
+   *   - limit (optionnel, défaut 12): Nombre de photos par page
+   *   - eventId (optionnel): Filtrer par ID d'événement (exclut les photos sans événement)
+   *   - noEvent (optionnel): Si true, retourner seulement les photos sans événement
+   *   - search (optionnel): Rechercher par tags ou nom d'utilisateur
+   *   - taggedByUsername (optionnel): Filtrer par nom d'utilisateur dans les tags
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('user-photos')
@@ -170,19 +174,37 @@ export class UploadController {
       const userId = req.user.id;
       const userRole = req.user.role;
       const page = Math.max(1, parseInt(req.query.page || '1', 10));
-      const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '10', 10)));
+      const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '12', 10)));
       const skip = (page - 1) * limit;
 
-      // Les admins et devs voient toutes les photos, les autres voient seulement les leurs
-      const whereClause = (userRole === 'ADMIN' || userRole === 'DEV') ? {} : { userId: userId };
+      // Récupérer les filtres
+      const eventId = req.query.eventId || null;
+      const noEvent = req.query.noEvent === 'true';
+      const search = (req.query.search || '').trim().toLowerCase();
+      const taggedByUsername = req.query.taggedByUsername || null;
 
-      // Récupérer le nombre total de photos
-      const totalCount = await this.prisma.photo.count({
+      // Construire la clause WHERE
+      let whereClause: any = {};
+
+      // Les photographes voient seulement leurs propres photos, les admins/devs voient tout
+      if (userRole !== 'ADMIN' && userRole !== 'DEV') {
+        whereClause.userId = userId;
+      }
+
+      // Filtre par événement
+      if (noEvent) {
+        whereClause.event = null;
+      } else if (eventId) {
+        whereClause.eventId = eventId;
+      }
+
+      // Récupérer le nombre total AVANT d'appliquer les filtres texte (pour la pagination)
+      const countBeforeTextFilter = await this.prisma.photo.count({
         where: whereClause,
       });
 
       // Récupérer les photos paginées
-      const photos = await this.prisma.photo.findMany({
+      let photos = await this.prisma.photo.findMany({
         where: whereClause,
         select: {
           id: true,
@@ -208,13 +230,32 @@ export class UploadController {
         take: limit,
       });
 
+      // Filtrer par recherche texte ou par utilisateur taguée (côté serveur)
+      if (search || taggedByUsername) {
+        photos = photos.filter((photo) => {
+          // Filtre par utilisateur taguée
+          if (taggedByUsername) {
+            return photo.tags && photo.tags.includes(taggedByUsername);
+          }
+
+          // Filtre par recherche texte (tags ou nom d'utilisateur)
+          if (search) {
+            const tagsMatch = photo.tags && photo.tags.some((tag) => tag.toLowerCase().includes(search));
+            const nameMatch = photo.user?.username && photo.user.username.toLowerCase().includes(search);
+            return tagsMatch || nameMatch;
+          }
+
+          return true;
+        });
+      }
+
       return {
         success: true,
         count: photos.length,
-        totalCount: totalCount,
+        totalCount: countBeforeTextFilter,
         page: page,
         limit: limit,
-        totalPages: Math.ceil(totalCount / limit),
+        totalPages: Math.ceil(countBeforeTextFilter / limit),
         photos: photos,
       };
     } catch (error) {

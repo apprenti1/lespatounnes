@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 
 export default function Photos() {
-  const [photos, setPhotos] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState('');
@@ -46,8 +45,30 @@ export default function Photos() {
 
       try {
         const token = localStorage.getItem('accessToken');
+
+        // Construire les paramètres de query
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+        params.append('limit', '12');
+
+        if (selectedEventId) {
+          params.append('eventId', selectedEventId);
+        }
+
+        if (showNoEvent) {
+          params.append('noEvent', 'true');
+        }
+
+        if (searchQuery.trim()) {
+          params.append('search', searchQuery);
+        }
+
+        if (showTaggedByMe && user?.username) {
+          params.append('taggedByUsername', user.username);
+        }
+
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/uploads/user-photos?page=${page}&limit=12`,
+          `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`,
           {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {},
           }
@@ -62,17 +83,17 @@ export default function Photos() {
 
         // Ajouter ou remplacer les photos
         if (append) {
-          setPhotos((prev) => [...prev, ...newPhotos]);
+          setFilteredPhotos((prev) => [...prev, ...newPhotos]);
         } else {
-          setPhotos(newPhotos);
+          setFilteredPhotos(newPhotos);
         }
 
         setCurrentPage(page);
         setTotalPages(data.totalPages);
         setHasMore(page < data.totalPages);
 
-        // Extraire les événements uniques (seulement à la première page)
-        if (isFirstPage) {
+        // Extraire les événements uniques (seulement à la première page et si pas de filtre)
+        if (isFirstPage && !selectedEventId && !showNoEvent) {
           const uniqueEvents = {};
           newPhotos.forEach((photo) => {
             if (photo.event && !uniqueEvents[photo.event.id]) {
@@ -92,47 +113,14 @@ export default function Photos() {
         }
       }
     },
-    []
+    [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]
   );
 
-  // Charger les photos au montage
+  // Charger les photos quand les filtres changent (retour à la page 1)
   useEffect(() => {
+    setCurrentPage(1);
     fetchPhotos(1, false);
-  }, [fetchPhotos]);
-
-  // Filtrer les photos selon tous les critères
-  useEffect(() => {
-    let result = photos;
-
-    // Filtre "Je suis taggé"
-    if (showTaggedByMe && user) {
-      result = result.filter((photo) =>
-        photo.tags && photo.tags.includes(user.username)
-      );
-    }
-
-    // Filtre "Sans événement"
-    if (showNoEvent) {
-      result = result.filter((photo) => !photo.event);
-    }
-
-    // Filtre par événement (seulement si showNoEvent est false)
-    if (!showNoEvent && selectedEventId !== '') {
-      result = result.filter((photo) => photo.event && photo.event.id === selectedEventId);
-    }
-
-    // Filtre de recherche par tags ou noms
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase();
-      result = result.filter((photo) => {
-        const tagsMatch = photo.tags && photo.tags.some((tag) => tag.toLowerCase().includes(query));
-        const nameMatch = photo.user?.username && photo.user.username.toLowerCase().includes(query);
-        return tagsMatch || nameMatch;
-      });
-    }
-
-    setFilteredPhotos(result);
-  }, [selectedEventId, photos, showTaggedByMe, showNoEvent, searchQuery, user]);
+  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, fetchPhotos]);
 
   // Intersection Observer pour infinite scroll
   useEffect(() => {
@@ -286,11 +274,7 @@ export default function Photos() {
           ) : filteredPhotos.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">📭</div>
-              <p className="text-gray-600 text-lg">
-                {photos.length === 0
-                  ? 'Aucune photo pour le moment'
-                  : 'Aucune photo pour cet événement'}
-              </p>
+              <p className="text-gray-600 text-lg">Aucune photo correspondant à votre recherche</p>
             </div>
           ) : (
             <div className="space-y-8">
