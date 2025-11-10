@@ -229,18 +229,9 @@ export class UploadController {
 
       const whereClause = whereConditions.length > 0 ? ` WHERE ${whereConditions.join(' AND ')}` : ' WHERE 1=1';
 
-      // Requête optimisée pour compter le nombre total
-      // On utilise une sous-requête pour éviter les JOINs inutiles si possible
-      const countResult: any = await this.prisma.$queryRawUnsafe(
-        `SELECT COUNT(DISTINCT p.id) as total FROM photos p
-         LEFT JOIN users u ON p."userId" = u.id${whereClause}`,
-        ...params
-      );
-      const totalCount = parseInt(countResult[0].total, 10);
-
-      // Requête optimisée pour récupérer les photos paginées
-      // On récupère les données en une seule requête bien structurée
-      const photos: any = await this.prisma.$queryRawUnsafe(
+      // Single optimized query to fetch both count and paginated results
+      // Using window function to avoid counting all rows unnecessarily
+      const photosWithCount: any = await this.prisma.$queryRawUnsafe(
         `SELECT
           p.id,
           p.image,
@@ -260,7 +251,8 @@ export class UploadController {
               'date', e.date
             )
             ELSE NULL
-          END as "event"
+          END as "event",
+          COUNT(*) OVER() as "totalCount"
         FROM photos p
         LEFT JOIN users u ON p."userId" = u.id
         LEFT JOIN events e ON p."eventId" = e.id${whereClause}
@@ -269,17 +261,18 @@ export class UploadController {
         ...params
       );
 
+      const totalCount = photosWithCount.length > 0 ? parseInt(photosWithCount[0].totalCount, 10) : 0;
+
       return {
         success: true,
-        count: photos?.length || 0,
+        count: photosWithCount?.length || 0,
         totalCount: totalCount,
         page: page,
         limit: limit,
         totalPages: Math.ceil(totalCount / limit),
-        photos: photos,
+        photos: photosWithCount,
       };
     } catch (error) {
-      console.error('Erreur getUserPhotos:', error);
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -379,8 +372,8 @@ export class UploadController {
         success: true,
         tags: Array.from(allTags).sort().slice(0, limit),
       };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch {
+      throw new HttpException('Error fetching autocomplete suggestions', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
