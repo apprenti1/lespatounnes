@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
+import LazyImage from '../components/LazyImage';
 
 export default function Photos() {
   const [filteredPhotos, setFilteredPhotos] = useState([]);
@@ -371,8 +372,8 @@ export default function Photos() {
                     onClick={() => openPhotoModal(photo)}
                   >
                     <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 h-64">
-                      {/* Image responsive */}
-                      <img
+                      {/* Image avec lazy loading */}
+                      <LazyImage
                         srcSet={`
                           ${import.meta.env.VITE_API_URL}/uploads/thumbnail/${photo.image} 150w,
                           ${import.meta.env.VITE_API_URL}/uploads/small/${photo.image} 400w,
@@ -478,7 +479,7 @@ export default function Photos() {
               {/* Image */}
               <div className="space-y-4">
                 <div className="overflow-hidden rounded-lg">
-                  <img
+                  <LazyImage
                     srcSet={`
                       ${import.meta.env.VITE_API_URL}/uploads/small/${selectedPhoto.image} 400w,
                       ${import.meta.env.VITE_API_URL}/uploads/medium/${selectedPhoto.image} 800w,
