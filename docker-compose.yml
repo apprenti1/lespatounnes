@@ -43,6 +43,7 @@ services:
       - ${DOCKER_NETWORK:-lespatounes-network}
     volumes:
       - ./api/prisma:/app/prisma
+      - ./api/uploads:/app/uploads
 
   # React App
   app:
