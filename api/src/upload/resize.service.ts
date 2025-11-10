@@ -76,21 +76,21 @@ export class ResizeService {
       // Small: 400x300
       await this.resizeImage(imagePath, this.folders.small, uuid, {
         width: 400,
-        height: 300,
+        height: Math.round(400 / aspectRatio),
         fit: 'cover',
       });
 
       // Medium: 800x600
       await this.resizeImage(imagePath, this.folders.medium, uuid, {
         width: 800,
-        height: 600,
+        height: Math.round(800 / aspectRatio),
         fit: 'cover',
       });
 
       // Large: 1200x900
       await this.resizeImage(imagePath, this.folders.large, uuid, {
         width: 1200,
-        height: 900,
+        height: Math.round(1200 / aspectRatio),
         fit: 'cover',
       });
     } catch (error) {
