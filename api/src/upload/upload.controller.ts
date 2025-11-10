@@ -153,8 +153,10 @@ export class UploadController {
   }
 
   /**
-   * Route protégée pour récupérer les photos de l'utilisateur
+   * Route protégée pour récupérer les photos
    * GET /uploads/user-photos
+   * - Les photographes voient uniquement leurs propres photos
+   * - Les admins et devs voient TOUTES les photos
    * Authentification requise
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
@@ -163,14 +165,24 @@ export class UploadController {
   async getUserPhotos(@Req() req: any) {
     try {
       const userId = req.user.id;
+      const userRole = req.user.role;
+
+      // Les admins et devs voient toutes les photos, les autres voient seulement les leurs
+      const whereClause = (userRole === 'ADMIN' || userRole === 'DEV') ? {} : { userId: userId };
 
       const photos = await this.prisma.photo.findMany({
-        where: { userId: userId },
+        where: whereClause,
         select: {
           id: true,
           image: true,
           createdAt: true,
           tags: true,
+          userId: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
           event: {
             select: {
               id: true,
@@ -186,6 +198,34 @@ export class UploadController {
         success: true,
         count: photos.length,
         photos: photos,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Route protégée pour récupérer la liste des tags pour autocomplete
+   * GET /uploads/tags/autocomplete
+   * Authentification requise
+   * IMPORTANT: Doit être AVANT les routes avec paramètres
+   */
+  @Get('tags/autocomplete')
+  @UseGuards(JwtGuard)
+  async getTagsAutocomplete(@Req() req: any) {
+    try {
+      const tags = await this.prisma.photoTag.findMany({
+        select: {
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      return {
+        success: true,
+        tags: tags.map((t) => t.name),
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
