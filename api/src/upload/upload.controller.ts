@@ -205,16 +205,18 @@ export class UploadController {
   }
 
   /**
-   * Route protégée pour récupérer la liste des tags pour autocomplete
+   * Route protégée pour récupérer la liste des tags et noms d'utilisateurs pour autocomplete
    * GET /uploads/tags/autocomplete
    * Authentification requise
+   * Retourne les tags des photos ET les noms d'utilisateurs
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('tags/autocomplete')
   @UseGuards(JwtGuard)
   async getTagsAutocomplete(@Req() req: any) {
     try {
-      const tags = await this.prisma.photoTag.findMany({
+      // Récupérer les tags des photos
+      const photoTags = await this.prisma.photoTag.findMany({
         select: {
           name: true,
         },
@@ -223,9 +225,37 @@ export class UploadController {
         },
       });
 
+      // Récupérer les noms d'utilisateurs
+      const users = await this.prisma.user.findMany({
+        select: {
+          username: true,
+        },
+        where: {
+          username: {
+            not: null,
+          },
+        },
+        orderBy: {
+          username: 'asc',
+        },
+      });
+
+      // Combiner et dédupliquer
+      const allTags = new Set<string>();
+
+      // Ajouter les tags des photos
+      photoTags.forEach((t) => allTags.add(t.name));
+
+      // Ajouter les noms d'utilisateurs
+      users.forEach((u) => {
+        if (u.username) {
+          allTags.add(u.username);
+        }
+      });
+
       return {
         success: true,
-        tags: tags.map((t) => t.name),
+        tags: Array.from(allTags).sort(),
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
