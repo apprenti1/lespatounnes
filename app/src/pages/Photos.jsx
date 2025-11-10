@@ -36,6 +36,7 @@ export default function Photos() {
     isLoadingPhotos: false, // Flag to prevent duplicate requests
   });
   const loadPhotosInFlightRef = useRef(false);
+  const loadPhotosRef = useRef(null); // Store loadPhotos function for observer
 
   // Récupérer l'utilisateur connecté (une fois au montage)
   useEffect(() => {
@@ -65,8 +66,14 @@ export default function Photos() {
     };
   }, [hasMore, isLoadingMore, currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
 
+  // Store loadPhotos in ref so observer can access latest version
+  useEffect(() => {
+    loadPhotosRef.current = loadPhotos;
+  }, [loadPhotos]);
+
   // Charger les photos avec les filtres actuels
   const loadPhotos = useCallback(async (pageNum = 1) => {
+    console.log('[loadPhotos] Called with pageNum:', pageNum);
     // Récupérer les filtres depuis la ref pour avoir les valeurs à jour
     const { selectedEventId: eventId, showNoEvent: noEvent, searchQuery: query, showTaggedByMe: taggedByMe, user: currentUser, isLoadingPhotos } = stateRef.current;
 
@@ -184,23 +191,36 @@ export default function Photos() {
   // Intersection Observer pour infinite scroll
   useEffect(() => {
     const target = observerTarget.current;
+    console.log('[IntersectionObserver] Setup - target:', target, 'target height:', target?.offsetHeight);
     if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page } = stateRef.current;
-          if (canLoadMore && !isLoading) {
-            loadPhotos(page + 1);
+        console.log('[IntersectionObserver] Callback - entries:', entries.length, 'isIntersecting:', entries[0]?.isIntersecting);
+
+        if (entries[0]?.isIntersecting) {
+          const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
+          console.log('[IntersectionObserver] Intersection detected - page:', page, 'canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
+
+          if (canLoadMore && !isLoading && !isLoadingPhotos) {
+            console.log('[IntersectionObserver] Loading page:', page + 1);
+            loadPhotosRef.current?.(page + 1);
+          } else {
+            console.log('[IntersectionObserver] Skipped - canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
           }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '200px' } // Added rootMargin to detect element earlier
     );
 
     observer.observe(target);
-    return () => observer.unobserve(target);
-  }, []);
+    console.log('[IntersectionObserver] Observer attached to target');
+
+    return () => {
+      console.log('[IntersectionObserver] Cleanup - unobserving target');
+      observer.unobserve(target);
+    };
+  }, []); // Empty deps - loadPhotos is stable and we read from stateRef
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
@@ -427,7 +447,14 @@ export default function Photos() {
 
               {/* Observer target pour infinite scroll - toujours présent si on a des photos */}
               {filteredPhotos.length > 0 && (
-                <div ref={observerTarget} className={hasMore ? "h-4" : "hidden"} />
+                <div
+                  ref={observerTarget}
+                  className={hasMore ? "h-32 bg-blue-100 my-8 flex items-center justify-center" : "h-0 hidden"}
+                  data-test="observer-target"
+                  style={{ visibility: hasMore ? 'visible' : 'hidden' }}
+                >
+                  {hasMore && <p className="text-sm text-blue-600 font-semibold">📍 Scroll detection zone</p>}
+                </div>
               )}
             </div>
           )}
