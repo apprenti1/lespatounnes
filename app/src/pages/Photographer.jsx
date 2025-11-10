@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TagEditor from '../components/TagEditor';
@@ -25,6 +25,16 @@ export default function Photographer() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const observerTarget = useRef(null);
+  const initialLoadDone = useRef(false);
+
+  // Refs for managing state without re-creating functions
+  const stateRef = useRef({
+    hasMore: true,
+    isLoadingMore: false,
+    currentPage: 1,
+    isLoadingPhotos: false,
+  });
+  const loadPhotosRef = useRef(null);
 
   // Vérifier l'authentification et le rôle
   useEffect(() => {
@@ -46,7 +56,7 @@ export default function Photographer() {
       }
       setUser(parsedUser);
       fetchEvents(token);
-      fetchUserPhotos(token);
+      initialLoadDone.current = true;
     } catch (error) {
       toast.error('Erreur lors de la vérification de l\'authentification');
       navigate('/login');
@@ -73,80 +83,139 @@ export default function Photographer() {
     }
   };
 
-  const fetchUserPhotos = useCallback(
-    async (token, page = 1, append = false) => {
-      const isFirstPage = page === 1;
-      if (isFirstPage) {
-        setLoadingPhotos(true);
-      } else {
-        setIsLoadingMore(true);
-      }
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/uploads/user-photos?page=${page}&limit=10`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          // Mapper les photos pour extraire juste les UUIDs pour l'affichage
-          const photoUuids = data.photos.map((photo) => ({
-            uuid: photo.image,
-            id: photo.id,
-            createdAt: photo.createdAt,
-            event: photo.event,
-            tags: photo.tags,
-            username: photo.user.username,
-          }));
-
-          // Ajouter les photos existantes ou remplacer
-          if (append) {
-            setUploadedImages((prev) => [...prev, ...photoUuids]);
-          } else {
-            setUploadedImages(photoUuids);
-          }
-
-          setCurrentPage(page);
-          setTotalPages(data.totalPages);
-          setHasMore(page < data.totalPages);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des photos:', error);
-      } finally {
-        if (isFirstPage) {
-          setLoadingPhotos(false);
-        } else {
-          setIsLoadingMore(false);
-        }
-      }
-    },
-    []
-  );
-
-  // Intersection Observer pour infinite scroll
+  // Update stateRef when pagination state changes
   useEffect(() => {
-    if (!observerTarget.current || !hasMore || isLoadingMore) return;
+    stateRef.current = {
+      hasMore,
+      isLoadingMore,
+      currentPage,
+      isLoadingPhotos: stateRef.current.isLoadingPhotos,
+    };
+  }, [hasMore, isLoadingMore, currentPage]);
+
+  const fetchUserPhotos = useCallback(async (token, pageNum = 1) => {
+    const { isLoadingPhotos } = stateRef.current;
+
+    // Prevent duplicate requests
+    if (isLoadingPhotos) {
+      return;
+    }
+
+    const isFirstPage = pageNum === 1;
+    stateRef.current.isLoadingPhotos = true;
+
+    if (isFirstPage) {
+      setLoadingPhotos(true);
+    } else {
+      setIsLoadingMore(true);
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/uploads/user-photos?page=${pageNum}&limit=12`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des photos');
+      }
+
+      const data = await response.json();
+      const photoUuids = data.photos.map((photo) => ({
+        uuid: photo.image,
+        id: photo.id,
+        createdAt: photo.createdAt,
+        event: photo.event,
+        tags: photo.tags,
+        username: photo.user.username,
+      }));
+
+      if (isFirstPage) {
+        setUploadedImages(photoUuids);
+      } else {
+        setUploadedImages((prev) => [...prev, ...photoUuids]);
+      }
+
+      setCurrentPage(pageNum);
+      setTotalPages(data.totalPages);
+      setHasMore(pageNum < data.totalPages);
+    } catch (error) {
+      toast.error('Impossible de charger les photos');
+    } finally {
+      stateRef.current.isLoadingPhotos = false;
+      if (isFirstPage) {
+        setLoadingPhotos(false);
+      } else {
+        setIsLoadingMore(false);
+      }
+    }
+  }, []);
+
+  // Store fetchUserPhotos in ref for observer to access
+  useEffect(() => {
+    loadPhotosRef.current = fetchUserPhotos;
+  }, [fetchUserPhotos]);
+
+  // Load photos on mount
+  useEffect(() => {
+    if (!initialLoadDone.current) return;
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      fetchUserPhotos(token, 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Intersection Observer for infinite scroll with scroll fallback
+  useLayoutEffect(() => {
+    const target = observerTarget.current;
+    if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          const token = localStorage.getItem('accessToken');
-          if (token) {
-            fetchUserPhotos(token, currentPage + 1, true);
+        if (entries[0]?.isIntersecting) {
+          const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
+          if (canLoadMore && !isLoading && !isLoadingPhotos) {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+              loadPhotosRef.current?.(token, page + 1);
+            }
           }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '100px' }
     );
 
-    observer.observe(observerTarget.current);
-    return () => observer.disconnect();
-  }, [currentPage, hasMore, isLoadingMore, fetchUserPhotos]);
+    observer.observe(target);
+
+    // Fallback scroll listener for better reliability
+    const handleScroll = () => {
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (isVisible) {
+        const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
+        if (canLoadMore && !isLoading && !isLoadingPhotos) {
+          const token = localStorage.getItem('accessToken');
+          if (token) {
+            loadPhotosRef.current?.(token, page + 1);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      observer.unobserve(target);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [uploadedImages.length]);
 
   const toggleFolder = (folderId) => {
     setExpandedFolders((prev) => ({
@@ -191,8 +260,9 @@ export default function Photographer() {
 
       // Rafraîchir la liste
       const photoToken = localStorage.getItem('accessToken');
-      setCurrentPage(1);
-      await fetchUserPhotos(photoToken, 1, false);
+      if (photoToken) {
+        await fetchUserPhotos(photoToken, 1);
+      }
     } catch (error) {
       toast.error(`❌ ${error.message}`, { position: 'top-center' });
     } finally {
@@ -230,8 +300,9 @@ export default function Photographer() {
 
       // Rafraîchir la liste
       const photoToken = localStorage.getItem('accessToken');
-      setCurrentPage(1);
-      await fetchUserPhotos(photoToken, 1, false);
+      if (photoToken) {
+        await fetchUserPhotos(photoToken, 1);
+      }
     } catch (error) {
       toast.error(`❌ ${error.message}`, { position: 'top-center' });
     }
@@ -302,7 +373,9 @@ export default function Photographer() {
       }
 
       // Rafraîchir la liste des photos depuis la base de données
-      await fetchUserPhotos(token);
+      if (token) {
+        await fetchUserPhotos(token, 1);
+      }
 
       setFiles([]);
       toast.success(`✅ ${data.count} image(s) uploadée(s) avec succès!`, {
