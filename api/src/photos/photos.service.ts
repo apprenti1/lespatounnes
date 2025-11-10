@@ -8,6 +8,19 @@ export class PhotosService {
   constructor(private prisma: PrismaService) {}
 
   async updateTags(photoId: string, tags: string[]) {
+    // Enregistrer les nouveaux tags dans la table PhotoTag
+    for (const tag of tags) {
+      const trimmedTag = tag.trim();
+      if (trimmedTag) {
+        await this.prisma.photoTag.upsert({
+          where: { name: trimmedTag },
+          update: {},
+          create: { name: trimmedTag },
+        });
+      }
+    }
+
+    // Mettre à jour les tags de la photo
     return await this.prisma.photo.update({
       where: { id: photoId },
       data: { tags },
