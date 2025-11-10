@@ -20,8 +20,9 @@ export default function Photos() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const observerTarget = useRef(null);
+  const initialLoadDone = useRef(false);
 
-  // Récupérer l'utilisateur connecté
+  // Récupérer l'utilisateur connecté (une fois au montage)
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -31,24 +32,70 @@ export default function Photos() {
         console.error('Erreur lors de la récupération de l\'utilisateur:', error);
       }
     }
+    // Charger la première page une seule fois
+    initialLoadDone.current = true;
   }, []);
 
-  // Récupérer les photos avec pagination
-  const fetchPhotos = useCallback(
-    async (page = 1, append = false) => {
-      const isFirstPage = page === 1;
-      if (isFirstPage) {
-        setLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
-
+  // Charger les photos au montage (une seule fois)
+  useEffect(() => {
+    const fetchInitial = async () => {
+      setLoading(true);
       try {
         const token = localStorage.getItem('accessToken');
-
-        // Construire les paramètres de query
         const params = new URLSearchParams();
-        params.append('page', page.toString());
+        params.append('page', '1');
+        params.append('limit', '12');
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`,
+          {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des photos');
+        }
+
+        const data = await response.json();
+        const newPhotos = data.photos || [];
+
+        setFilteredPhotos(newPhotos);
+        setCurrentPage(1);
+        setTotalPages(data.totalPages);
+        setHasMore(1 < data.totalPages);
+
+        // Extraire les événements uniques
+        const uniqueEvents = {};
+        newPhotos.forEach((photo) => {
+          if (photo.event && !uniqueEvents[photo.event.id]) {
+            uniqueEvents[photo.event.id] = photo.event;
+          }
+        });
+        setEvents(Object.values(uniqueEvents).sort((a, b) => new Date(b.date) - new Date(a.date)));
+      } catch (error) {
+        console.error('Erreur:', error);
+        toast.error('Impossible de charger les photos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (initialLoadDone.current) {
+      fetchInitial();
+    }
+  }, []);
+
+  // Charger les photos quand les filtres changent (retour à la page 1)
+  useEffect(() => {
+    if (!initialLoadDone.current) return;
+
+    const fetchFiltered = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('accessToken');
+        const params = new URLSearchParams();
+        params.append('page', '1');
         params.append('limit', '12');
 
         if (selectedEventId) {
@@ -81,19 +128,13 @@ export default function Photos() {
         const data = await response.json();
         const newPhotos = data.photos || [];
 
-        // Ajouter ou remplacer les photos
-        if (append) {
-          setFilteredPhotos((prev) => [...prev, ...newPhotos]);
-        } else {
-          setFilteredPhotos(newPhotos);
-        }
-
-        setCurrentPage(page);
+        setFilteredPhotos(newPhotos);
+        setCurrentPage(1);
         setTotalPages(data.totalPages);
-        setHasMore(page < data.totalPages);
+        setHasMore(1 < data.totalPages);
 
-        // Extraire les événements uniques (seulement à la première page et si pas de filtre)
-        if (isFirstPage && !selectedEventId && !showNoEvent) {
+        // Extraire les événements uniques (seulement si pas de filtre)
+        if (!selectedEventId && !showNoEvent) {
           const uniqueEvents = {};
           newPhotos.forEach((photo) => {
             if (photo.event && !uniqueEvents[photo.event.id]) {
@@ -106,21 +147,65 @@ export default function Photos() {
         console.error('Erreur:', error);
         toast.error('Impossible de charger les photos');
       } finally {
-        if (isFirstPage) {
-          setLoading(false);
-        } else {
-          setIsLoadingMore(false);
-        }
+        setLoading(false);
       }
-    },
-    [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]
-  );
+    };
 
-  // Charger les photos quand les filtres changent (retour à la page 1)
-  useEffect(() => {
-    setCurrentPage(1);
-    fetchPhotos(1, false);
-  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, fetchPhotos]);
+    fetchFiltered();
+  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
+
+  // Fonction pour charger la page suivante (infinite scroll)
+  const loadNextPage = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const nextPage = currentPage + 1;
+      const params = new URLSearchParams();
+      params.append('page', nextPage.toString());
+      params.append('limit', '12');
+
+      if (selectedEventId) {
+        params.append('eventId', selectedEventId);
+      }
+
+      if (showNoEvent) {
+        params.append('noEvent', 'true');
+      }
+
+      if (searchQuery.trim()) {
+        params.append('search', searchQuery);
+      }
+
+      if (showTaggedByMe && user?.username) {
+        params.append('taggedByUsername', user.username);
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`,
+        {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des photos');
+      }
+
+      const data = await response.json();
+      const newPhotos = data.photos || [];
+
+      setFilteredPhotos((prev) => [...prev, ...newPhotos]);
+      setCurrentPage(nextPage);
+      setHasMore(nextPage < data.totalPages);
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Impossible de charger les photos');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user, isLoadingMore, hasMore]);
 
   // Intersection Observer pour infinite scroll
   useEffect(() => {
@@ -129,7 +214,7 @@ export default function Photos() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          fetchPhotos(currentPage + 1, true);
+          loadNextPage();
         }
       },
       { threshold: 0.1 }
@@ -137,7 +222,7 @@ export default function Photos() {
 
     observer.observe(observerTarget.current);
     return () => observer.disconnect();
-  }, [currentPage, hasMore, isLoadingMore, fetchPhotos]);
+  }, [hasMore, isLoadingMore, loadNextPage]);
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
