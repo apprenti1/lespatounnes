@@ -68,13 +68,11 @@ export default function Photos() {
 
   // Charger les photos avec les filtres actuels
   const loadPhotos = useCallback(async (pageNum = 1) => {
-    console.log('[loadPhotos] Called with pageNum:', pageNum);
     // Récupérer les filtres depuis la ref pour avoir les valeurs à jour
     const { selectedEventId: eventId, showNoEvent: noEvent, searchQuery: query, showTaggedByMe: taggedByMe, user: currentUser, isLoadingPhotos } = stateRef.current;
 
     // Prevent duplicate requests - only allow one request at a time
     if (isLoadingPhotos) {
-      console.warn('[loadPhotos] Already loading, skipping duplicate request for page:', pageNum);
       return;
     }
 
@@ -109,8 +107,6 @@ export default function Photos() {
       if (taggedByMe && currentUser?.username) {
         params.append('taggedByUsername', currentUser.username);
       }
-
-      console.log('[loadPhotos] Fetching page:', pageNum, 'URL:', `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`);
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/uploads/user-photos?${params.toString()}`,
@@ -166,97 +162,50 @@ export default function Photos() {
     loadPhotosRef.current = loadPhotos;
   }, [loadPhotos]);
 
-  // Charger les photos au montage
+  // Load photos on mount
   useEffect(() => {
     if (!initialLoadDone.current) return;
-    console.log('[Mount] Loading initial photos');
     loadPhotos(1);
-  }, []); // Empty deps - loadPhotos is stable from useCallback with empty deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Charger les photos quand les filtres changent
-  // Reset to page 1 when filters change
+  // Reload photos when filters change
   useEffect(() => {
     if (!initialLoadDone.current) return;
-    console.log('[Filters Changed] Resetting to page 1 with new filters:', {
-      selectedEventId,
-      showNoEvent,
-      searchQuery,
-      showTaggedByMe,
-    });
     setCurrentPage(1);
     setHasMore(true);
     loadPhotos(1);
-  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe]); // Filter deps only, not loadPhotos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe]);
 
-  // Intersection Observer pour infinite scroll - MUST use useLayoutEffect
-  // because useEffect runs before DOM elements are available
+  // Intersection Observer for infinite scroll pagination
   useLayoutEffect(() => {
     const target = observerTarget.current;
-    console.log('[IntersectionObserver] Setup - target:', target);
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      console.log('[IntersectionObserver] Target rect:', {
-        top: rect.top,
-        bottom: rect.bottom,
-        height: rect.height,
-        offsetHeight: target.offsetHeight,
-        offsetTop: target.offsetTop,
-        parentElement: target.parentElement?.className,
-      });
-    }
-    if (!target) {
-      console.warn('[IntersectionObserver] No target found! This means observerTarget.current is null');
-      return;
-    }
+    if (!target) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log('[IntersectionObserver] Callback triggered!');
-        entries.forEach((entry, idx) => {
-          console.log(`[IntersectionObserver] Entry ${idx}:`, {
-            isIntersecting: entry.isIntersecting,
-            boundingClientRect: {
-              top: entry.boundingClientRect.top,
-              bottom: entry.boundingClientRect.bottom,
-              height: entry.boundingClientRect.height,
-            },
-            intersectionRatio: entry.intersectionRatio,
-            rootBounds: entry.rootBounds,
-          });
-        });
-
         if (entries[0]?.isIntersecting) {
           const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
-          console.log('[IntersectionObserver] ✅ Intersection detected - page:', page, 'canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
-
           if (canLoadMore && !isLoading && !isLoadingPhotos) {
-            console.log('[IntersectionObserver] 🚀 Loading page:', page + 1);
             loadPhotosRef.current?.(page + 1);
-          } else {
-            console.log('[IntersectionObserver] ⏭️ Skipped - canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
           }
         }
       },
-      { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: '100px' }
+      { threshold: 0.1, rootMargin: '100px' }
     );
 
     observer.observe(target);
-    console.log('[IntersectionObserver] ✅ Observer attached to target');
 
-    // Fallback: Manual scroll detection since IntersectionObserver might not work
+    // Fallback scroll listener for better reliability
     const handleScroll = () => {
       if (!target) return;
-
       const rect = target.getBoundingClientRect();
       const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
       if (isVisible) {
-        console.log('[Scroll Fallback] 📍 Target is visible in viewport - checking if should load...');
         const { hasMore: canLoadMore, isLoadingMore: isLoading, currentPage: page, isLoadingPhotos } = stateRef.current;
-        console.log('[Scroll Fallback] canLoadMore:', canLoadMore, 'isLoading:', isLoading, 'isLoadingPhotos:', isLoadingPhotos);
-
         if (canLoadMore && !isLoading && !isLoadingPhotos) {
-          console.log('[Scroll Fallback] 🚀 Loading page:', page + 1);
           loadPhotosRef.current?.(page + 1);
         }
       }
@@ -265,11 +214,10 @@ export default function Photos() {
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      console.log('[IntersectionObserver] Cleanup - unobserving target');
       observer.unobserve(target);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [filteredPhotos.length]); // Re-attach observer when photos list changes (DOM elements move)
+  }, [filteredPhotos.length]);
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
@@ -494,16 +442,9 @@ export default function Photos() {
                 </div>
               )}
 
-              {/* Observer target pour infinite scroll - toujours présent si on a des photos */}
-              {filteredPhotos.length > 0 && (
-                <div
-                  ref={observerTarget}
-                  className={hasMore ? "h-32 bg-blue-100 my-8 flex items-center justify-center" : "h-0 hidden"}
-                  data-test="observer-target"
-                  style={{ visibility: hasMore ? 'visible' : 'hidden' }}
-                >
-                  {hasMore && <p className="text-sm text-blue-600 font-semibold">📍 Scroll detection zone</p>}
-                </div>
+              {/* Infinite scroll observer target - triggers loading next page on scroll */}
+              {filteredPhotos.length > 0 && hasMore && (
+                <div ref={observerTarget} className="h-4 my-4" />
               )}
             </div>
           )}
