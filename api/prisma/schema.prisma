@@ -77,3 +77,9 @@ model Photo {
 
   @@map("photos")
 }
+
+model PhotoTag {
+  name String @id
+
+  @@map("photo_tags")
+}
