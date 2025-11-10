@@ -7,21 +7,26 @@ export default function TagEditor({ value, onChange, placeholder = '' }) {
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
-  // Charger les usernames disponibles au montage
+  // Charger les tags et usernames disponibles au montage
   useEffect(() => {
-    const fetchUsernames = async () => {
+    const fetchTagsAndUsernames = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/usernames`);
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/tags/autocomplete`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         if (data.success) {
-          setAllUsernames(data.data || []);
+          setAllUsernames(data.tags || []);
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des usernames:', error);
+        console.error('Erreur lors du chargement des tags et usernames:', error);
       }
     };
 
-    fetchUsernames();
+    fetchTagsAndUsernames();
   }, []);
 
   // Initialiser les tags depuis la prop value
