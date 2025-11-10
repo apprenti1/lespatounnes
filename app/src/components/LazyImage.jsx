@@ -43,21 +43,18 @@ export default function LazyImage({ srcSet, sizes, src, alt, className, onError 
     };
   }, [src, hasBeenObserved]);
 
+  const shouldApplySrcSet = imageSrc && isLoaded;
+
   return (
     <img
       ref={imgRef}
-      srcSet={imageSrc && isLoaded ? srcSet : ''}
-      sizes={imageSrc && isLoaded ? sizes : ''}
+      srcSet={shouldApplySrcSet ? srcSet : ''}
+      sizes={shouldApplySrcSet ? sizes : ''}
       src={imageSrc}
       alt={alt}
       className={className}
       onLoad={() => setIsLoaded(true)}
-      onError={(e) => {
-        // Si l'image échoue à charger avec srcSet, essayer avec l'original
-        if (onError) {
-          onError(e);
-        }
-      }}
+      onError={onError}
     />
   );
 }
