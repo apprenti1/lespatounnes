@@ -3,10 +3,18 @@ import { useState, useRef, useEffect } from 'react';
 export default function LazyImage({ srcSet, sizes, src, alt, className, onError }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
+  const [hasBeenObserved, setHasBeenObserved] = useState(false);
   const imgRef = useRef(null);
 
   useEffect(() => {
-    if (!imgRef.current) return;
+    // Réinitialiser quand src change
+    setImageSrc(null);
+    setIsLoaded(false);
+    setHasBeenObserved(false);
+  }, [src]);
+
+  useEffect(() => {
+    if (!imgRef.current || hasBeenObserved) return;
 
     // Créer l'Intersection Observer pour charger les images
     const observer = new IntersectionObserver(
@@ -14,8 +22,8 @@ export default function LazyImage({ srcSet, sizes, src, alt, className, onError 
         entries.forEach((entry) => {
           // Quand l'image est visible dans le viewport, charger l'image
           if (entry.isIntersecting) {
-            // Charger l'image avec srcSet
             setImageSrc(src);
+            setHasBeenObserved(true);
             observer.unobserve(entry.target);
           }
         });
@@ -33,13 +41,13 @@ export default function LazyImage({ srcSet, sizes, src, alt, className, onError 
         observer.unobserve(imgRef.current);
       }
     };
-  }, [src]);
+  }, [src, hasBeenObserved]);
 
   return (
     <img
       ref={imgRef}
-      srcSet={isLoaded ? srcSet : ''}
-      sizes={isLoaded ? sizes : ''}
+      srcSet={imageSrc && isLoaded ? srcSet : ''}
+      sizes={imageSrc && isLoaded ? sizes : ''}
       src={imageSrc}
       alt={alt}
       className={className}
