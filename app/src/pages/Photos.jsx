@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 import LazyImage from '../components/LazyImage';
@@ -188,8 +188,9 @@ export default function Photos() {
     loadPhotos(1);
   }, [selectedEventId, showNoEvent, searchQuery, showTaggedByMe]); // Filter deps only, not loadPhotos
 
-  // Intersection Observer pour infinite scroll
-  useEffect(() => {
+  // Intersection Observer pour infinite scroll - MUST use useLayoutEffect
+  // because useEffect runs before DOM elements are available
+  useLayoutEffect(() => {
     const target = observerTarget.current;
     console.log('[IntersectionObserver] Setup - target:', target);
     if (target) {
@@ -204,7 +205,7 @@ export default function Photos() {
       });
     }
     if (!target) {
-      console.warn('[IntersectionObserver] No target found!');
+      console.warn('[IntersectionObserver] No target found! This means observerTarget.current is null');
       return;
     }
 
@@ -268,7 +269,7 @@ export default function Photos() {
       observer.unobserve(target);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Empty deps - loadPhotosRef, stateRef are mutable refs, not deps
+  }, [filteredPhotos.length]); // Re-attach observer when photos list changes (DOM elements move)
 
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
