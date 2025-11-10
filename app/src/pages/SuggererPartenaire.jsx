@@ -34,8 +34,6 @@ export default function SuggererPartenaire() {
 
     try {
       // TODO: Envoyer le formulaire au backend
-      console.log('Formulaire soumis :', formData);
-
       toast.success(
         '✅ Votre suggestion a été envoyée avec succès ! Merci pour votre contribution 💜',
         { position: 'top-center' }
