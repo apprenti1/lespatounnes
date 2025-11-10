@@ -533,20 +533,19 @@ export default function Photographer() {
                       )}
                     </div>
                   ))}
-                </div>
-
-                {/* Infinite scroll loader */}
-                {isLoadingMore && (
-                  <div className="text-center py-8">
-                    <div className="inline-block">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                  {/* Infinite scroll loader */}
+                  {isLoadingMore && (
+                    <div className="text-center py-8">
+                      <div className="inline-block">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                      </div>
+                      <p className="text-gray-500 mt-2">Chargement plus de photos...</p>
                     </div>
-                    <p className="text-gray-500 mt-2">Chargement plus de photos...</p>
-                  </div>
-                )}
+                  )}
 
-                {/* Observer target pour infinite scroll */}
-                {hasMore && <div ref={observerTarget} className="h-4" />}
+                  {/* Observer target pour infinite scroll */}
+                  {hasMore && <div ref={observerTarget} className="h-4" />}
+                </div>
               )}
             </div>
           </div>
