@@ -172,11 +172,10 @@ export class UploadController {
    * IMPORTANT: Doit être AVANT les routes avec paramètres
    */
   @Get('user-photos')
-  @UseGuards(JwtGuard)
   async getUserPhotos(@Req() req: any) {
     try {
-      const userId = req.user.id;
-      const userRole = req.user.role;
+      const userId = req.user?.id || null;
+      const userRole = req.user?.role || null;
       const page = Math.max(1, parseInt(req.query.page || '1', 10));
       const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '12', 10)));
       const offset = (page - 1) * limit;
@@ -192,7 +191,8 @@ export class UploadController {
       let whereConditions: string[] = [];
 
       // Les photographes voient seulement leurs propres photos, les admins/devs voient tout
-      if (userRole !== 'ADMIN' && userRole !== 'DEV') {
+      // Si pas connecté, voir toutes les photos publiques
+      if (userId && userRole !== 'ADMIN' && userRole !== 'DEV') {
         whereConditions.push(`p."userId" = $${params.length + 1}`);
         params.push(userId);
       }
