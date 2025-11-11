@@ -23,6 +23,11 @@ export default function Photographer() {
   const [folderDisplayLimits, setFolderDisplayLimits] = useState({});
   const PHOTOS_PER_FOLDER = 12;
 
+  // Selection mode state
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState(new Set());
+  const [isDeletingMultiple, setIsDeletingMultiple] = useState(false);
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -240,6 +245,78 @@ export default function Photographer() {
       ...prev,
       [folderId]: (prev[folderId] || PHOTOS_PER_FOLDER) + PHOTOS_PER_FOLDER,
     }));
+  };
+
+  const togglePhotoSelection = (photoId) => {
+    setSelectedPhotoIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(photoId)) {
+        newSet.delete(photoId);
+      } else {
+        newSet.add(photoId);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllPhotos = () => {
+    setSelectedPhotoIds(new Set(uploadedImages.map((photo) => photo.id)));
+  };
+
+  const deselectAllPhotos = () => {
+    setSelectedPhotoIds(new Set());
+  };
+
+  const handleDeleteMultiplePhotos = async () => {
+    if (selectedPhotoIds.size === 0) return;
+
+    const confirmDelete = window.confirm(
+      `Êtes-vous sûr de vouloir supprimer ${selectedPhotoIds.size} photo(s)? Cette action est irréversible.`
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeletingMultiple(true);
+    const token = localStorage.getItem('accessToken');
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const photoId of selectedPhotoIds) {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/photos/${photoId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          errorCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`✅ ${successCount} photo(s) supprimée(s) avec succès!`, { position: 'top-center' });
+      }
+      if (errorCount > 0) {
+        toast.error(`❌ ${errorCount} photo(s) n'ont pas pu être supprimées`, { position: 'top-center' });
+      }
+
+      // Refresh photos list
+      deselectAllPhotos();
+      setIsSelectionMode(false);
+      if (token) {
+        await fetchUserPhotos(token, 1);
+      }
+    } finally {
+      setIsDeletingMultiple(false);
+    }
   };
 
   const openPhotoModal = (photo) => {
@@ -532,9 +609,54 @@ export default function Photographer() {
           {/* Images uploadées */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
-              <h2 className="text-2xl font-bold gradient-text mb-6">
-                Images uploadées ({uploadedImages.length})
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold gradient-text">
+                  Images uploadées ({uploadedImages.length})
+                </h2>
+                {uploadedImages.length > 0 && (
+                  <button
+                    onClick={() => setIsSelectionMode(!isSelectionMode)}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                      isSelectionMode
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                    }`}
+                  >
+                    {isSelectionMode ? '✕ Annuler sélection' : '☑️ Mode sélection'}
+                  </button>
+                )}
+              </div>
+
+              {/* Selection toolbar */}
+              {isSelectionMode && selectedPhotoIds.size > 0 && (
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-blue-900">
+                      {selectedPhotoIds.size} photo(s) sélectionnée(s)
+                    </span>
+                    <button
+                      onClick={selectAllPhotos}
+                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Tout sélectionner
+                    </button>
+                    <button
+                      onClick={deselectAllPhotos}
+                      className="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
+                    >
+                      Tout désélectionner
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleDeleteMultiplePhotos}
+                    disabled={isDeletingMultiple}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <span>🗑️</span>
+                    {isDeletingMultiple ? 'Suppression...' : 'Supprimer'}
+                  </button>
+                </div>
+              )}
 
               {uploadedImages.length === 0 ? (
                 <div className="text-center py-12">
@@ -577,7 +699,38 @@ export default function Photographer() {
                         <div className="p-4 bg-gray-50">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {folder.photos.slice(0, folderDisplayLimits[folder.id] || PHOTOS_PER_FOLDER).map((photo) => (
-                              <div key={photo.id} className="group cursor-pointer" onClick={() => openPhotoModal(photo)}>
+                              <div
+                                key={photo.id}
+                                className={`group cursor-pointer relative ${
+                                  isSelectionMode
+                                    ? `ring-2 ring-offset-2 ${
+                                        selectedPhotoIds.has(photo.id)
+                                          ? 'ring-blue-500 ring-offset-blue-500'
+                                          : 'ring-gray-300'
+                                      }`
+                                    : ''
+                                }`}
+                                onClick={() => {
+                                  if (isSelectionMode) {
+                                    togglePhotoSelection(photo.id);
+                                  } else {
+                                    openPhotoModal(photo);
+                                  }
+                                }}
+                              >
+                                {/* Selection checkbox */}
+                                {isSelectionMode && (
+                                  <div className="absolute top-2 left-2 z-10">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedPhotoIds.has(photo.id)}
+                                      onChange={() => togglePhotoSelection(photo.id)}
+                                      className="w-6 h-6 cursor-pointer"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                )}
+
                                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                                   {/* Afficher l'image responsive avec srcset */}
                                   <img
