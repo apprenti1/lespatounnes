@@ -28,6 +28,9 @@ export default function Photographer() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState(new Set());
   const [isDeletingMultiple, setIsDeletingMultiple] = useState(false);
 
+  // All events with photos (for display structure even if photos not loaded)
+  const [allEventsWithPhotos, setAllEventsWithPhotos] = useState([]);
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -65,6 +68,7 @@ export default function Photographer() {
       }
       setUser(parsedUser);
       fetchEvents(token);
+      fetchAllEventsWithPhotos();
       initialLoadDone.current = true;
     } catch (error) {
       toast.error('Erreur lors de la vérification de l\'authentification');
@@ -89,6 +93,48 @@ export default function Photographer() {
       console.error('Erreur lors du chargement des événements:', error);
     } finally {
       setLoadingEvents(false);
+    }
+  };
+
+  const fetchAllEventsWithPhotos = async () => {
+    try {
+      // Récupérer TOUTES les photos (sans limite) pour voir les événements
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/uploads/all`,
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const photos = data.success ? data.photos : [];
+
+        // Regrouper par événement pour connaître TOUS les événements avec photos
+        const eventsMap = new Map();
+        const noEventGroup = { id: 'no-event', title: 'Autres photos', event: null, photos: [] };
+
+        photos.forEach((photo) => {
+          if (photo.event) {
+            if (!eventsMap.has(photo.event.id)) {
+              eventsMap.set(photo.event.id, {
+                id: `event-${photo.event.id}`,
+                title: photo.event.title,
+                event: photo.event,
+                photos: [],
+              });
+            }
+          } else {
+            noEventGroup.photos.push(photo);
+          }
+        });
+
+        const eventsList = Array.from(eventsMap.values());
+        if (noEventGroup.photos.length > 0) {
+          eventsList.push(noEventGroup);
+        }
+
+        setAllEventsWithPhotos(eventsList);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des événements avec photos:', error);
     }
   };
 
@@ -404,24 +450,43 @@ export default function Photographer() {
   };
 
   const groupPhotosByEvent = (photos) => {
-    const grouped = {};
+    // Créer une copie de allEventsWithPhotos comme base
+    const eventsCopy = allEventsWithPhotos.map((e) => ({
+      ...e,
+      photos: [],
+    }));
 
+    // Ajouter les photos chargées aux événements correspondants
     photos.forEach((photo) => {
-      const folderId = photo.event ? `event-${photo.event.id}` : 'no-event';
-      const folderKey = photo.event ? photo.event.title : 'Autres photos';
+      const eventId = photo.event ? `event-${photo.event.id}` : 'no-event';
+      const eventFolder = eventsCopy.find((e) => e.id === eventId);
 
-      if (!grouped[folderId]) {
-        grouped[folderId] = {
-          id: folderId,
-          title: folderKey,
-          event: photo.event || null,
-          photos: [],
-        };
+      if (eventFolder) {
+        eventFolder.photos.push(photo);
       }
-      grouped[folderId].photos.push(photo);
     });
 
-    return Object.values(grouped);
+    // Si allEventsWithPhotos est vide, fall back à l'ancienne méthode
+    if (eventsCopy.length === 0) {
+      const grouped = {};
+      photos.forEach((photo) => {
+        const folderId = photo.event ? `event-${photo.event.id}` : 'no-event';
+        const folderKey = photo.event ? photo.event.title : 'Autres photos';
+
+        if (!grouped[folderId]) {
+          grouped[folderId] = {
+            id: folderId,
+            title: folderKey,
+            event: photo.event || null,
+            photos: [],
+          };
+        }
+        grouped[folderId].photos.push(photo);
+      });
+      return Object.values(grouped);
+    }
+
+    return eventsCopy;
   };
 
   const handleFileSelect = (e) => {
