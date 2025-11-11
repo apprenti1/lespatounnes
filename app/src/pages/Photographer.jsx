@@ -908,7 +908,7 @@ export default function Photographer() {
       {/* Modale de gestion des photos */}
       {isModalOpen && selectedPhoto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-in flex flex-col max-h-[90vh] my-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-in flex flex-col max-h-[90vh] my-auto overflow-hidden">
             {/* En-tête de la modale */}
             <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6 text-white flex justify-between items-center flex-shrink-0">
               <h2 className="text-xl font-bold">Gérer la photo</h2>
