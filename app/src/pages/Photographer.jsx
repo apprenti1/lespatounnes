@@ -377,6 +377,18 @@ export default function Photographer() {
     setEditTags('');
   };
 
+  // Close modal with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        closePhotoModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
+
   const handleDeletePhoto = async () => {
     if (!selectedPhoto) return;
 
