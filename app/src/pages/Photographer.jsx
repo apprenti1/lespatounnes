@@ -450,43 +450,40 @@ export default function Photographer() {
   };
 
   const groupPhotosByEvent = (photos) => {
-    // Créer une copie de allEventsWithPhotos comme base
-    const eventsCopy = allEventsWithPhotos.map((e) => ({
-      ...e,
-      photos: [],
-    }));
+    // Créer une Map pour tous les événements avec photos (de allEventsWithPhotos)
+    const eventsMap = new Map();
+
+    // Initialiser avec allEventsWithPhotos comme base
+    allEventsWithPhotos.forEach((e) => {
+      eventsMap.set(e.id, {
+        ...e,
+        photos: [],
+      });
+    });
 
     // Ajouter les photos chargées aux événements correspondants
     photos.forEach((photo) => {
       const eventId = photo.event ? `event-${photo.event.id}` : 'no-event';
-      const eventFolder = eventsCopy.find((e) => e.id === eventId);
 
-      if (eventFolder) {
-        eventFolder.photos.push(photo);
+      if (eventsMap.has(eventId)) {
+        // Ajouter à un événement existant
+        eventsMap.get(eventId).photos.push(photo);
+      } else {
+        // Créer un nouvel événement si pas dans allEventsWithPhotos
+        if (!eventsMap.has(eventId)) {
+          eventsMap.set(eventId, {
+            id: eventId,
+            title: photo.event ? photo.event.title : 'Autres photos',
+            event: photo.event || null,
+            photos: [photo],
+          });
+        } else {
+          eventsMap.get(eventId).photos.push(photo);
+        }
       }
     });
 
-    // Si allEventsWithPhotos est vide, fall back à l'ancienne méthode
-    if (eventsCopy.length === 0) {
-      const grouped = {};
-      photos.forEach((photo) => {
-        const folderId = photo.event ? `event-${photo.event.id}` : 'no-event';
-        const folderKey = photo.event ? photo.event.title : 'Autres photos';
-
-        if (!grouped[folderId]) {
-          grouped[folderId] = {
-            id: folderId,
-            title: folderKey,
-            event: photo.event || null,
-            photos: [],
-          };
-        }
-        grouped[folderId].photos.push(photo);
-      });
-      return Object.values(grouped);
-    }
-
-    return eventsCopy;
+    return Array.from(eventsMap.values());
   };
 
   const handleFileSelect = (e) => {
