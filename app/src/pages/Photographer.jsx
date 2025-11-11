@@ -736,7 +736,9 @@ export default function Photographer() {
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                     src={`${import.meta.env.VITE_API_URL}/uploads/medium/${photo.uuid}`}
                                     alt={`Photo ${photo.id}`}
-                                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                                    className={`w-full h-48 object-cover group-hover:scale-110 transition-all duration-300 ${
+                                      selectedPhotoIds.has(photo.id) ? 'blur-sm' : ''
+                                    }`}
                                     onError={(e) => {
                                       e.target.src = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.uuid}`;
                                     }}
