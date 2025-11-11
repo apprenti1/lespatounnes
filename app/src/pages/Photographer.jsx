@@ -749,7 +749,7 @@ export default function Photographer() {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="mt-2 space-y-2">
+                                <div className="mt-2 space-y-2 p-1">
                                   {photo.tags && photo.tags.length > 0 ? (
                                     <div className="flex flex-wrap gap-1">
                                       {photo.tags.map((tag, idx) => (
