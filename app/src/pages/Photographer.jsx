@@ -694,7 +694,7 @@ export default function Photographer() {
                             {folder.photos.slice(0, folderDisplayLimits[folder.id] || PHOTOS_PER_FOLDER).map((photo) => (
                               <div
                                 key={photo.id}
-                                className={`group cursor-pointer relative ${
+                                className={`group cursor-pointer relative rounded-xl ${
                                   isSelectionMode
                                     ? `ring-2 ring-offset-2 ${
                                         selectedPhotoIds.has(photo.id)
