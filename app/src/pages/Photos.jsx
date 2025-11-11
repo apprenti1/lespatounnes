@@ -247,6 +247,18 @@ export default function Photos() {
     setSelectedPhoto(null);
   };
 
+  // Close modal with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        closePhotoModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
+
   const downloadPhoto = (photo) => {
     const photoUrl = `${import.meta.env.VITE_API_URL}/uploads/original/${photo.image}`;
     const link = document.createElement('a');
