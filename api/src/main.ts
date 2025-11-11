@@ -4,17 +4,25 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS - normalize origins to avoid duplicates
+  // Enable CORS with proper origin handling
   const corsOrigins = process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()) || ['http://localhost:5173', 'http://localhost:5174'];
+
   app.enableCors({
     origin: (requestOrigin, callback) => {
-      if (!requestOrigin || corsOrigins.some((allowedOrigin) => {
-        // Normalize by removing port 80/443 and comparing
-        const normalized = allowedOrigin.replace(/:80$/, '').replace(/:443$/, '');
-        const requestNormalized = requestOrigin.replace(/:80$/, '').replace(/:443$/, '');
-        return normalized === requestNormalized;
-      })) {
+      // If no origin header, allow (same-origin or non-browser requests)
+      if (!requestOrigin) {
         callback(null, true);
+        return;
+      }
+
+      // Check if the request origin is in the allowed list
+      const isAllowed = corsOrigins.some((allowedOrigin) => {
+        return allowedOrigin === requestOrigin;
+      });
+
+      if (isAllowed) {
+        // Return the exact origin from the request to avoid duplicates
+        callback(null, requestOrigin);
       } else {
         callback(new Error('Not allowed by CORS'));
       }
