@@ -14,6 +14,7 @@ export default function Photos() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [allEventsWithPhotos, setAllEventsWithPhotos] = useState([]);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +49,9 @@ export default function Photos() {
         console.error('Erreur lors de la récupération de l\'utilisateur:', error);
       }
     }
+
+    // Récupérer tous les événements avec photos
+    fetchAllEventsWithPhotos();
     initialLoadDone.current = true;
   }, []);
 
@@ -65,6 +69,30 @@ export default function Photos() {
       isLoadingPhotos: stateRef.current.isLoadingPhotos, // Preserve the flag
     };
   }, [hasMore, isLoadingMore, currentPage, selectedEventId, showNoEvent, searchQuery, showTaggedByMe, user]);
+
+  // Récupérer tous les événements avec photos
+  const fetchAllEventsWithPhotos = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/uploads/all`);
+
+      if (response.ok) {
+        const data = await response.json();
+        const photos = data.success ? data.photos : [];
+
+        // Extraire tous les événements uniques
+        const uniqueEvents = {};
+        photos.forEach((photo) => {
+          if (photo.event && !uniqueEvents[photo.event.id]) {
+            uniqueEvents[photo.event.id] = photo.event;
+          }
+        });
+
+        setEvents(Object.values(uniqueEvents).sort((a, b) => new Date(b.date) - new Date(a.date)));
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des événements:', error);
+    }
+  };
 
   // Charger les photos avec les filtres actuels
   const loadPhotos = useCallback(async (pageNum = 1) => {
@@ -127,16 +155,6 @@ export default function Photos() {
         setCurrentPage(1);
         setTotalPages(data.totalPages);
         setHasMore(1 < data.totalPages);
-        // Extraire les événements uniques seulement à la première page
-        if (!eventId && !noEvent) {
-          const uniqueEvents = {};
-          newPhotos.forEach((photo) => {
-            if (photo.event && !uniqueEvents[photo.event.id]) {
-              uniqueEvents[photo.event.id] = photo.event;
-            }
-          });
-          setEvents(Object.values(uniqueEvents).sort((a, b) => new Date(b.date) - new Date(a.date)));
-        }
       } else {
         setFilteredPhotos((prev) => [...prev, ...newPhotos]);
         setCurrentPage(pageNum);
