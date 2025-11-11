@@ -630,23 +630,9 @@ export default function Photographer() {
               {/* Selection toolbar */}
               {isSelectionMode && selectedPhotoIds.size > 0 && (
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="font-semibold text-blue-900">
-                      {selectedPhotoIds.size} photo(s) sélectionnée(s)
-                    </span>
-                    <button
-                      onClick={selectAllPhotos}
-                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-                    >
-                      Tout sélectionner
-                    </button>
-                    <button
-                      onClick={deselectAllPhotos}
-                      className="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
-                    >
-                      Tout désélectionner
-                    </button>
-                  </div>
+                  <span className="font-semibold text-blue-900">
+                    {selectedPhotoIds.size} photo(s) sélectionnée(s)
+                  </span>
                   <button
                     onClick={handleDeleteMultiplePhotos}
                     disabled={isDeletingMultiple}
@@ -725,7 +711,7 @@ export default function Photographer() {
                                       type="checkbox"
                                       checked={selectedPhotoIds.has(photo.id)}
                                       onChange={() => togglePhotoSelection(photo.id)}
-                                      className="w-6 h-6 cursor-pointer"
+                                      className="w-6 h-6 cursor-pointer rounded"
                                       onClick={(e) => e.stopPropagation()}
                                     />
                                   </div>
@@ -750,7 +736,9 @@ export default function Photographer() {
                                   />
                                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-center">
-                                      <p className="text-lg font-semibold">Gérer</p>
+                                      <p className="text-lg font-semibold">
+                                        {isSelectionMode ? 'Sélectionner' : 'Gérer'}
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
