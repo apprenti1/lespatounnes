@@ -615,7 +615,14 @@ export default function Photographer() {
                 </h2>
                 {uploadedImages.length > 0 && (
                   <button
-                    onClick={() => setIsSelectionMode(!isSelectionMode)}
+                    onClick={() => {
+                      if (isSelectionMode) {
+                        deselectAllPhotos();
+                        setIsSelectionMode(false);
+                      } else {
+                        setIsSelectionMode(true);
+                      }
+                    }}
                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                       isSelectionMode
                         ? 'bg-red-500 text-white hover:bg-red-600'
