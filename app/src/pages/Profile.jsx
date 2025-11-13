@@ -43,13 +43,44 @@ export default function Profile() {
     }
   }, [navigate]);
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    // TODO: Implémenter l'appel API pour mettre à jour le profil
-    toast.success('Profil mis à jour avec succès ! 🐾', { position: 'top-center' });
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      toast.error('Vous devez être connecté');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/update-profile`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Mettre à jour les infos locales
+        const updatedUser = { ...user, ...formData };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.dispatchEvent(new Event('storage'));
+        toast.success('Profil mis à jour avec succès ! 🐾', { position: 'top-center' });
+      } else {
+        toast.error(data.message || 'Erreur lors de la mise à jour du profil', { position: 'top-center' });
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors de la mise à jour du profil', { position: 'top-center' });
+    }
   };
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -62,9 +93,37 @@ export default function Profile() {
       return;
     }
 
-    // TODO: Implémenter l'appel API pour changer le mot de passe
-    toast.success('Mot de passe modifié avec succès ! 🐾', { position: 'top-center' });
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      toast.error('Vous devez être connecté');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Mot de passe modifié avec succès ! 🐾', { position: 'top-center' });
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        toast.error(data.message || 'Erreur lors du changement de mot de passe', { position: 'top-center' });
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors du changement de mot de passe', { position: 'top-center' });
+    }
   };
 
   const handleDeleteAccount = () => {
