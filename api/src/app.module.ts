@@ -7,6 +7,7 @@ import { HelloAssoModule } from './helloasso/helloasso.module';
 import { UploadModule } from './upload/upload.module';
 import { EventsModule } from './events/events.module';
 import { PhotosModule } from './photos/photos.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PhotosModule } from './photos/photos.module';
     UploadModule,
     EventsModule,
     PhotosModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
