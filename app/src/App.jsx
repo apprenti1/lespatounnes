@@ -15,6 +15,7 @@ import Story from './pages/Story';
 import Photos from './pages/Photos';
 import Admin from './pages/Admin';
 import AdminEvents from './pages/AdminEvents';
+import AdminUsers from './pages/AdminUsers';
 import Profile from './pages/Profile';
 import Photographer from './pages/Photographer';
 import Dev from './pages/Dev';
@@ -125,6 +126,7 @@ function App() {
           <Route path="/photos" element={<Photos />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/events" element={<AdminEvents />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/dev" element={<Dev />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photographer" element={<Photographer />} />
