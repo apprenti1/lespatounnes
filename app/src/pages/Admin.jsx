@@ -56,7 +56,7 @@ export default function Admin() {
         emoji="🛡️"
         title="Panel Admin"
         subtitle="Gestion de l'association Les Patounes"
-        description="Espace réservé aux administrateurs"
+        description="Espace réservé aux administrateurs et développeurs"
         buttons={heroButtons}
         stats={heroStats}
       />
@@ -72,11 +72,14 @@ export default function Admin() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-            <div className="bg-white rounded-2xl p-8 shadow-xl card-hover">
+            <button
+              onClick={() => navigate('/admin/users')}
+              className="bg-white rounded-2xl p-8 shadow-xl card-hover hover:shadow-2xl transition-all duration-300 cursor-pointer text-center"
+            >
               <div className="text-5xl mb-4">👥</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Gestion des membres</h3>
               <p className="text-gray-600">Visualiser et gérer les adhérents</p>
-            </div>
+            </button>
 
             <button
               onClick={() => navigate('/admin/events')}
