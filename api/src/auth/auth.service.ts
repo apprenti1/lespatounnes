@@ -138,4 +138,101 @@ export class AuthService {
       user,
     };
   }
+
+  async updateProfile(userId: string, data: any) {
+    const { firstName, lastName, username, email } = data;
+
+    // Vérifier que l'utilisateur existe
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur non trouvé');
+    }
+
+    // Vérifier que le nouvel email/username n'existe pas ailleurs
+    if (email && email !== user.email) {
+      const existingEmail = await this.prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingEmail) {
+        throw new ConflictException('Cet email est déjà utilisé');
+      }
+    }
+
+    if (username && username !== user.username) {
+      const existingUsername = await this.prisma.user.findUnique({
+        where: { username },
+      });
+      if (existingUsername) {
+        throw new ConflictException('Ce pseudo est déjà utilisé');
+      }
+    }
+
+    // Mettre à jour le profil
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: firstName !== undefined ? firstName : user.firstName,
+        lastName: lastName !== undefined ? lastName : user.lastName,
+        username: username !== undefined ? username : user.username,
+        email: email !== undefined ? email : user.email,
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+      },
+    });
+
+    return {
+      success: true,
+      user: updatedUser,
+      message: 'Profil mis à jour avec succès',
+    };
+  }
+
+  async changePassword(userId: string, data: any) {
+    const { currentPassword, newPassword } = data;
+
+    if (!currentPassword || !newPassword) {
+      throw new UnauthorizedException('Les anciens et nouveaux mots de passe sont obligatoires');
+    }
+
+    // Vérifier que l'utilisateur existe
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur non trouvé');
+    }
+
+    // Vérifier que le mot de passe actuel est correct
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Mot de passe incorrect');
+    }
+
+    // Hasher le nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Mettre à jour le mot de passe
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Mot de passe changé avec succès',
+    };
+  }
 }
