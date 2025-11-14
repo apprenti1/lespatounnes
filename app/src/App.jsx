@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTopButton from './components/ScrollToTop';
 import Home from './pages/Home';
 import Events from './pages/Events';
 import Login from './pages/Login';
@@ -102,6 +103,7 @@ function App() {
       <ScrollToTop />
       <div className="min-h-screen bg-gray-50">
         <Navbar />
+        <ScrollToTopButton />
         <ToastContainer
           position="top-right"
           autoClose={3000}

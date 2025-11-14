@@ -1,0 +1,67 @@
+/* Scroll to Top Button */
+#scrolltoTop {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 40;
+  transition: opacity 0.5s ease, transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#scrolltoTop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#scrolltoTop.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#scrolltoTop:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+}
+
+/* Arrow animation */
+.arrow {
+  width: 1.8rem;
+  height: 1.25rem;
+  display: inline-block;
+  position: relative;
+}
+
+.arrow span {
+  position: absolute;
+  width: 1.2rem;
+  height: 0.3rem;
+  background-color: #ffffff;
+  display: inline-block;
+  transition: 0.5s all;
+  border-radius: 50px;
+  top: 0.5rem;
+}
+
+.arrow span:first-of-type {
+  left: 0;
+  transform: rotate(-45deg);
+}
+
+.arrow span:last-of-type {
+  right: 0;
+  transform: rotate(45deg);
+}
+
+#scrolltoTop:hover .arrow span {
+  transform: rotate(0deg);
+  width: 1rem;
+}
