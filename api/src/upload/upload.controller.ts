@@ -116,6 +116,34 @@ export class UploadController {
   }
 
   /**
+   * Route d'upload pour l'image d'un partenaire
+   * POST /uploads/partner
+   * Authentification requise (rôle ADMIN/DEV)
+   */
+  @Post('partner')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadPartnerImage(@UploadedFile() file: any) {
+    if (!file) {
+      throw new HttpException('Aucun fichier n\'a été fourni', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      // Upload l'image avec création des versions responsive (thumbnail, small, medium, large)
+      const uuid = await this.uploadService.uploadFile(file, 999, true);
+
+      return {
+        success: true,
+        uuid: uuid,
+        filename: uuid,
+        message: 'Image uploadée avec succès',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
    * Route publique pour récupérer TOUTES les photos
    * GET /uploads/all
    * Sans authentification
