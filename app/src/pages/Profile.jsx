@@ -8,8 +8,6 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     username: '',
-    firstName: '',
-    lastName: '',
     email: '',
   });
   const [passwordData, setPasswordData] = useState({
@@ -33,8 +31,6 @@ export default function Profile() {
       setUser(parsedUser);
       setFormData({
         username: parsedUser.username || '',
-        firstName: parsedUser.firstName || '',
-        lastName: parsedUser.lastName || '',
         email: parsedUser.email || '',
       });
     } catch (error) {
@@ -161,7 +157,7 @@ export default function Profile() {
       <HeroSection
         emoji="👤"
         title="Mon Profil"
-        subtitle={`Bienvenue ${user.username || user.firstName || 'membre'} ! 🐾`}
+        subtitle={`Bienvenue ${user.username || 'membre'} ! 🐾`}
         description="Gérez vos informations personnelles et votre compte"
         buttons={heroButtons}
       />
@@ -185,30 +181,6 @@ export default function Profile() {
                   className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 transition-all duration-300"
                   placeholder="Votre pseudo"
                 />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Prénom</label>
-                  <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 transition-all duration-300"
-                    placeholder="Prénom"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Nom</label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 transition-all duration-300"
-                    placeholder="Nom"
-                  />
-                </div>
               </div>
 
               <div>

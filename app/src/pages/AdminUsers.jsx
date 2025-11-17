@@ -15,8 +15,6 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    firstName: '',
-    lastName: '',
     role: 'USER',
   });
 
@@ -74,8 +72,6 @@ export default function AdminUsers() {
     setFormData({
       username: '',
       email: '',
-      firstName: '',
-      lastName: '',
       role: 'USER',
       password: '',
     });
@@ -88,8 +84,6 @@ export default function AdminUsers() {
     setFormData({
       username: userToEdit.username,
       email: userToEdit.email,
-      firstName: userToEdit.firstName || '',
-      lastName: userToEdit.lastName || '',
       role: userToEdit.role,
     });
     setIsModalOpen(true);
@@ -101,8 +95,6 @@ export default function AdminUsers() {
     setFormData({
       username: '',
       email: '',
-      firstName: '',
-      lastName: '',
       role: 'USER',
     });
   };
@@ -198,8 +190,8 @@ export default function AdminUsers() {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (u.username && u.username.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (!user) {
@@ -259,7 +251,6 @@ export default function AdminUsers() {
                       <tr>
                         <th className="px-6 py-4 text-left">Pseudo</th>
                         <th className="px-6 py-4 text-left">Email</th>
-                        <th className="px-6 py-4 text-left">Nom</th>
                         <th className="px-6 py-4 text-left">Rôle</th>
                         <th className="px-6 py-4 text-center">Actions</th>
                       </tr>
@@ -269,11 +260,6 @@ export default function AdminUsers() {
                         <tr key={u.id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 font-semibold">{u.username}</td>
                           <td className="px-6 py-4">{u.email}</td>
-                          <td className="px-6 py-4">
-                            {u.firstName && u.lastName
-                              ? `${u.firstName} ${u.lastName}`
-                              : '-'}
-                          </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                               u.role === 'ADMIN'
@@ -359,26 +345,6 @@ export default function AdminUsers() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
                   required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Prénom</label>
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Nom</label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
                 />
               </div>
 

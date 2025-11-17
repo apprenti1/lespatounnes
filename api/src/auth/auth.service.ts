@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, username, firstName, lastName, birthDate } = registerDto;
+    const { email, password, username } = registerDto;
 
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await this.prisma.user.findUnique({
@@ -33,9 +33,6 @@ export class AuthService {
         email,
         password: hashedPassword,
         username,
-        firstName,
-        lastName,
-        birthDate: birthDate ? new Date(birthDate) : null,
       },
     });
 
@@ -49,8 +46,6 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
         role: user.role,
       },
     };
@@ -85,8 +80,6 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
         role: user.role,
       },
     };
@@ -123,8 +116,6 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
-        firstName: true,
-        lastName: true,
         role: true,
       },
     });
@@ -140,7 +131,7 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, data: any) {
-    const { firstName, lastName, username, email } = data;
+    const { username, email } = data;
 
     // Vérifier que l'utilisateur existe
     const user = await this.prisma.user.findUnique({
@@ -174,8 +165,6 @@ export class AuthService {
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
-        firstName: firstName !== undefined ? firstName : user.firstName,
-        lastName: lastName !== undefined ? lastName : user.lastName,
         username: username !== undefined ? username : user.username,
         email: email !== undefined ? email : user.email,
       },
@@ -183,8 +172,6 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
-        firstName: true,
-        lastName: true,
         role: true,
       },
     });
