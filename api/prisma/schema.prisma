@@ -81,3 +81,15 @@ model PhotoTag {
 
   @@map("photo_tags")
 }
+
+model Partner {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  description String
+  image     String?
+  websiteUrl String?
+  promoCode String?
+  promotionalText String?
+
+  @@map("partners")
+}
