@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 export default function Home() {
   const heroStats = [
     { emoji: '👥', value: '~80', label: 'Personnes par événement' },
-    { emoji: '💜', value: '64', label: 'Adhérents' },
+    { emoji: '💜', value: '80', label: 'Adhérents' },
     { emoji: '🎉', value: '2025', label: 'Ouverture en Juin' },
   ];
 
