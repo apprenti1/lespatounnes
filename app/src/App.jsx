@@ -17,6 +17,7 @@ import Photos from './pages/Photos';
 import Admin from './pages/Admin';
 import AdminEvents from './pages/AdminEvents';
 import AdminUsers from './pages/AdminUsers';
+import AdminPartners from './pages/AdminPartners';
 import Profile from './pages/Profile';
 import Photographer from './pages/Photographer';
 import Dev from './pages/Dev';
@@ -129,6 +130,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/events" element={<AdminEvents />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/partners" element={<AdminPartners />} />
           <Route path="/dev" element={<Dev />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/photographer" element={<Photographer />} />
