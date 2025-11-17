@@ -1,2 +1,2 @@
 -- DropTable
-DROP TABLE "promos";
+DROP TABLE IF EXISTS "promos" CASCADE;
