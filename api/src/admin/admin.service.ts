@@ -16,6 +16,7 @@ export class AdminService {
         username: true,
         email: true,
         role: true,
+        isMember: true,
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -60,6 +61,7 @@ export class AdminService {
         username: true,
         email: true,
         role: true,
+        isMember: true,
         createdAt: true,
       },
     });
@@ -109,6 +111,7 @@ export class AdminService {
         username: true,
         email: true,
         role: true,
+        isMember: true,
         createdAt: true,
       },
     });

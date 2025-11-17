@@ -47,6 +47,7 @@ export class AuthService {
         email: user.email,
         username: user.username,
         role: user.role,
+        isMember: user.isMember,
       },
     };
   }
@@ -81,6 +82,7 @@ export class AuthService {
         email: user.email,
         username: user.username,
         role: user.role,
+        isMember: user.isMember,
       },
     };
   }
@@ -117,6 +119,7 @@ export class AuthService {
         email: true,
         username: true,
         role: true,
+        isMember: true,
       },
     });
 
@@ -173,6 +176,7 @@ export class AuthService {
         email: true,
         username: true,
         role: true,
+        isMember: true,
       },
     });
 
