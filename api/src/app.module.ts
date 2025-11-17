@@ -8,6 +8,7 @@ import { UploadModule } from './upload/upload.module';
 import { EventsModule } from './events/events.module';
 import { PhotosModule } from './photos/photos.module';
 import { AdminModule } from './admin/admin.module';
+import { PartnersModule } from './partners/partners.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AdminModule } from './admin/admin.module';
     EventsModule,
     PhotosModule,
     AdminModule,
+    PartnersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
