@@ -1,7 +1,78 @@
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import HeroSection from '../components/HeroSection';
 import { Link } from 'react-router-dom';
 
 export default function Partners() {
+  const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [promoCodes, setPromoCodes] = useState({});
+
+  useEffect(() => {
+    // Vérifier si l'utilisateur est connecté et adhérent
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Erreur lors du parsing des données utilisateur:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/partners`);
+        if (response.ok) {
+          const data = await response.json();
+          const partnersList = data.success ? data.partners : [];
+          setPartners(partnersList);
+
+          // Si l'utilisateur est connecté et adhérent, récupérer les codes promo
+          if (user && user.isMember) {
+            const token = localStorage.getItem('accessToken');
+            const promos = {};
+
+            for (const partner of partnersList) {
+              try {
+                const promoResponse = await fetch(
+                  `${import.meta.env.VITE_API_URL}/partners/${partner.id}/promo`,
+                  {
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                    },
+                  }
+                );
+
+                if (promoResponse.ok) {
+                  const promoData = await promoResponse.json();
+                  if (promoData.success && promoData.promoCode) {
+                    promos[partner.id] = promoData.promoCode;
+                  }
+                }
+              } catch (error) {
+                console.error('Erreur lors du chargement du code promo:', error);
+              }
+            }
+
+            setPromoCodes(promos);
+          }
+        } else {
+          toast.error('Erreur lors du chargement des partenaires');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        toast.error('Erreur lors du chargement des partenaires');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, [user]);
+
   const heroButtons = [
     {
       href: '/devenir-partenaire',
@@ -19,7 +90,7 @@ export default function Partners() {
     },
   ];
 
-  const partners = [
+  const defaultPartners = [
     {
       name: 'K9Fetish - Produits Personnalisés',
       description: 'Produits sur mesure haut de gamme :<br/>' +
@@ -28,7 +99,7 @@ export default function Partners() {
                    '<br/>' +
                    'Devenez adhérent et bénéficiez de<br/>' +
                    '<strong>10% de réduction</strong> sur votre panier.<br/>',
-      imageUrl: '/k9.jpg',
+      image: '/k9.jpg',
       websiteUrl: 'https://www.k9fetish.fr',
 
     },
@@ -41,7 +112,7 @@ export default function Partners() {
                    '<strong>10% de réduction</strong> sur votre panier<br/>' +
                    'sur la collection spéciale "Puppy Secret".<br/>' +
                    '(Entrez le code "Puppylove" pour accéder à la collection.)<br/>',
-      imageUrl: '/riya.jpg',
+      image: '/riya.jpg',
       websiteUrl: 'https://lescreaderiya.fr/collections/puppysecret-🐶',
     },
     {
@@ -56,7 +127,7 @@ export default function Partners() {
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong><br/>' +
                    'en magasin et peut-être même d\'un accès au sous-sol pour les plus téméraires !<br/>' +
                    '<small><em>(sur présentation de votre carte de membre en caisse)</em></small><br/>',
-      imageUrl: 'Boxxman.jpg',
+      image: 'Boxxman.jpg',
       websiteUrl: 'https://www.boxxman.fr',
     },
     {
@@ -72,7 +143,7 @@ export default function Partners() {
                    '<br/>' +
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong> sur votre shooting.<br/>' +
                    '<small><em>(sur présentation de votre carte de membre au photographe)</em></small><br/>',
-      imageUrl: 'scooby.jpg',
+      image: 'scooby.jpg',
       websiteUrl: 'https://www.gregstudiophoto.fr/fetish',
     },
     {
@@ -90,7 +161,7 @@ export default function Partners() {
                    '<br/>' +
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong><br/>' +
                    'sur votre panier.',
-      imageUrl: 'wolf.jpg',
+      image: 'wolf.jpg',
       websiteUrl: 'https://wolf-studio.fr',
     },
     {
@@ -107,7 +178,7 @@ export default function Partners() {
                    'Devenez adhérent et bénéficiez de <strong>10% de réduction</strong><br/>' +
                    'en magasin<br/>' +
                    '<small>(sur présentation de votre carte de membre en caisse)</small>.',
-      imageUrl: 'bmc.jpg',
+      image: 'bmc.jpg',
       websiteUrl: 'https://www.bmc-store.com',
     },
     {
@@ -122,7 +193,7 @@ export default function Partners() {
                    '<small><em>(bière 25cl, verre de vin ou soft)</small></em><br>' +
                    'pour toute commande d\'un plat.<br>' +
                    '<small><em>(sur présentation de votre carte de membre en caisse)</em></small>.<br>',
-      imageUrl: 'bouquet.jpg',
+      image: 'bouquet.jpg',
       websiteUrl: 'https://share.google/4ZJUIUn1bCq1B17BG',
     },
     {
@@ -133,7 +204,7 @@ export default function Partners() {
                    '<br/>' +
                    'Devenez adhérent et bénéficiez de<br/>' +
                    '<strong>10% de réduction</strong> sur votre panier.',
-      imageUrl: 'furrjoi.jpg',
+      image: 'furrjoi.jpg',
       websiteUrl: 'https://furrjoi.com/home',
     },
     {
@@ -145,7 +216,7 @@ export default function Partners() {
                    'et 100% Made in France !<br/>' +
                    '<br/>' +
                    'Devenez adhérant et bénéficiez d\'un <strong>accès premium</strong> !<br/>',
-      imageUrl: 'Playfetish.png',
+      image: 'Playfetish.png',
       websiteUrl: 'https://PlayFetish.com/@lespatounesfr',
     },
   ];
@@ -164,12 +235,14 @@ export default function Partners() {
       <section id="evenements" className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-
           {/* Join Section */}
           <div className="py-20 bg-gray-50 paw-pattern rounded-3xl">
-
-            {
-              partners.map((partner, index) => (
+            {loading ? (
+              <div className="text-center py-12">Chargement des partenaires...</div>
+            ) : (
+              <>
+                {
+                  (partners.length > 0 ? partners : defaultPartners).map((partner, index) => (
                 <div 
                   key={index} 
                   className={`flex flex-col md:flex-row items-center gap-8 p-8 ${ index%2 == 1 ? 'md:flex-row-reverse' : ''}`}
@@ -179,30 +252,50 @@ export default function Partners() {
                     <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-6">
                       {partner.name}
                     </h3>
-                    <p 
+                    <p
                       className="text-lg text-gray-700 leading-relaxed mb-6"
                       dangerouslySetInnerHTML={{ __html: partner.description }}
                     />
-                    <Link
-                      to={partner.websiteUrl}
+
+                    {/* Afficher le code promo si l'utilisateur est adhérent, sinon le texte promotionnel */}
+                    {user && user.isMember && promoCodes[partner.id] && (
+                      <div className="mb-6 p-4 bg-purple-100 rounded-lg border-2 border-purple-300">
+                        <p className="text-sm text-gray-600 mb-2">Code promo adhérent:</p>
+                        <p className="text-2xl font-bold text-purple-600">{promoCodes[partner.id]}</p>
+                      </div>
+                    )}
+
+                    {(!user || !user.isMember) && partner.promotionalText && (
+                      <div
+                        className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200"
+                        dangerouslySetInnerHTML={{ __html: `<p>${partner.promotionalText}</p>` }}
+                      />
+                    )}
+
+                    <a
+                      href={partner.websiteUrl}
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-3 btn-primary text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl"
                     >
                       <span className="text-2xl">🐾</span> Visiter le site
-                    </Link>
+                    </a>
                   </div>
                   {/* Image à droite */}
                   <div className="flex-1 w-full md:w-auto">
-                    <img
-                      src={partner.imageUrl}
-                      alt={`Partenaire ${partner.name}`}
-                      className="w-full h-auto rounded-2xl shadow-2xl object-cover"
-                    />
+                    {partner.image && (
+                      <img
+                        src={partner.image.startsWith('http') || partner.image.startsWith('/') ? partner.image : `${import.meta.env.VITE_API_URL}/uploads/medium/${partner.image}`}
+                        alt={`Partenaire ${partner.name}`}
+                        className="w-full h-auto rounded-2xl shadow-2xl object-cover"
+                      />
+                    )}
                   </div>
                 </div>
-              ))
-            }
-
+                  ))
+                }
+              </>
+            )}
           </div>
 
         </div>
