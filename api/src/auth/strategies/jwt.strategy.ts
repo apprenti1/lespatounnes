@@ -22,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         email: true,
         role: true,
         username: true,
+        isMember: true,
       },
     });
 
@@ -35,6 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       role: user.role, // Rôle à jour depuis la base de données
       username: user.username,
+      isMember: user.isMember,
     };
   }
 }
