@@ -1,0 +1,3 @@
+-- This migration is a placeholder to reset the migration history
+-- All tables and structures already exist in the production database
+-- This allows Prisma to continue without trying to recreate existing structures
