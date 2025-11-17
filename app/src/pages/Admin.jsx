@@ -71,7 +71,7 @@ export default function Admin() {
             Cette page sera bientôt disponible avec tous les outils de gestion ! 🐾
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             <button
               onClick={() => navigate('/admin/users')}
               className="bg-white rounded-2xl p-8 shadow-xl card-hover hover:shadow-2xl transition-all duration-300 cursor-pointer text-center"
@@ -90,11 +90,14 @@ export default function Admin() {
               <p className="text-gray-600">Créer et modifier les événements</p>
             </button>
 
-            <div className="bg-white rounded-2xl p-8 shadow-xl card-hover">
-              <div className="text-5xl mb-4">🪄</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Personnalisation</h3>
-              <p className="text-gray-600">Personnaliser les pages facilement</p>
-            </div>
+            <button
+              onClick={() => navigate('/admin/partners')}
+              className="bg-white rounded-2xl p-8 shadow-xl card-hover hover:shadow-2xl transition-all duration-300 cursor-pointer text-center"
+            >
+              <div className="text-5xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Gestion des partenaires</h3>
+              <p className="text-gray-600">Gérer les partenaires et offres</p>
+            </button>
           </div>
         </div>
       </section>
