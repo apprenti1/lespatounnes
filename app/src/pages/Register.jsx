@@ -5,9 +5,6 @@ import { Link } from 'react-router-dom';
 export default function Register() {
   const [formData, setFormData] = useState({
     pseudo: '',
-    prenom: '',
-    nom: '',
-    naissance: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -41,26 +38,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.prenom || !formData.nom || !formData.naissance || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
       toast.error('❌ Veuillez remplir tous les champs obligatoires !', { position: 'top-center' });
       return;
     }
 
     if (!formData.cgu) {
       toast.error("❌ Vous devez accepter les conditions générales d'utilisation pour continuer.", { position: 'top-center' });
-      return;
-    }
-
-    const birthDate = new Date(formData.naissance);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    if (age < 18) {
-      toast.error("❌ Vous devez avoir 18 ans ou plus pour adhérer à l'association.", { position: 'top-center' });
       return;
     }
 
@@ -86,9 +70,6 @@ export default function Register() {
           email: formData.email,
           password: formData.password,
           username: formData.pseudo || null,
-          firstName: formData.prenom,
-          lastName: formData.nom,
-          birthDate: formData.naissance,
         }),
       });
 
@@ -244,49 +225,6 @@ export default function Register() {
                     placeholder="Votre pseudo dans la communauté"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2 text-lg">
-                    Prénom *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.prenom}
-                    onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
-                    className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
-                    placeholder="Prénom"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2 text-lg">Nom *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.nom}
-                    onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-                    className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
-                    placeholder="Nom"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2 text-lg">
-                  Date de naissance *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.naissance}
-                  onChange={(e) => setFormData({ ...formData, naissance: e.target.value })}
-                  className="w-full px-6 py-4 rounded-xl border-2 border-gray-200 text-gray-700 text-lg transition-all duration-300"
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  Vous devez avoir 18 ans ou plus pour adhérer
-                </p>
               </div>
 
               <div>

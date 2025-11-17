@@ -1,11 +1,41 @@
-/* Scroll to Top Button */
+/* arrow scrollto top animation */
+.arrow {
+  width: 1.8rem;
+  height: 1.25rem;
+  display: inline-block;
+  position: relative;
+}
+.arrow span {
+  top: 0.5rem;
+  position: absolute;
+  width: 1.2rem;
+  height: 0.4rem;
+  background-color: #efefef;
+  display: inline-block;
+  transition: 0.5s all 0s;
+  border-radius: 50px;
+}
+.arrow span:first-of-type {
+  left: 0;
+  transform: rotate(-45deg);
+}
+.arrow span:last-of-type {
+  right: 0;
+  transform: rotate(45deg);
+}
+.arrow:hover span {
+  transform: rotate(0deg);
+  width: 1rem;
+}
+/* END arrow scrollto top animation */
+
 #scrolltoTop {
   position: fixed;
   bottom: 10px;
   right: 10px;
   width: 50px;
   height: 50px;
-  background: #06b6d4;
+  background-color: #06b6d4;
   border: none;
   border-radius: 50%;
   display: flex;
@@ -13,13 +43,9 @@
   justify-content: center;
   cursor: pointer;
   z-index: 40;
-  transition: opacity 0.5s ease, transform 0.3s ease;
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-}
-
-#scrolltoTop.visible {
   opacity: 1;
-  pointer-events: auto;
+  transition: 0.5s;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
 #scrolltoTop.hidden {
@@ -27,44 +53,7 @@
   pointer-events: none;
 }
 
-#scrolltoTop:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
-}
-
-/* Arrow animation */
-.arrow {
-  width: 1.8rem;
-  height: 1.25rem;
-  display: inline-block;
-  position: relative;
-}
-
-.arrow span {
-  position: absolute;
-  width: 1.2rem;
-  height: 0.3rem;
-  background-color: #ffffff;
-  display: inline-block;
-  transition: 0.5s all;
-  border-radius: 50px;
-}
-
-.arrow span:first-of-type {
-  left: 0;
-  top: 0;
-  transform: rotate(-45deg);
-  transform-origin: left center;
-}
-
-.arrow span:last-of-type {
-  right: 0;
-  bottom: 0;
-  transform: rotate(45deg);
-  transform-origin: right center;
-}
-
-#scrolltoTop:hover .arrow span {
-  transform: rotate(0deg);
-  width: 1rem;
+#scrolltoTop.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
