@@ -20,6 +20,7 @@ export default function AdminPartners() {
     websiteUrl: '',
     promoCode: '',
     promotionalText: '',
+    order: 0,
   });
 
   // Vérifier l'authentification et le rôle
@@ -81,6 +82,7 @@ export default function AdminPartners() {
       websiteUrl: '',
       promoCode: '',
       promotionalText: '',
+      order: 0,
     });
     setIsModalOpen(true);
   };
@@ -96,6 +98,7 @@ export default function AdminPartners() {
       websiteUrl: partnerToEdit.websiteUrl || '',
       promoCode: partnerToEdit.promoCode || '',
       promotionalText: partnerToEdit.promotionalText || '',
+      order: partnerToEdit.order || 0,
     });
     setIsModalOpen(true);
   };
@@ -111,6 +114,7 @@ export default function AdminPartners() {
       websiteUrl: '',
       promoCode: '',
       promotionalText: '',
+      order: 0,
     });
   };
 
@@ -155,6 +159,7 @@ export default function AdminPartners() {
         promoCode: formData.promoCode,
         promotionalText: formData.promotionalText,
         image: imagePath,
+        order: parseInt(formData.order) || 0,
       };
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/partners`, {
@@ -217,6 +222,7 @@ export default function AdminPartners() {
         promoCode: formData.promoCode,
         promotionalText: formData.promotionalText,
         image: imagePath,
+        order: parseInt(formData.order) || 0,
       };
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/partners/${selectedPartner.id}`, {
@@ -476,6 +482,18 @@ export default function AdminPartners() {
                   className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
                   placeholder="Texte HTML pour les visiteurs non adhérents"
                   rows="3"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">Ordre d'affichage</label>
+                <input
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                  className="w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none"
+                  placeholder="0"
+                  min="0"
                 />
               </div>
 

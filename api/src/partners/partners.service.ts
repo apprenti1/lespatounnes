@@ -9,7 +9,9 @@ export class PartnersService {
    * Récupérer tous les partenaires
    */
   async getAllPartners() {
-    return this.prisma.partner.findMany();
+    return this.prisma.partner.findMany({
+      orderBy: { order: 'asc' },
+    });
   }
 
   /**
@@ -23,7 +25,7 @@ export class PartnersService {
    * Créer un nouveau partenaire
    */
   async createPartner(data: any) {
-    const { name, description, image, websiteUrl, promoCode, promotionalText } = data;
+    const { name, description, image, websiteUrl, promoCode, promotionalText, order } = data;
 
     // Validation
     if (!name || !description) {
@@ -48,6 +50,7 @@ export class PartnersService {
         websiteUrl: websiteUrl || null,
         promoCode: promoCode || null,
         promotionalText: promotionalText || null,
+        order: order || 0,
       },
     });
   }
@@ -56,7 +59,7 @@ export class PartnersService {
    * Mettre à jour un partenaire
    */
   async updatePartner(id: string, data: any) {
-    const { name, description, image, websiteUrl, promoCode, promotionalText } = data;
+    const { name, description, image, websiteUrl, promoCode, promotionalText, order } = data;
 
     // Vérifier que le partenaire existe
     const partner = await this.prisma.partner.findUnique({ where: { id } });
@@ -84,6 +87,7 @@ export class PartnersService {
         websiteUrl: websiteUrl !== undefined ? websiteUrl : partner.websiteUrl,
         promoCode: promoCode !== undefined ? promoCode : partner.promoCode,
         promotionalText: promotionalText !== undefined ? promotionalText : partner.promotionalText,
+        order: order !== undefined ? order : partner.order,
       },
     });
   }

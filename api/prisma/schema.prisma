@@ -90,6 +90,7 @@ model Partner {
   websiteUrl String?
   promoCode String?
   promotionalText String?
+  order     Int       @default(0)
 
   @@map("partners")
 }
