@@ -27,7 +27,7 @@ export class AdminService {
    * Créer un nouvel utilisateur
    */
   async createUser(data: any) {
-    const { username, email, password, role } = data;
+    const { username, email, password, role, isMember } = data;
 
     // Validation
     if (!username || !email || !password) {
@@ -55,6 +55,7 @@ export class AdminService {
         email,
         password: hashedPassword,
         role: role || 'USER',
+        isMember: isMember || false,
       },
       select: {
         id: true,
@@ -71,7 +72,7 @@ export class AdminService {
    * Mettre à jour un utilisateur (sans modifier le mot de passe)
    */
   async updateUser(id: string, data: any) {
-    const { username, email, role } = data;
+    const { username, email, role, isMember } = data;
 
     // Vérifier que l'utilisateur existe
     const user = await this.prisma.user.findUnique({ where: { id } });
@@ -105,6 +106,7 @@ export class AdminService {
         username: username || user.username,
         email: email || user.email,
         role: role || user.role,
+        isMember: isMember !== undefined ? isMember : user.isMember,
       },
       select: {
         id: true,

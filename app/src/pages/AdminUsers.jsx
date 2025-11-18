@@ -16,6 +16,7 @@ export default function AdminUsers() {
     username: '',
     email: '',
     role: 'USER',
+    isMember: false,
   });
 
   // Vérifier l'authentification et le rôle
@@ -73,6 +74,7 @@ export default function AdminUsers() {
       username: '',
       email: '',
       role: 'USER',
+      isMember: false,
       password: '',
     });
     setIsModalOpen(true);
@@ -85,6 +87,7 @@ export default function AdminUsers() {
       username: userToEdit.username,
       email: userToEdit.email,
       role: userToEdit.role,
+      isMember: userToEdit.isMember || false,
     });
     setIsModalOpen(true);
   };
@@ -96,6 +99,7 @@ export default function AdminUsers() {
       username: '',
       email: '',
       role: 'USER',
+      isMember: false,
     });
   };
 
@@ -252,6 +256,7 @@ export default function AdminUsers() {
                         <th className="px-6 py-4 text-left">Pseudo</th>
                         <th className="px-6 py-4 text-left">Email</th>
                         <th className="px-6 py-4 text-left">Rôle</th>
+                        <th className="px-6 py-4 text-center">Adhérent</th>
                         <th className="px-6 py-4 text-center">Actions</th>
                       </tr>
                     </thead>
@@ -271,6 +276,15 @@ export default function AdminUsers() {
                                 : 'bg-gray-100 text-gray-700'
                             }`}>
                               {u.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                              u.isMember
+                                ? 'bg-purple-100 text-purple-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {u.isMember ? '✅ Oui' : '❌ Non'}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-center space-x-2">
@@ -373,6 +387,18 @@ export default function AdminUsers() {
                   <option value="ADMIN">Admin</option>
                   <option value="DEV">Dev</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isMember}
+                    onChange={(e) => setFormData({ ...formData, isMember: e.target.checked })}
+                    className="w-5 h-5 cursor-pointer"
+                  />
+                  <span className="text-gray-700 font-semibold">Adhérent</span>
+                </label>
               </div>
 
               <div className="flex gap-3 pt-4">
