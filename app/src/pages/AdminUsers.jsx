@@ -128,6 +128,21 @@ export default function AdminUsers() {
         toast.success('Utilisateur créé avec succès');
         closeModal();
         fetchUsers(token);
+
+        // Mettre à jour le localStorage si c'est l'utilisateur connecté
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          try {
+            const currentUser = JSON.parse(userData);
+            if (currentUser.email === formData.email) {
+              currentUser.isMember = formData.isMember;
+              currentUser.role = formData.role;
+              localStorage.setItem('user', JSON.stringify(currentUser));
+            }
+          } catch (error) {
+            console.error('Erreur lors de la mise à jour du localStorage:', error);
+          }
+        }
       } else {
         toast.error(data.message || 'Erreur lors de la création');
       }
@@ -155,6 +170,22 @@ export default function AdminUsers() {
 
       if (response.ok) {
         toast.success('Utilisateur mis à jour avec succès');
+
+        // Mettre à jour le localStorage si c'est l'utilisateur connecté
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          try {
+            const currentUser = JSON.parse(userData);
+            if (currentUser.id === selectedUser.id) {
+              currentUser.isMember = formData.isMember;
+              currentUser.role = formData.role;
+              localStorage.setItem('user', JSON.stringify(currentUser));
+            }
+          } catch (error) {
+            console.error('Erreur lors de la mise à jour du localStorage:', error);
+          }
+        }
+
         closeModal();
         fetchUsers(token);
       } else {
