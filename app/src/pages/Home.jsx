@@ -101,8 +101,7 @@ export default function Home() {
             <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
             <p className="text-xl text-gray-600">Découvrez toutes nos initiatives 🌈</p>
           </div>
-{/* 
-          {/* Main Event * /}
+          {/* Main Event */}
           <div className="relative bg-white rounded-3xl overflow-hidden mb-10 shadow-2xl card-hover">
             <div className="image-card h-96 relative">
               <img
@@ -117,16 +116,15 @@ export default function Home() {
                   <h3 className="text-3xl md:text-4xl font-bold">Apéros Hebdomadaires</h3>
                 </div>
                 <p className="text-xl md:text-2xl mb-4 font-light">
-                  Tous les jeudis à 18h30 au FreeDj, dans le Marais à Paris
+                  Tous les vendredis à 18h30 dans le Marais à Paris
                 </p>
-                <p className="text-lg opacity-90 mb-4">Avec La Qonnasse KyssyBangBang</p>
-                <div className="inline-block bg-white text-purple-600 px-6 py-3 rounded-full font-bold text-lg">
-                  Tous les jeudis 📅
+{/*                 <p className="text-lg opacity-90 mb-4">Avec La Qonnasse KyssyBangBang</p>
+ */}                <div className="inline-block bg-white text-purple-600 px-6 py-3 rounded-full font-bold text-lg">
+                  Tous les vendredis 📅
                 </div>
               </div>
             </div>
           </div>
- */}
           {/* Join Section */}
           <div className="py-20 bg-gray-50 paw-pattern rounded-3xl">
             <div className="flex flex-col md:flex-row items-center gap-8 p-8">

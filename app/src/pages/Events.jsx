@@ -53,8 +53,7 @@ export default function Events() {
         subtitle="Découvrez toutes nos initiatives et rejoignez la meute 🐾"
         buttons={heroButtons}
       />
-{/* 
-      {/* {Featured Event} * /}
+      {/* {Featured Event} */}
       <section className="py-20 bg-gray-50 paw-pattern -mt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -80,15 +79,15 @@ export default function Events() {
                   <h3 className="text-3xl md:text-5xl font-bold">Apéros Hebdomadaires</h3>
                 </div>
                 <p className="text-xl md:text-2xl mb-3 font-light">
-                  Tous les jeudis à 18h30 au FreeDj, dans le Marais à Paris
+                  Tous les Vendredis à 18h30 dans le Marais à Paris
                 </p>
-                <p className="text-lg md:text-xl opacity-90 mb-6">
+                {/* <p className="text-lg md:text-xl opacity-90 mb-6">
                   Avec La Qonnasse KyssyBangBang
-                </p>
+                </p> */}
                 <div className="flex flex-wrap gap-3">
                   <span className="event-badge bg-white text-purple-600">
                     <ion-icon name="calendar-outline"></ion-icon>
-                    Tous les jeudis
+                    Tous les Vendredis
                   </span>
                   <span className="event-badge bg-white text-purple-600">
                     <ion-icon name="time-outline"></ion-icon>
@@ -96,7 +95,7 @@ export default function Events() {
                   </span>
                   <span className="event-badge bg-white text-purple-600">
                     <ion-icon name="location-outline"></ion-icon>
-                    FreeDj - Le Marais
+                    dans Le Marais
                   </span>
                 </div>
               </div>
@@ -104,7 +103,6 @@ export default function Events() {
           </div>
         </div>
       </section>
- */}
       {/* {Events Grid} */}
       <section id="evenements" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
