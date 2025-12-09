@@ -53,8 +53,8 @@ export default function Events() {
         subtitle="Découvrez toutes nos initiatives et rejoignez la meute 🐾"
         buttons={heroButtons}
       />
-
-      {/* {Featured Event} */}
+{/* 
+      {/* {Featured Event} * /}
       <section className="py-20 bg-gray-50 paw-pattern -mt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -104,7 +104,7 @@ export default function Events() {
           </div>
         </div>
       </section>
-
+ */}
       {/* {Events Grid} */}
       <section id="evenements" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

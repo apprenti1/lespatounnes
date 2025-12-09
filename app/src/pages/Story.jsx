@@ -189,6 +189,8 @@ export default function Story() {
           <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-10 md:p-16 shadow-2xl">
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6 text-gray-700 text-lg leading-relaxed">
+                
+                {/* 
                 <p>
                   Chaque semaine, nous organisons nos <span className="font-bold text-purple-600">apéros hebdomadaires tous les jeudis à 18h30 au FreeDj</span>, dans le Marais à Paris, avec La Qonnasse KyssyBangBang. Ces rencontres sont l'occasion idéale de se retrouver, d'échanger et de renforcer les liens au sein de notre communauté 🐶💬
                 </p>
@@ -196,7 +198,7 @@ export default function Story() {
                 <p className="font-semibold text-gray-800 text-xl">
                   En plus de ces rendez-vous réguliers, nous proposons :
                 </p>
-                
+                 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-xl p-6 shadow-lg">
                     <div className="text-4xl mb-3">🎉</div>

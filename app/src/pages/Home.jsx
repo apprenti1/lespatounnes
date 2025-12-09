@@ -101,8 +101,8 @@ export default function Home() {
             <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-pink-500 mx-auto mb-6"></div>
             <p className="text-xl text-gray-600">Découvrez toutes nos initiatives 🌈</p>
           </div>
-
-          {/* Main Event */}
+{/* 
+          {/* Main Event * /}
           <div className="relative bg-white rounded-3xl overflow-hidden mb-10 shadow-2xl card-hover">
             <div className="image-card h-96 relative">
               <img
@@ -126,7 +126,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-
+ */}
           {/* Join Section */}
           <div className="py-20 bg-gray-50 paw-pattern rounded-3xl">
             <div className="flex flex-col md:flex-row items-center gap-8 p-8">
